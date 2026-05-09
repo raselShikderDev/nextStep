@@ -1,0 +1,51 @@
+{
+  "name": "nextstepbackend",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon --exec bun run src/server.ts",
+    "build": "tsup src/server.ts --format cjs --dts",
+    "start": "bun run dist/server.js",
+    "db:generate": "bunx prisma generate",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:studio": "bunx prisma studio",
+    "db:reset": "bunx prisma migrate reset",
+    "db:seed": "bun run prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.6.2",
+    "@types/nodemailer": "^8.0.0",
+    "@types/uuid": "^11.0.0",
+    "nodemon": "^3.1.14",
+    "prisma": "^7.8.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.1"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "@prisma/client": "^7.8.0",
+    "bullmq": "^5.76.6",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.10.1",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.7",
+    "uuid": "^14.0.0",
+    "xss": "^1.0.15",
+    "zod": "^4.4.3"
+  }
+}
