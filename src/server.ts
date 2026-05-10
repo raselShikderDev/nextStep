@@ -1,10 +1,11 @@
 import expressApp from "@/app";
 import { type Server } from "http";
+import envVar from "@/config/env"
 
 async function startServer() {
   let server: Server;
 
-  const PORT = 3000;
+  const PORT = envVar.PORT;
   try {
     server = expressApp.listen(PORT, () => {
       console.log(`🚀 Server is running on http://localhost:${PORT}`);
