@@ -1,6 +1,6 @@
 import expressApp from "@/app";
 import { type Server } from "http";
-import envVar from "@/config/env"
+import envVar from "@/config/env.config"
 
 async function startServer() {
   let server: Server;

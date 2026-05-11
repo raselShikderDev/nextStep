@@ -1,14 +1,26 @@
-import createClient from "ioredis"
+import { createClient } from 'redis';
+import envVar from './env.config';
+const client = createClient({ url: envVar.REDIS_URL as string});
 
-const client = new createClient({
-  url: 'redis://localhost:6379' // Default local connection
-});
 
-client.on('error', (err) => console.log('Redis Client Error', err));
-
-async function connectRedis() {
-  await client.connect();
-  console.log('Connected to Redis!');
+if (client.isReady) {
+    console.log("Redis is connected");
+    
+} else {
+    client.on('connect', ()=>console.log("Redis clinet is connecting"))
+    client.on('ready', ()=>console.log("Redis clinet is Ready now"))
+    client.on('error', (error)=>console.error("Redis clinet is Ready now", error))
 }
+// import { createClient } from "redis";
 
-connectRedis();
+// const port: number = 3210;
+
+// // Create a Redis client
+// const client = createClient();
+
+// client.on("error", (err) => {
+//   console.log("Redis error =>", err);
+// });
+
+// // Connect to the Redis server
+// client.connect();

@@ -5,7 +5,9 @@ dotenv.config({path:path.join(process.cwd(), "env")})
 
 const envVar = {
     PORT: process.env.PORT,
-    DATABASE_URL:process.env.DATABASE_URL
+    DATABASE_URL:process.env.DATABASE_URL,
+    REDIS_URL:process.env.REDIS_URL,
+    
 }
 
 export default envVar
