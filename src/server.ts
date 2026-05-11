@@ -1,6 +1,7 @@
 import expressApp from "@/app";
 import { type Server } from "http";
 import envVar from "@/config/env.config"
+import {connectRedis} from "@config/redis.config"
 
 async function startServer() {
   let server: Server;
@@ -30,4 +31,7 @@ async function startServer() {
   }
 }
 
+(async()=>{
 startServer();
+connectRedis()
+})()
