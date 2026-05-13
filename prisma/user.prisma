@@ -1,13 +1,15 @@
 model User {
-  id           String  @id @default(uuid())
-  name         String
-  email        String  @unique
-  phone        String? @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   passwordHash String
- // otherInfo
-  role     Role    @default(USER)
-  isActive Boolean @default(true)
+  role         Role     @default(USER)
+  isActive     Boolean  @default(true)
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  //   requests     ServiceRequest[]
   @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@map("users")
 }
