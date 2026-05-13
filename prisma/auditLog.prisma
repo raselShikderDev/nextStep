@@ -1,12 +1,23 @@
 model AuditLog {
-    id          String     @id @default(uuid())
-    requestId   String?
-    performedBy String
-    action      ActionType
-    entityType  String
-    entityId    String
-    oldValue    Json?
-    newValue    Json?
-    ipAddress   String?
-    createdAt   DateTime   @default(now())
+  id           String     @id @default(uuid())
+  performedById String
+  requestId    String?
+  action       ActionType
+  entityType   String     // "ServiceRequest" | "Payment" | "User" | "Service"
+  entityId     String
+  oldValue     Json?
+  newValue     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime   @default(now())
+
+  performedBy User            @relation("PerformedBy", fields: [performedById], references: [id])
+  request     ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+
+  @@index([performedById])
+  @@index([requestId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
 }

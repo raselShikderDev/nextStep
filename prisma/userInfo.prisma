@@ -4,7 +4,7 @@ model UserDetails {
     phone     String? @unique
     avatarUrl String?
     address   String?
-    userId    String  @unique
+    userId    String  @uniqu
 
     // Relations
     user                 User                   @relation(fields: [id], references: [id])

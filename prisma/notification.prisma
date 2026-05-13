@@ -1,0 +1,20 @@
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  requestId String?
+  type      NotificationType
+  title     String
+  body      String
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  metadata  Json?            // extra context (e.g. requestNo, amount)
+  createdAt DateTime         @default(now())
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([requestId])
+  @@map("notifications")
+}
