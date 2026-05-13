@@ -1,0 +1,12 @@
+model AuditLog {
+    id          String     @id @default(uuid())
+    requestId   String?
+    performedBy String
+    action      ActionType
+    entityType  String
+    entityId    String
+    oldValue    Json?
+    newValue    Json?
+    ipAddress   String?
+    createdAt   DateTime   @default(now())
+}

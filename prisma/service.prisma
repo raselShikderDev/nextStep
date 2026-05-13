@@ -1,0 +1,26 @@
+model Service {
+  id          String   @id @default(uuid())
+  categoryId  String
+  name        String
+  slug        String   @unique
+  priceMin    Decimal  @db.Decimal(10, 2)
+  priceMax    Decimal  @db.Decimal(10, 2)
+  formSchema  Json     // Dynamic form field definitions
+  isActive    Boolean  @default(true)
+//   requests    ServiceRequest[]
+}
+ 
+model ServiceRequest {
+  id           String        @id @default(uuid())
+  requestNo    String        @unique  // NSX-2024-001234
+  userId       String
+  serviceId    String
+  status       RequestStatus @default(SUBMITTED)
+  formData     Json          // Dynamic form submission
+  quotedPrice  Decimal?      @db.Decimal(10, 2)
+  finalPrice   Decimal?      @db.Decimal(10, 2)
+//   payment      Payment?
+//   statusHistory RequestStatusHistory[]
+//   documents    RequestDocument[]
+//   auditLogs    AuditLog[]
+}

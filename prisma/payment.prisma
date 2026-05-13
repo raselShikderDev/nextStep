@@ -1,0 +1,14 @@
+model Payment {
+  id              String        @id @default(uuid())
+  requestId       String        @unique
+  amount          Decimal       @db.Decimal(10, 2)
+  method          PaymentMethod
+  status          PaymentStatus @default(SUBMITTED)
+  transactionId   String
+  senderNumber    String?
+  screenshotUrl   String?       // S3 URL
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  rejectionReason String?
+}
+ 
