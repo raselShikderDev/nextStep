@@ -1,0 +1,35 @@
+enum Role {
+    USER
+    MANAGER
+    ADMIN
+    SUPER_ADMIN
+}
+
+enum RequestStatus {
+    DRAFT
+    SUBMITTED
+    UNDER_REVIEW
+    PAYMENT_PENDING
+    PAYMENT_SUBMITTED
+    PAYMENT_VERIFIED
+    IN_PROGRESS
+    COMPLETED
+    REJECTED
+    CANCELLED
+}
+
+enum PaymentMethod {
+    BKASH
+    NAGAD
+    ROCKET
+    DUTCH_BANGLA
+    BANK_TRANSFER
+    CASH
+}
+
+enum PaymentStatus {
+    SUBMITTED
+    VERIFIED
+    REJECTED
+    REFUNDED
+}
