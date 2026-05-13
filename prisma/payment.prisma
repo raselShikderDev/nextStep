@@ -1,14 +1,29 @@
 model Payment {
-  id              String        @id @default(uuid())
-  requestId       String        @unique
-  amount          Decimal       @db.Decimal(10, 2)
+  id              String         @id @default(uuid())
+  requestId       String         @unique
+  amount          Decimal        @db.Decimal(10, 2)
+  currency        String         @default("BDT")
   method          PaymentMethod
-  status          PaymentStatus @default(SUBMITTED)
   transactionId   String
   senderNumber    String?
-  screenshotUrl   String?       // S3 URL
-  verifiedBy      String?
+  screenshotUrl   String?
+  screenshotKey   String?
+  submittedAt     DateTime       @default(now())
+  userNote        String?
+  status          PaymentStatus  @default(SUBMITTED)
+  verifiedById    String?
   verifiedAt      DateTime?
   rejectionReason String?
+  adminNote       String?
+  userDetailsId   String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  request ServiceRequest @relation(fields: [requestId], references: [id])
+  verifiedBy UserDetails? @relation("VerifiedBy", fields: [verifiedById], references: [id])
+  userDetails UserDetails? @relation("UserPayments", fields: [userDetailsId], references: [id])
+  @@index([requestId])
+  @@index([status])
+  @@index([transactionId])
+  @@index([submittedAt])
+  @@map("payments")
 }
- 

@@ -11,7 +11,7 @@ model AuditLog {
   userAgent    String?
   createdAt    DateTime   @default(now())
 
-  performedBy User            @relation("PerformedBy", fields: [performedById], references: [id])
+  performedBy UserDetails            @relation("PerformedBy", fields: [performedById], references: [id])
   request     ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
 
   @@index([performedById])

@@ -1,20 +1,36 @@
 import type { Server } from "node:http";
+import { PrismaClient } from "@prisma/client";
 import expressApp from "@/app";
 import envVar from "@/config/env.config";
 import redisClient from "./config/redis.config";
+
+const prisma = new PrismaClient();
+
+async function checkConnection() {
+	try {
+		await prisma.$connect();
+		console.log("Successfully connected to the database!");
+	} catch (e) {
+		console.error("Connection failed:", e);
+	} finally {
+		await prisma.$disconnect();
+	}
+}
+
+checkConnection();
 
 async function startServer() {
 	let server: Server;
 
 	const PORT = envVar.PORT;
 	try {
-// Connecting with Redis
+		// Connecting with Redis
 
-await new Promise<void>((resolve, reject)=>{
-  redisClient.once("ready", ()=> resolve())
-redisClient.once("error", (err)=> reject(err))
-})
-    // Connecting Database and starting express app
+		await new Promise<void>((resolve, reject) => {
+			redisClient.once("ready", () => resolve());
+			redisClient.once("error", (err) => reject(err));
+		});
+		// Connecting Database and starting express app
 		server = expressApp.listen(PORT, () => {
 			console.log(`🚀 Server is running on http://localhost:${PORT}`);
 		});
@@ -31,8 +47,7 @@ redisClient.once("error", (err)=> reject(err))
 			} else {
 				process.exit(1);
 			}
-		});      
-
+		});
 	} catch (error) {
 		console.error("Error during server startup:", error);
 		process.exit(1);

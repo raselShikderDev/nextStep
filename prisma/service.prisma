@@ -16,24 +16,22 @@ model ServiceCategory {
   @@map("service_categories")
 }
 
-
 model Service {
-  id          String   @id @default(uuid())
-  categoryId  String
-  name        String
-  slug        String   @unique
-  description String?
-  features    String[] // bullet points of what's included
+  id           String   @id @default(uuid())
+  categoryId   String
+  name         String
+  slug         String   @unique
+  description  String?
+  features     String[] // bullet points of what's included
   deliverables String[] // what user receives on completion
-  turnaround  String?  // e.g. "2-3 business days"
-  priceMin    Decimal  @db.Decimal(10, 2)
-  priceMax    Decimal  @db.Decimal(10, 2)
-  currency    String   @default("BDT")
-  formSchema  Json     // dynamic form field definitions
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  turnaround   String? // e.g. "2-3 business days"
+  price     Decimal  @db.Decimal(10, 2)
+  currency     String   @default("BDT")
+  formSchema   Json // dynamic form field definitions
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   category ServiceCategory  @relation(fields: [categoryId], references: [id])
   requests ServiceRequest[]
@@ -45,16 +43,16 @@ model Service {
 }
 
 model ServiceRequest {
-  id           String        @id @default(uuid())
-  requestNo    String        @unique // NSX-2025-001234
+  id           String  @id @default(uuid())
+  requestNo    String  @unique // NSX-2025-001234
   userId       String
   serviceId    String
   assignedToId String?
 
   status     RequestStatus @default(SUBMITTED)
-  formData   Json          // captured at submission, immutable snapshot
-  userNotes  String?       // optional notes from user at submission
-  adminNotes String?       // internal notes, not visible to user
+  formData   Json // captured at submission, immutable snapshot
+  userNotes  String? // optional notes from user at submission
+  adminNotes String? // internal notes, not visible to user
 
   // Pricing
   quotedPrice Decimal? @db.Decimal(10, 2)
@@ -62,22 +60,22 @@ model ServiceRequest {
   currency    String   @default("BDT")
 
   // Timestamps
-  submittedAt  DateTime  @default(now())
-  dueDate      DateTime?
-  completedAt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  submittedAt DateTime  @default(now())
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   // Relations
-  user       User  @relation("UserRequests", fields: [userId], references: [id])
-  assignedTo User? @relation("AssignedManager", fields: [assignedToId], references: [id])
+  UserDetailsId       UserDetails    @relation("UserRequests", fields: [userId], references: [id])
+  assignedTo UserDetails?   @relation("AssignedManager", fields: [assignedToId], references: [id])
   service    Service @relation(fields: [serviceId], references: [id])
 
-  payment        Payment?
-  statusHistory  RequestStatusHistory[]
-  documents      RequestDocument[]
-  auditLogs      AuditLog[]
-  notifications  Notification[]
+  payment       Payment?
+  statusHistory RequestStatusHistory[]
+  documents     RequestDocument[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
 
   @@index([userId])
   @@index([serviceId])
@@ -90,16 +88,16 @@ model ServiceRequest {
 }
 
 model RequestStatusHistory {
-  id         String        @id @default(uuid())
-  requestId  String
+  id          String         @id @default(uuid())
+  requestId   String
   changedById String
-  fromStatus RequestStatus?
-  toStatus   RequestStatus
-  note       String?
-  createdAt  DateTime      @default(now())
+  fromStatus  RequestStatus?
+  toStatus    RequestStatus
+  note        String?
+  createdAt   DateTime       @default(now())
 
   request   ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  changedBy User           @relation("ChangedBy", fields: [changedById], references: [id])
+  changedBy UserDetails           @relation("ChangedBy", fields: [changedById], references: [id])
 
   @@index([requestId])
   @@index([createdAt])
@@ -107,63 +105,23 @@ model RequestStatusHistory {
 }
 
 model RequestDocument {
-  id           String             @id @default(uuid())
-  requestId    String
-  uploadedById String
-  uploadedByRole DocumentUploadedBy
-  name         String
-  originalName String
-  url          String             // S3 URL
-  key          String             // S3 key for deletion
-  mimeType     String
-  size         Int                // bytes
-  description  String?            // e.g. "Payment screenshot", "Existing CV"
-  createdAt    DateTime           @default(now())
+  id             String             @id @default(uuid())
+  requestId      String
+  uploadedById   String
+  uploadedByRole Role
+  name           String
+  originalName   String
+  url            String // S3 URL
+  key            String // S3 key for deletion
+  mimeType       String
+  size           Int // bytes
+  description    String? // e.g. "Payment screenshot", "Existing CV"
+  createdAt      DateTime           @default(now())
 
   request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  uploadedBy User           @relation("UploadedBy", fields: [uploadedById], references: [id])
+  uploadedBy UserDetails           @relation("UploadedBy", fields: [uploadedById], references: [id])
 
   @@index([requestId])
   @@index([uploadedById])
   @@map("request_documents")
-}
-
-
-model Payment {
-  id        String @id @default(uuid())
-  requestId String @unique
-
-  // Amount
-  amount   Decimal @db.Decimal(10, 2)
-  currency String  @default("BDT")
-
-  // User submitted
-  method         PaymentMethod
-  transactionId  String
-  senderNumber   String?
-  screenshotUrl  String?  // S3 URL
-  screenshotKey  String?  // S3 key
-  submittedAt    DateTime @default(now())
-  userNote       String?
-
-  // Status
-  status PaymentStatus @default(SUBMITTED)
-
-  // Admin verification
-  verifiedById    String?
-  verifiedAt      DateTime?
-  rejectionReason String?
-  adminNote       String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  request    ServiceRequest @relation(fields: [requestId], references: [id])
-  verifiedBy User?          @relation("VerifiedBy", fields: [verifiedById], references: [id])
-
-  @@index([requestId])
-  @@index([status])
-  @@index([transactionId])
-  @@index([submittedAt])
-  @@map("payments")
 }
