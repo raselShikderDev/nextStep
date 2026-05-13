@@ -1,33 +1,32 @@
-import { createClient } from 'redis';
-import envVar from './env.config';
-import { createClient } from "redis";
+import Redis from "ioredis";
+import envVar from "./env.config";
 
+const redisClient = new Redis(envVar.REDIS_URL as string, {
+  tls: {},
 
+  maxRetriesPerRequest: null,
 
-export const redisClient = createClient({
-    username: envVars.REDIS_USERNAME,
-    password: envVars.REDIS_PASSWORD,
-    socket: {
-        host: envVars.REDIS_HOST,
-        port: Number(envVars.REDIS_PORT)
-    }
+  retryStrategy(times) {
+    console.log(`🔄 Redis reconnecting (${times})`);
+
+    return Math.min(times * 1000, 10000);
+  },
 });
 
+redisClient.on("connect", () => {
+  console.log("✅ Redis connected");
+});
 
+redisClient.on("ready", () => {
+  console.log("🚀 Redis ready");
+});
 
-export const connectRedis = async()=>{
+redisClient.on("error", (error: Error) => {
+  console.error("❌ Redis error:", error.message);
+});
 
-    if (client.isReady) {
-    console.log("Redis is connected");
-    retrun ;
-}
+redisClient.on("close", () => {
+  console.warn("⚠️ Redis disconnected");
+});
 
-    if (!redisClient.isOpen) {
-        client.on('connect', ()=>console.log("Redis clinet is connecting"))
-        await redisClient.connect();
-        client.on('ready', ()=>console.log("Redis clinet is Ready now"))
-    } else {
-    client.on('error', (error)=>console.error("Redis clinet is Ready now", error))
-}
-
-}
+export default redisClient;
