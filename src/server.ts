@@ -1,36 +1,29 @@
 import type { Server } from "node:http";
-import { PrismaClient } from "@prisma/client";
 import expressApp from "@/app";
+import prisma from "@/config/db.config";
 import envVar from "@/config/env.config";
 import redisClient from "./config/redis.config";
 
-const prisma = new PrismaClient();
-
-async function checkConnection() {
-	try {
-		await prisma.$connect();
-		console.log("Successfully connected to the database!");
-	} catch (e) {
-		console.error("Connection failed:", e);
-	} finally {
-		await prisma.$disconnect();
-	}
-}
-
-checkConnection();
-
 async function startServer() {
 	let server: Server;
-
 	const PORT = envVar.PORT;
+	// Connection checking of Postgres
+	try {
+		await prisma.$connect();
+
+		console.log("✅ PostgreSQL connected");
+	} catch (error) {
+		console.error("❌ PostgreSQL connection failed:", error);
+		process.exit(1);
+	}
+
 	try {
 		// Connecting with Redis
-
 		await new Promise<void>((resolve, reject) => {
 			redisClient.once("ready", () => resolve());
 			redisClient.once("error", (err) => reject(err));
 		});
-		// Connecting Database and starting express app
+		// Starting express app
 		server = expressApp.listen(PORT, () => {
 			console.log(`🚀 Server is running on http://localhost:${PORT}`);
 		});
