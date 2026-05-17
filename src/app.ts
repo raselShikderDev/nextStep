@@ -7,6 +7,7 @@ import express, {
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
+import { mainRoutes } from "./routes/mainRoutes";
 
 const expressApp: Application = express();
 
@@ -14,6 +15,8 @@ expressApp.use(helmet());
 expressApp.use(express.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
+
+expressApp.use("/api/v1", mainRoutes)
 
 expressApp.get("/", (_req: Request, res: Response) => {
 	res.send("App running");
