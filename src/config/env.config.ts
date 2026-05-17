@@ -5,6 +5,7 @@ dotenv.config({ path: path.join(process.cwd(), "env") });
 
 const envVar = {
 	PORT: process.env.PORT as string,
+	NODE_ENV: process.env.NODE_ENV as string,
 	DATABASE_URL: process.env.DATABASE_URL as string,
 	REDIS_URL: process.env.REDIS_URL as string,
 	REDIS_PORT: process.env.REDIS_PORT as string,

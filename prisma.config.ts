@@ -3,14 +3,13 @@ import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  
-  schema: "prisma",
+	schema: "prisma",
 
-  migrations: {
-    path:  "../src/generated/prisma"
-  },
+	migrations: {
+		path: "../src/generated/prisma",
+	},
 
-  datasource: {
-    url: process.env.DATABASE_URL,
-  },
+	datasource: {
+		url: process.env.DATABASE_URL,
+	},
 });
