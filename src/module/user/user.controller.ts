@@ -2,7 +2,7 @@ import { Router } from "express";
 
 const router = Router()
 
-router.post("/login", ()=>{console.log("Login router hit");
+router.post("/create-user", ()=>{console.log("User router hit");
 })
 
 
