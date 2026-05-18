@@ -15,10 +15,7 @@ interface IData<T> {
 	meta?: IMeta;
 }
 
-export const sendResponse = <T>(
-	res: Response,
-	data: IData<T>,
-) => {
+export const sendResponse = <T>(res: Response, data: IData<T>) => {
 	res.status(data.statusCode).json({
 		success: data.success,
 		message: data.message,

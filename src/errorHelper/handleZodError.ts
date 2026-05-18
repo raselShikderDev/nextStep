@@ -1,15 +1,11 @@
 import type { ZodError } from "zod";
 
-const handleZodError = (
-	error: ZodError,
-) => {
-	const errors = error.issues.map(
-		(issue) => ({
-			path: issue.path.join("."),
+const handleZodError = (error: ZodError) => {
+	const errors = error.issues.map((issue) => ({
+		path: issue.path.join("."),
 
-			message: issue.message,
-		}),
-	);
+		message: issue.message,
+	}));
 
 	return {
 		statusCode: 400,

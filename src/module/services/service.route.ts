@@ -1,9 +1,9 @@
 import { Router } from "express";
 
-const router = Router()
+const router = Router();
 
-router.post("/create-service", ()=>{console.log("Create router hit");
-})
+router.post("/create-service", () => {
+	console.log("Create router hit");
+});
 
-
-export const servicesRouter = router
+export const servicesRouter = router;

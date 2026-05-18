@@ -18,14 +18,13 @@ expressApp.use(express.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
 
-expressApp.use("/api/v1", mainRoutes)
+expressApp.use("/api/v1", mainRoutes);
 
 expressApp.get("/", (_req: Request, res: Response) => {
 	res.send("App running");
 });
 
-
-expressApp.use(globalErrorHandler)
-expressApp.use(notFound)
+expressApp.use(globalErrorHandler);
+expressApp.use(notFound);
 
 export default expressApp;

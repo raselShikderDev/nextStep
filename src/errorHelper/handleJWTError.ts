@@ -1,27 +1,14 @@
-import {
-	JsonWebTokenError,
-	TokenExpiredError,
-} from "jsonwebtoken";
+import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
-const handleJWTError = (
-	error:
-		| JsonWebTokenError
-		| TokenExpiredError,
-) => {
+const handleJWTError = (error: JsonWebTokenError | TokenExpiredError) => {
 	let message = "Unauthorized access";
 
-	if (
-		error instanceof TokenExpiredError
-	) {
-		message =
-			"Your session has expired. Please login again";
+	if (error instanceof TokenExpiredError) {
+		message = "Your session has expired. Please login again";
 	}
 
-	if (
-		error instanceof JsonWebTokenError
-	) {
-		message =
-			"Invalid access token";
+	if (error instanceof JsonWebTokenError) {
+		message = "Invalid access token";
 	}
 
 	return {

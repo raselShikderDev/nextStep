@@ -1,9 +1,8 @@
 import { Router } from "express";
+import { UserControllers } from "./user.controller";
 
-const router = Router()
+const router = Router();
 
-router.post("/create-user", ()=>{console.log("User router hit");
-})
+router.patch("/me", UserControllers.updateOwnProfile);
 
-
-export const userRouter = router
+export const userRouter = router;
