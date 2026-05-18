@@ -1,5 +1,3 @@
-const appRateLimit =()=>{
+const appRateLimit = () => {};
 
-}
-
-export default appRateLimit
+export default appRateLimit;

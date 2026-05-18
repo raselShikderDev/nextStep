@@ -16,6 +16,7 @@ enum RequestStatus {
     COMPLETED
     REJECTED
     CANCELLED
+    PENDING
 }
 
 enum PaymentMethod {

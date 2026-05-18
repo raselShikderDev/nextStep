@@ -12,3 +12,11 @@ export const updateUserValidationSchema = z.object({
 	address: z.string().optional(),
 	avatarUrl: z.url().optional(),
 });
+
+
+export const updateEmailSchema =
+	z.object({
+		userId: z.uuid(),
+
+		newEmail: z.email(),
+	});

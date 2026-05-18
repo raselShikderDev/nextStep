@@ -1,20 +1,41 @@
 model User {
-  id           String    @id @default(uuid())
-  email        String    @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   passwordHash String
-  role         Role      @default(USER)
-  isActive     Boolean   @default(true)
-  isVerified   Boolean   @default(false)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  role         Role     @default(USER)
+  isActive     Boolean  @default(true)
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  userDetails  UserDetails?
+  userDetails         UserDetails?
+  emailChangeRequests EmailChangeRequest[] @relation("EmailChangeUser")
+  approvedEmailRequests EmailChangeRequest[] @relation("EmailChangeApprovedBy")
 
   @@index([email])
-
   @@index([role])
-
   @@index([isActive])
-
   @@map("users")
+}
+
+model EmailChangeRequest {
+  id             String        @id @default(uuid())
+  userId         String
+  currentEmail   String
+  requestedEmail String
+  reason         String?
+  status         RequestStatus @default(PENDING)
+  approvedById   String?
+  approvedAt     DateTime?
+  rejectedReason String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // RELATIONS
+  user       User  @relation("EmailChangeUser", fields: [userId], references: [id])
+  approvedBy User? @relation("EmailChangeApprovedBy", fields: [approvedById], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("email_change_requests")
 }

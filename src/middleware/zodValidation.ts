@@ -1,5 +1,3 @@
-const zodValidation = ()=>{
+const zodValidation = () => {};
 
-}
-
-export default zodValidation
+export default zodValidation;

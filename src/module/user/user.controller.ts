@@ -6,45 +6,55 @@ import { updateUserValidationSchema } from "./user.validation";
 
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
-	const validatedData = updateUserValidationSchema.parse(req.body);
+  const validatedData = updateUserValidationSchema.parse(req.body);
 
-	const userId = req.user.userId;
+  const userId = req.user.userId;
 
-	const result = await UserServices.updateOwnProfile(userId, validatedData);
+  const result = await UserServices.updateOwnProfile(userId, validatedData);
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Profile updated successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile updated successfully",
+    data: result,
+  });
 });
 
 // Fetch own profile
-const getMyProfile = asyncHelper(
-	async (req: Request, res: Response) => {
-		const userId = req.user.userId;
+const getMyProfile = asyncHelper(async (req: Request, res: Response) => {
+  const userId = req.user.userId;
 
-		const result =
-			await UserServices.getMyProfile(
-				userId,
-			);
+  const result = await UserServices.getMyProfile(userId);
 
-		sendResponse(res, {
-			statusCode: 200,
+  sendResponse(res, {
+    statusCode: 200,
 
-			success: true,
+    success: true,
 
-			message:
-				"My profile retrieved successfully",
+    message: "My profile retrieved successfully",
 
-			data: result,
-		});
-	},
-);
+    data: result,
+  });
+});
 
+// Role Restricted
+const approveEmailChange = asyncHelper(async (req, res) => {
+  const result = await UserServices.approveEmailChange(
+    req.user.userId,
+    req.user.role,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Email updated successfully",
+    data: result,
+  });
+});
 
 export const UserControllers = {
-	updateOwnProfile,
-    getMyProfile,
+  updateOwnProfile,
+  getMyProfile,
+  approveEmailChange,
 };
