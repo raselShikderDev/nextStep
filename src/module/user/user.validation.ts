@@ -14,9 +14,21 @@ export const updateUserValidationSchema = z.object({
 });
 
 
-export const updateEmailSchema =
+export const requestEmailChangeSchema =
 	z.object({
-		userId: z.uuid(),
+		requestedEmail: z.email(),
 
-		newEmail: z.email(),
+		reason:
+			z.string().optional(),
+	});
+
+export const approveEmailChangeSchema =
+	z.object({
+		status: z.enum([
+			"APPROVED",
+			"REJECTED",
+		]),
+
+		rejectedReason:
+			z.string().optional(),
 	});

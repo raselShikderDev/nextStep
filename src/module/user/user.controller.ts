@@ -38,23 +38,104 @@ const getMyProfile = asyncHelper(async (req: Request, res: Response) => {
 });
 
 // Role Restricted
-const approveEmailChange = asyncHelper(async (req, res) => {
-  const result = await UserServices.approveEmailChange(
-    req.user.userId,
-    req.user.role,
-    req.body,
-  );
+const requestEmailChange =
+	asyncHelper(
+		async (
+			req,
+			res,
+		) => {
+			
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Email updated successfully",
-    data: result,
-  });
-});
+			const result =
+				await UserServices.requestEmailChange(
+					req.user.userId,
+					req.body,
+				);
+
+			sendResponse(res, {
+				statusCode: 201,
+				success: true,
+				message:
+					"Email change request submitted successfully",
+				data: result,
+			});
+		},
+	);
+
+
+
+const getAllPendingEmailRequests =
+	asyncHelper(
+		async (
+			_req,
+			res,
+		) => {
+			const result =
+				await UserServices.getAllPendingEmailRequests();
+
+			sendResponse(res, {
+				statusCode: 200,
+				success: true,
+				message: "Pending email requests retrieved successfully",
+				data: result,
+			});
+		},
+	);
+
+
+
+const approveEmailChangeRequest =
+	asyncHelper(
+		async (
+			req,
+			res,
+		) => {
+			const result =
+				await UserServices.approveEmailChangeRequest(
+					req.params.id as string,
+					req.user.userId,
+				);
+
+			sendResponse(res, {
+				statusCode: 200,
+				success: true,
+				message:"Email request approved successfully",
+				data: result,
+			});
+		},
+	);
+
+
+
+const rejectEmailChangeRequest =
+	asyncHelper(
+		async (
+			req,
+			res,
+		) => {
+			 
+const  {validatedData} = req.body
+			const result =
+				await UserServices.rejectEmailChangeRequest(
+					req.params.id as string,
+					req.user.userId,
+					validatedData.rejectedReason,
+				);
+
+			sendResponse(res, {
+				statusCode: 200,
+				success: true,
+				message: "Email request rejected successfully",
+				data: result,
+			});
+		},
+	);
 
 export const UserControllers = {
   updateOwnProfile,
   getMyProfile,
-  approveEmailChange,
+  requestEmailChange,
+  getAllPendingEmailRequests,
+  approveEmailChangeRequest,
+  rejectEmailChangeRequest,
 };
