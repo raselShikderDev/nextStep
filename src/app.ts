@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import { mainRoutes } from "./routes/mainRoutes";
+import globalErrorHandler from "./middleware/globalErrorHandler";
 
 const expressApp: Application = express();
 
@@ -21,5 +22,8 @@ expressApp.use("/api/v1", mainRoutes)
 expressApp.get("/", (_req: Request, res: Response) => {
 	res.send("App running");
 });
+
+
+expressApp.use(globalErrorHandler)
 
 export default expressApp;
