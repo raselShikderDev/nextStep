@@ -8,6 +8,8 @@ interface IUpdateUserPayload {
 	avatarUrl?: string;
 }
 
+
+// Update my own profile
 const updateOwnProfile = async (
 	userId: string,
 	payload: IUpdateUserPayload,
@@ -85,6 +87,46 @@ const updateOwnProfile = async (
 	return updatedUser;
 };
 
+// Get my own profile
+const getMyProfile = async (
+	userId: string,
+) => {
+	const user =
+		await prisma.user.findUnique({
+			where: {
+				id: userId,
+			},
+
+			select: {
+				id: true,
+
+				email: true,
+
+				role: true,
+
+				isActive: true,
+
+				isVerified: true,
+
+				createdAt: true,
+
+				updatedAt: true,
+
+				userDetails: true,
+			},
+		});
+
+	if (!user) {
+		throw new AppError(
+			404,
+			"User not found",
+		);
+	}
+
+	return user;
+};
+
 export const UserServices = {
 	updateOwnProfile,
+    getMyProfile,
 };

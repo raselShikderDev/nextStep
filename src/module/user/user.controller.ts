@@ -4,6 +4,7 @@ import { sendResponse } from "@/utils/response";
 import { UserServices } from "./user.service";
 import { updateUserValidationSchema } from "./user.validation";
 
+// Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
 	const validatedData = updateUserValidationSchema.parse(req.body);
 
@@ -19,6 +20,31 @@ const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+// Fetch own profile
+const getMyProfile = asyncHelper(
+	async (req: Request, res: Response) => {
+		const userId = req.user.userId;
+
+		const result =
+			await UserServices.getMyProfile(
+				userId,
+			);
+
+		sendResponse(res, {
+			statusCode: 200,
+
+			success: true,
+
+			message:
+				"My profile retrieved successfully",
+
+			data: result,
+		});
+	},
+);
+
+
 export const UserControllers = {
 	updateOwnProfile,
+    getMyProfile,
 };
