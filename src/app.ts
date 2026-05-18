@@ -9,6 +9,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { mainRoutes } from "./routes/mainRoutes";
 import globalErrorHandler from "./middleware/globalErrorHandler";
+import notFound from "./errorHelper/notFound";
 
 const expressApp: Application = express();
 
@@ -25,5 +26,6 @@ expressApp.get("/", (_req: Request, res: Response) => {
 
 
 expressApp.use(globalErrorHandler)
+expressApp.use(notFound)
 
 export default expressApp;
