@@ -5,17 +5,17 @@ model UserDetails {
     avatarUrl            String?
     address              String?
     userId               String                 @unique
-    // Relations
-    user                 User                   @relation(fields: [userId], references: [id])
-    requests             ServiceRequest[]       @relation("UserRequests")
-    assignedRequests     ServiceRequest[]       @relation("AssignedManager")
-    notifications        Notification[]         @relation("UserNotifications")
-    auditLogsPerformed   AuditLog[]             @relation("PerformedBy")
-    uploadedDocuments    RequestDocument[]      @relation("UploadedBy")
+    user                 User @relation(fields: [userId], references: [id])
+    requests             ServiceRequest[] @relation("UserRequests")
+    assignedRequests     ServiceRequest[] @relation("AssignedManager")
+    notifications        Notification[] @relation("UserNotifications")
+    auditLogsPerformed   AuditLog[] @relation("PerformedBy")
+    uploadedDocuments    RequestDocument[] @relation("UploadedBy")
     statusChanges        RequestStatusHistory[] @relation("ChangedBy")
-    paymentVerifications Payment[]              @relation("VerifiedBy")
-    payments             Payment[]              @relation("UserPayments")
+    paymentVerifications Payment[] @relation("VerifiedBy")
+    payments             Payment[] @relation("UserPayments")
 
     @@index([phone])
+
     @@map("UserDetails")
 }

@@ -1,0 +1,100 @@
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import prisma from "@/config/db.config";
+import envVar from "@/config/env.config";
+
+const registerUser = async (payload: {
+	name: string;
+	email: string;
+	password: string;
+}) => {
+	const existingUser = await prisma.user.findUnique({
+		where: {
+			email: payload.email,
+		},
+	});
+
+	if (existingUser) {
+		throw new Error("User already exists");
+	}
+
+	const hashedPassword = await bcrypt.hash(payload.password, 10);
+
+	const user = await prisma.user.create({
+		data: {
+			email: payload.email,
+			password: hashedPassword,
+
+			userDetails: {
+				create: {
+					name: payload.name,
+				},
+			},
+		},
+		include: {
+			userDetails: true,
+		},
+	});
+
+	return user;
+};
+
+
+// Login
+const loginUser = async (payload: {
+	email: string;
+	password: string;
+}) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			email: payload.email,
+		},
+		include: {
+			userDetails: true,
+		},
+	});
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	if (!user.isActive) {
+		throw new Error("User account is disabled");
+	}
+
+	if (!user.isVerified) {
+		throw new Error("User is not verified");
+	}
+
+	const isPasswordMatched = await bcrypt.compare(
+		payload.password,
+		user.passwordHash,
+	);
+
+	if (!isPasswordMatched) {
+		throw new Error("Invalid credentials");
+	}
+
+	const accessToken = jwt.sign(
+		{
+			userId: user.id,
+			role: user.role,
+		},
+		envVar.JWT_SECRET,
+		{
+			expiresIn: "7d",
+		},
+	);
+
+	return {
+		accessToken,
+
+		user,
+	};
+};
+
+export const AuthServices = {
+	registerUser,
+	loginUser,
+};
