@@ -1,10 +1,13 @@
 import bcrypt from "bcryptjs";
+import { StatusCodes } from "http-status-codes";
 import otpGenerator from "otp-generator";
 import prisma from "@/config/db.config";
 import envVar from "@/config/env.config";
 import redisClient from "@/config/redis.config";
 import AppError from "@/errorHelper/appError";
 import { createJwtToken } from "@/utils/jwtHelper";
+import sendEmail from "@/utils/sendEmail";
+import resetPasswordTemplate from "@/utils/templates/resetPasswordTemplate";
 import type { User } from "../../../prisma/generated/prisma/client";
 
 // Register user
@@ -137,6 +140,22 @@ const forgotPassword = async (email: string) => {
 		email,
 		otp,
 	});
+
+	try {
+		await sendEmail({
+			to: email,
+			subject: "Reset Password OTP",
+			html: resetPasswordTemplate(otp),
+		});
+	} catch (error) {
+		if (envVar.NODE_ENV === "Development") {
+			console.error("Sending reset password OTP is failed", error);
+		}
+		throw new AppError(
+			StatusCodes.BAD_GATEWAY,
+			"Sending reset password OTP is Unsuccessfull",
+		);
+	}
 
 	return;
 };

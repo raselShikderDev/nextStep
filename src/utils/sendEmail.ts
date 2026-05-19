@@ -7,13 +7,11 @@ interface ISendEmailOptions {
 	html: string;
 }
 
-const sendEmail = async (
-	options: ISendEmailOptions,
-) => {
+const sendEmail = async (options: ISendEmailOptions) => {
 	await resend.emails.send({
-		from:`NextStep <${envVar.EMAIL_FROM as string}>`,
+		from: `NextStep <${envVar.EMAIL_FROM as string}>`,
 		to: options.to,
-		subject:options.subject,
+		subject: options.subject,
 		html: options.html,
 	});
 };
