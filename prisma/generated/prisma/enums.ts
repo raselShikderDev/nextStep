@@ -21,6 +21,7 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 export const RequestStatus = {
   DRAFT: 'DRAFT',
+  PENDING: 'PENDING',
   SUBMITTED: 'SUBMITTED',
   UNDER_REVIEW: 'UNDER_REVIEW',
   PAYMENT_PENDING: 'PAYMENT_PENDING',
@@ -30,7 +31,6 @@ export const RequestStatus = {
   COMPLETED: 'COMPLETED',
   REJECTED: 'REJECTED',
   CANCELLED: 'CANCELLED',
-  PENDING: 'PENDING',
   APPROVED: 'APPROVED'
 } as const
 
@@ -57,6 +57,17 @@ export const PaymentStatus = {
 } as const
 
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const DocumentType = {
+  USER_UPLOAD: 'USER_UPLOAD',
+  PAYMENT_PROOF: 'PAYMENT_PROOF',
+  ADDITIONAL_DOCUMENT: 'ADDITIONAL_DOCUMENT',
+  FINAL_DELIVERY: 'FINAL_DELIVERY',
+  INTERNAL_DOCUMENT: 'INTERNAL_DOCUMENT'
+} as const
+
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
 
 
 export const NotificationType = {

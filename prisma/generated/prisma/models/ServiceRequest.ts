@@ -54,6 +54,7 @@ export type ServiceRequestMinAggregateOutputType = {
   quotedPrice: runtime.Decimal | null
   finalPrice: runtime.Decimal | null
   currency: string | null
+  deliveryMessage: string | null
   submittedAt: Date | null
   dueDate: Date | null
   completedAt: Date | null
@@ -79,6 +80,7 @@ export type ServiceRequestMaxAggregateOutputType = {
   quotedPrice: runtime.Decimal | null
   finalPrice: runtime.Decimal | null
   currency: string | null
+  deliveryMessage: string | null
   submittedAt: Date | null
   dueDate: Date | null
   completedAt: Date | null
@@ -105,6 +107,7 @@ export type ServiceRequestCountAggregateOutputType = {
   quotedPrice: number
   finalPrice: number
   currency: number
+  deliveryMessage: number
   submittedAt: number
   dueDate: number
   completedAt: number
@@ -142,6 +145,7 @@ export type ServiceRequestMinAggregateInputType = {
   quotedPrice?: true
   finalPrice?: true
   currency?: true
+  deliveryMessage?: true
   submittedAt?: true
   dueDate?: true
   completedAt?: true
@@ -167,6 +171,7 @@ export type ServiceRequestMaxAggregateInputType = {
   quotedPrice?: true
   finalPrice?: true
   currency?: true
+  deliveryMessage?: true
   submittedAt?: true
   dueDate?: true
   completedAt?: true
@@ -193,6 +198,7 @@ export type ServiceRequestCountAggregateInputType = {
   quotedPrice?: true
   finalPrice?: true
   currency?: true
+  deliveryMessage?: true
   submittedAt?: true
   dueDate?: true
   completedAt?: true
@@ -306,6 +312,7 @@ export type ServiceRequestGroupByOutputType = {
   quotedPrice: runtime.Decimal | null
   finalPrice: runtime.Decimal | null
   currency: string
+  deliveryMessage: string | null
   submittedAt: Date
   dueDate: Date | null
   completedAt: Date | null
@@ -355,6 +362,7 @@ export type ServiceRequestWhereInput = {
   quotedPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ServiceRequest"> | string
+  deliveryMessage?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   submittedAt?: Prisma.DateTimeFilter<"ServiceRequest"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
@@ -389,6 +397,7 @@ export type ServiceRequestOrderByWithRelationInput = {
   quotedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   finalPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deliveryMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -426,6 +435,7 @@ export type ServiceRequestWhereUniqueInput = Prisma.AtLeast<{
   quotedPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ServiceRequest"> | string
+  deliveryMessage?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   submittedAt?: Prisma.DateTimeFilter<"ServiceRequest"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
@@ -460,6 +470,7 @@ export type ServiceRequestOrderByWithAggregationInput = {
   quotedPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   finalPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deliveryMessage?: Prisma.SortOrderInput | Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   dueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -494,6 +505,7 @@ export type ServiceRequestScalarWhereWithAggregatesInput = {
   quotedPrice?: Prisma.DecimalNullableWithAggregatesFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.DecimalNullableWithAggregatesFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringWithAggregatesFilter<"ServiceRequest"> | string
+  deliveryMessage?: Prisma.StringNullableWithAggregatesFilter<"ServiceRequest"> | string | null
   submittedAt?: Prisma.DateTimeWithAggregatesFilter<"ServiceRequest"> | Date | string
   dueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceRequest"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceRequest"> | Date | string | null
@@ -517,6 +529,7 @@ export type ServiceRequestCreateInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -551,6 +564,7 @@ export type ServiceRequestUncheckedCreateInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -579,6 +593,7 @@ export type ServiceRequestUpdateInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -613,6 +628,7 @@ export type ServiceRequestUncheckedUpdateInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -644,6 +660,7 @@ export type ServiceRequestCreateManyInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -667,6 +684,7 @@ export type ServiceRequestUpdateManyMutationInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -693,6 +711,7 @@ export type ServiceRequestUncheckedUpdateManyInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -739,6 +758,7 @@ export type ServiceRequestCountOrderByAggregateInput = {
   quotedPrice?: Prisma.SortOrder
   finalPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deliveryMessage?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -769,6 +789,7 @@ export type ServiceRequestMaxOrderByAggregateInput = {
   quotedPrice?: Prisma.SortOrder
   finalPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deliveryMessage?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -794,6 +815,7 @@ export type ServiceRequestMinOrderByAggregateInput = {
   quotedPrice?: Prisma.SortOrder
   finalPrice?: Prisma.SortOrder
   currency?: Prisma.SortOrder
+  deliveryMessage?: Prisma.SortOrder
   submittedAt?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -1038,6 +1060,7 @@ export type ServiceRequestCreateWithoutAuditLogsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1071,6 +1094,7 @@ export type ServiceRequestUncheckedCreateWithoutAuditLogsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1114,6 +1138,7 @@ export type ServiceRequestUpdateWithoutAuditLogsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1147,6 +1172,7 @@ export type ServiceRequestUncheckedUpdateWithoutAuditLogsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1174,6 +1200,7 @@ export type ServiceRequestCreateWithoutNotificationsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1207,6 +1234,7 @@ export type ServiceRequestUncheckedCreateWithoutNotificationsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1250,6 +1278,7 @@ export type ServiceRequestUpdateWithoutNotificationsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1283,6 +1312,7 @@ export type ServiceRequestUncheckedUpdateWithoutNotificationsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1310,6 +1340,7 @@ export type ServiceRequestCreateWithoutPaymentInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1343,6 +1374,7 @@ export type ServiceRequestUncheckedCreateWithoutPaymentInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1386,6 +1418,7 @@ export type ServiceRequestUpdateWithoutPaymentInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1419,6 +1452,7 @@ export type ServiceRequestUncheckedUpdateWithoutPaymentInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1446,6 +1480,7 @@ export type ServiceRequestCreateWithoutServiceInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1478,6 +1513,7 @@ export type ServiceRequestUncheckedCreateWithoutServiceInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1538,6 +1574,7 @@ export type ServiceRequestScalarWhereInput = {
   quotedPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.DecimalNullableFilter<"ServiceRequest"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"ServiceRequest"> | string
+  deliveryMessage?: Prisma.StringNullableFilter<"ServiceRequest"> | string | null
   submittedAt?: Prisma.DateTimeFilter<"ServiceRequest"> | Date | string
   dueDate?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"ServiceRequest"> | Date | string | null
@@ -1561,6 +1598,7 @@ export type ServiceRequestCreateWithoutStatusHistoryInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1594,6 +1632,7 @@ export type ServiceRequestUncheckedCreateWithoutStatusHistoryInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1637,6 +1676,7 @@ export type ServiceRequestUpdateWithoutStatusHistoryInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1670,6 +1710,7 @@ export type ServiceRequestUncheckedUpdateWithoutStatusHistoryInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1697,6 +1738,7 @@ export type ServiceRequestCreateWithoutDocumentsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1730,6 +1772,7 @@ export type ServiceRequestUncheckedCreateWithoutDocumentsInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1773,6 +1816,7 @@ export type ServiceRequestUpdateWithoutDocumentsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1806,6 +1850,7 @@ export type ServiceRequestUncheckedUpdateWithoutDocumentsInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1833,6 +1878,7 @@ export type ServiceRequestCreateWithoutUserInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1865,6 +1911,7 @@ export type ServiceRequestUncheckedCreateWithoutUserInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1903,6 +1950,7 @@ export type ServiceRequestCreateWithoutAssignedToInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -1935,6 +1983,7 @@ export type ServiceRequestUncheckedCreateWithoutAssignedToInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -2007,6 +2056,7 @@ export type ServiceRequestCreateManyServiceInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -2030,6 +2080,7 @@ export type ServiceRequestUpdateWithoutServiceInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2062,6 +2113,7 @@ export type ServiceRequestUncheckedUpdateWithoutServiceInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2092,6 +2144,7 @@ export type ServiceRequestUncheckedUpdateManyWithoutServiceInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2117,6 +2170,7 @@ export type ServiceRequestCreateManyUserInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -2142,6 +2196,7 @@ export type ServiceRequestCreateManyAssignedToInput = {
   quotedPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
+  deliveryMessage?: string | null
   submittedAt?: Date | string
   dueDate?: Date | string | null
   completedAt?: Date | string | null
@@ -2165,6 +2220,7 @@ export type ServiceRequestUpdateWithoutUserInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2197,6 +2253,7 @@ export type ServiceRequestUncheckedUpdateWithoutUserInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2227,6 +2284,7 @@ export type ServiceRequestUncheckedUpdateManyWithoutUserInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2250,6 +2308,7 @@ export type ServiceRequestUpdateWithoutAssignedToInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2282,6 +2341,7 @@ export type ServiceRequestUncheckedUpdateWithoutAssignedToInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2312,6 +2372,7 @@ export type ServiceRequestUncheckedUpdateManyWithoutAssignedToInput = {
   quotedPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   finalPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
+  deliveryMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   submittedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2396,6 +2457,7 @@ export type ServiceRequestSelect<ExtArgs extends runtime.Types.Extensions.Intern
   quotedPrice?: boolean
   finalPrice?: boolean
   currency?: boolean
+  deliveryMessage?: boolean
   submittedAt?: boolean
   dueDate?: boolean
   completedAt?: boolean
@@ -2431,6 +2493,7 @@ export type ServiceRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   quotedPrice?: boolean
   finalPrice?: boolean
   currency?: boolean
+  deliveryMessage?: boolean
   submittedAt?: boolean
   dueDate?: boolean
   completedAt?: boolean
@@ -2460,6 +2523,7 @@ export type ServiceRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   quotedPrice?: boolean
   finalPrice?: boolean
   currency?: boolean
+  deliveryMessage?: boolean
   submittedAt?: boolean
   dueDate?: boolean
   completedAt?: boolean
@@ -2489,6 +2553,7 @@ export type ServiceRequestSelectScalar = {
   quotedPrice?: boolean
   finalPrice?: boolean
   currency?: boolean
+  deliveryMessage?: boolean
   submittedAt?: boolean
   dueDate?: boolean
   completedAt?: boolean
@@ -2496,7 +2561,7 @@ export type ServiceRequestSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ServiceRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestNo" | "userId" | "serviceId" | "assignedToId" | "isGuest" | "guestName" | "guestEmail" | "guestPhone" | "guestAddress" | "guestSource" | "status" | "formData" | "userNotes" | "adminNotes" | "quotedPrice" | "finalPrice" | "currency" | "submittedAt" | "dueDate" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceRequest"]>
+export type ServiceRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestNo" | "userId" | "serviceId" | "assignedToId" | "isGuest" | "guestName" | "guestEmail" | "guestPhone" | "guestAddress" | "guestSource" | "status" | "formData" | "userNotes" | "adminNotes" | "quotedPrice" | "finalPrice" | "currency" | "deliveryMessage" | "submittedAt" | "dueDate" | "completedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["serviceRequest"]>
 export type ServiceRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.ServiceRequest$userArgs<ExtArgs>
   assignedTo?: boolean | Prisma.ServiceRequest$assignedToArgs<ExtArgs>
@@ -2550,6 +2615,7 @@ export type $ServiceRequestPayload<ExtArgs extends runtime.Types.Extensions.Inte
     quotedPrice: runtime.Decimal | null
     finalPrice: runtime.Decimal | null
     currency: string
+    deliveryMessage: string | null
     submittedAt: Date
     dueDate: Date | null
     completedAt: Date | null
@@ -3004,6 +3070,7 @@ export interface ServiceRequestFieldRefs {
   readonly quotedPrice: Prisma.FieldRef<"ServiceRequest", 'Decimal'>
   readonly finalPrice: Prisma.FieldRef<"ServiceRequest", 'Decimal'>
   readonly currency: Prisma.FieldRef<"ServiceRequest", 'String'>
+  readonly deliveryMessage: Prisma.FieldRef<"ServiceRequest", 'String'>
   readonly submittedAt: Prisma.FieldRef<"ServiceRequest", 'DateTime'>
   readonly dueDate: Prisma.FieldRef<"ServiceRequest", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"ServiceRequest", 'DateTime'>

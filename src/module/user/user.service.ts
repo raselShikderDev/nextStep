@@ -1,5 +1,6 @@
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
+import { RequestStatus } from "../../../prisma/generated/prisma/enums";
 
 interface IUpdateUserPayload {
 	name?: string;
@@ -299,7 +300,7 @@ const approveEmailChangeRequest = async (
 			},
 
 			data: {
-				status: "APPROVED",
+				status: RequestStatus.APPROVED,
 
 				approvedById: approverId,
 

@@ -1,41 +1,48 @@
 enum Role {
-    USER
-    MANAGER
-    ADMIN
-    SUPER_ADMIN
+  USER
+  MANAGER
+  ADMIN
+  SUPER_ADMIN
 }
 
 enum RequestStatus {
-    DRAFT
-    SUBMITTED
-    UNDER_REVIEW
-    PAYMENT_PENDING
-    PAYMENT_SUBMITTED
-    PAYMENT_VERIFIED
-    IN_PROGRESS
-    COMPLETED
-    REJECTED
-    CANCELLED
-    PENDING
-    APPROVED
+  DRAFT
+  PENDING
+  SUBMITTED
+  UNDER_REVIEW
+  PAYMENT_PENDING
+  PAYMENT_SUBMITTED
+  PAYMENT_VERIFIED
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  CANCELLED
+  APPROVED
 }
 
 enum PaymentMethod {
-    BKASH
-    NAGAD
-    ROCKET
-    DUTCH_BANGLA
-    BANK_TRANSFER
-    CASH
+  BKASH
+  NAGAD
+  ROCKET
+  DUTCH_BANGLA
+  BANK_TRANSFER
+  CASH
 }
 
 enum PaymentStatus {
-    SUBMITTED
-    VERIFIED
-    REJECTED
-    REFUNDED
+  SUBMITTED
+  VERIFIED
+  REJECTED
+  REFUNDED
 }
 
+enum DocumentType {
+  USER_UPLOAD
+  PAYMENT_PROOF
+  ADDITIONAL_DOCUMENT
+  FINAL_DELIVERY
+  INTERNAL_DOCUMENT
+}
 
 enum NotificationType {
   REQUEST_SUBMITTED
@@ -88,7 +95,6 @@ enum ActionType {
   PASSWORD_RESET
 }
 
-
 enum FieldType {
   TEXT
   TEXTAREA
@@ -106,171 +112,136 @@ enum FieldType {
 }
 
 enum GuestSource {
-    FACEBOOK
-     WHATSAPP
-     LINKEDIN
-     TELEGRAM
-     WEBSITE
-    REFERRAL
-    OTHERS
+  FACEBOOK
+  WHATSAPP
+  LINKEDIN
+  TELEGRAM
+  WEBSITE
+  REFERRAL
+  OTHERS
 }
 
-
-/*
-
-enum RequestStatus {
-  // ─── Set automatically when user submits the form
-  // Triggers: user clicks "Submit Application"
-  // Visible to user as: "Submitted — Awaiting Review"
-  DRAFT
-
-  // ─── User saved the form but did not submit yet
-  // Triggers: user clicks "Save for Later"  
-  // Visible to user as: "Draft — Complete and submit your application"
-  SUBMITTED
-
-  // ─── Admin opened the request and is reviewing form data
-  // Triggers: admin opens request and changes status manually
-  // Visible to user as: "Under Review — Our team is reviewing your request"
-  UNDER_REVIEW
-
-  // ─── Admin reviewed and set a quoted price, waiting for user to pay
-  // Triggers: admin clicks "Set Quote" and enters a price
-  // Visible to user as: "Payment Required — Please submit payment of X BDT"
-  PAYMENT_PENDING
-
-  // ─── User submitted transaction ID + screenshot, admin hasn't verified yet
-  // Triggers: user submits payment form
-  // Visible to user as: "Payment Submitted — Awaiting verification"
-  PAYMENT_SUBMITTED
-
-  // ─── Admin verified the payment is real and amount is correct
-  // Triggers: admin clicks "Verify Payment"
-  // Visible to user as: "Payment Confirmed — Work will begin shortly"
-  PAYMENT_VERIFIED
-
-  // ─── Manager/admin is actively working on the service delivery
-  // Triggers: admin/manager changes status after payment verified
-  // Visible to user as: "In Progress — Your request is being processed"
-  IN_PROGRESS
-
-  // ─── Service fully delivered, admin marks as done
-  // Triggers: admin clicks "Mark as Completed"
-  // Visible to user as: "Completed ✓ — Your service has been delivered"
-  COMPLETED
-
-  // ─── Admin rejected the request (bad info, ineligible, spam, etc.)
-  // Triggers: admin clicks "Reject" and writes a reason
-  // Visible to user as: "Rejected — See reason: [admin note]"
-  REJECTED
-
-  // ─── User or admin cancelled before completion
-  // Triggers: user clicks "Cancel" OR admin cancels on behalf
-  // Visible to user as: "Cancelled — This request has been closed"
-  CANCELLED
-}
-
-enum PaymentStatus {
-  // ─── Payment record exists but user hasn't submitted proof yet
-  // When: created automatically when admin sets a quoted price
-  PENDING
-
-  // ─── User submitted TxID + screenshot, waiting for admin to check
-  // When: user fills and submits the payment form
-  SUBMITTED
-
-  // ─── Admin confirmed the transaction is real and amount matches
-  // When: admin clicks "Verify" after checking with payment provider
-  VERIFIED
-
-  // ─── Admin found the payment fake, wrong amount, or wrong TxID
-  // When: admin clicks "Reject" and writes reason
-  // Effect: user is notified and can resubmit with correct info
-  REJECTED
-
-  // ─── Admin issued a refund after cancellation or dispute
-  // When: manually set by admin after processing refund externally
-  REFUNDED
-}
-
-enum NotificationType {
-  // ─── Sent to USER when they submit a new request
-  REQUEST_SUBMITTED
-
-  // ─── Sent to USER when admin opens and starts reviewing their request
-  REQUEST_UNDER_REVIEW
-
-  // ─── Sent to USER when admin sets a quoted price — action required
-  PAYMENT_REQUIRED
-
-  // ─── Sent to ADMIN when user submits payment proof — action required
-  PAYMENT_SUBMITTED
-
-  // ─── Sent to USER when admin verifies their payment
-  PAYMENT_VERIFIED
-
-  // ─── Sent to USER when admin rejects their payment with a reason
-  PAYMENT_REJECTED
-
-  // ─── Sent to USER when work officially starts after payment verified
-  REQUEST_IN_PROGRESS
-
-  // ─── Sent to USER when service is fully delivered
-  REQUEST_COMPLETED
-
-  // ─── Sent to USER when admin rejects their request entirely
-  REQUEST_REJECTED
-
-  // ─── Sent to USER or triggered by user/admin cancellation
-  REQUEST_CANCELLED
-
-  // ─── Sent to USER when admin needs more documents or information
-  DOCUMENT_REQUESTED
-
-  // ─── Sent to ADMIN/MANAGER for internal platform alerts
-  ADMIN_ALERT
-
-  // ─── Generic system message (announcements, etc.)
-  GENERAL
-}
-
-enum ActionType {
-  // ─── REQUEST ACTIONS (who: user or admin)
-  REQUEST_CREATED         // user submitted a new request
-  REQUEST_UPDATED         // form data updated (rare, admin-triggered)
-  REQUEST_STATUS_CHANGED  // any status transition logged here
-  REQUEST_ASSIGNED        // admin assigned request to a manager
-  REQUEST_NOTE_ADDED      // admin added an internal note
-  REQUEST_CANCELLED       // user or admin cancelled
-  REQUEST_REJECTED        // admin rejected with reason
-  REQUEST_COMPLETED       // admin marked as completed
-  REQUEST_QUOTE_SET       // admin set the quoted price
-
-  // ─── PAYMENT ACTIONS (who: admin)
-  PAYMENT_SUBMITTED       // user submitted payment proof
-  PAYMENT_VERIFIED        // admin verified the payment
-  PAYMENT_REJECTED        // admin rejected the payment
-  PAYMENT_REFUNDED        // admin processed a refund
-
-  // ─── DOCUMENT ACTIONS (who: user, admin, or manager)
-  DOCUMENT_UPLOADED       // anyone uploaded a file to a request
-  DOCUMENT_DELETED        // admin deleted a document
-
-  // ─── USER MANAGEMENT (who: admin)
-  USER_CREATED            // new user registered
-  USER_UPDATED            // profile updated
-  USER_ROLE_CHANGED       // admin changed user role
-  USER_ACTIVATED          // admin reactivated a deactivated account
-  USER_DEACTIVATED        // admin deactivated an account
-
-  // ─── SERVICE MANAGEMENT (who: admin)
-  SERVICE_CREATED         // admin created a new service
-  SERVICE_UPDATED         // admin edited service details
-  SERVICE_TOGGLED         // admin enabled or disabled a service
-
-  // ─── AUTH EVENTS (who: user)
-  USER_LOGIN              // successful login
-  USER_LOGOUT             // user logged out
-  PASSWORD_RESET          // user reset their password
-}
-*/
+/**
+ * enum RequestStatus {
+ * // ─── Set automatically when user submits the form
+ * // Triggers: user clicks "Submit Application"
+ * // Visible to user as: "Submitted — Awaiting Review"
+ * DRAFT
+ * // ─── User saved the form but did not submit yet
+ * // Triggers: user clicks "Save for Later"
+ * // Visible to user as: "Draft — Complete and submit your application"
+ * SUBMITTED
+ * // ─── Admin opened the request and is reviewing form data
+ * // Triggers: admin opens request and changes status manually
+ * // Visible to user as: "Under Review — Our team is reviewing your request"
+ * UNDER_REVIEW
+ * // ─── Admin reviewed and set a quoted price, waiting for user to pay
+ * // Triggers: admin clicks "Set Quote" and enters a price
+ * // Visible to user as: "Payment Required — Please submit payment of X BDT"
+ * PAYMENT_PENDING
+ * // ─── User submitted transaction ID + screenshot, admin hasn't verified yet
+ * // Triggers: user submits payment form
+ * // Visible to user as: "Payment Submitted — Awaiting verification"
+ * PAYMENT_SUBMITTED
+ * // ─── Admin verified the payment is real and amount is correct
+ * // Triggers: admin clicks "Verify Payment"
+ * // Visible to user as: "Payment Confirmed — Work will begin shortly"
+ * PAYMENT_VERIFIED
+ * // ─── Manager/admin is actively working on the service delivery
+ * // Triggers: admin/manager changes status after payment verified
+ * // Visible to user as: "In Progress — Your request is being processed"
+ * IN_PROGRESS
+ * // ─── Service fully delivered, admin marks as done
+ * // Triggers: admin clicks "Mark as Completed"
+ * // Visible to user as: "Completed ✓ — Your service has been delivered"
+ * COMPLETED
+ * // ─── Admin rejected the request (bad info, ineligible, spam, etc.)
+ * // Triggers: admin clicks "Reject" and writes a reason
+ * // Visible to user as: "Rejected — See reason: [admin note]"
+ * REJECTED
+ * // ─── User or admin cancelled before completion
+ * // Triggers: user clicks "Cancel" OR admin cancels on behalf
+ * // Visible to user as: "Cancelled — This request has been closed"
+ * CANCELLED
+ * }
+ * enum PaymentStatus {
+ * // ─── Payment record exists but user hasn't submitted proof yet
+ * // When: created automatically when admin sets a quoted price
+ * PENDING
+ * // ─── User submitted TxID + screenshot, waiting for admin to check
+ * // When: user fills and submits the payment form
+ * SUBMITTED
+ * // ─── Admin confirmed the transaction is real and amount matches
+ * // When: admin clicks "Verify" after checking with payment provider
+ * VERIFIED
+ * // ─── Admin found the payment fake, wrong amount, or wrong TxID
+ * // When: admin clicks "Reject" and writes reason
+ * // Effect: user is notified and can resubmit with correct info
+ * REJECTED
+ * // ─── Admin issued a refund after cancellation or dispute
+ * // When: manually set by admin after processing refund externally
+ * REFUNDED
+ * }
+ * enum NotificationType {
+ * // ─── Sent to USER when they submit a new request
+ * REQUEST_SUBMITTED
+ * // ─── Sent to USER when admin opens and starts reviewing their request
+ * REQUEST_UNDER_REVIEW
+ * // ─── Sent to USER when admin sets a quoted price — action required
+ * PAYMENT_REQUIRED
+ * // ─── Sent to ADMIN when user submits payment proof — action required
+ * PAYMENT_SUBMITTED
+ * // ─── Sent to USER when admin verifies their payment
+ * PAYMENT_VERIFIED
+ * // ─── Sent to USER when admin rejects their payment with a reason
+ * PAYMENT_REJECTED
+ * // ─── Sent to USER when work officially starts after payment verified
+ * REQUEST_IN_PROGRESS
+ * // ─── Sent to USER when service is fully delivered
+ * REQUEST_COMPLETED
+ * // ─── Sent to USER when admin rejects their request entirely
+ * REQUEST_REJECTED
+ * // ─── Sent to USER or triggered by user/admin cancellation
+ * REQUEST_CANCELLED
+ * // ─── Sent to USER when admin needs more documents or information
+ * DOCUMENT_REQUESTED
+ * // ─── Sent to ADMIN/MANAGER for internal platform alerts
+ * ADMIN_ALERT
+ * // ─── Generic system message (announcements, etc.)
+ * GENERAL
+ * }
+ * enum ActionType {
+ * // ─── REQUEST ACTIONS (who: user or admin)
+ * REQUEST_CREATED         // user submitted a new request
+ * REQUEST_UPDATED         // form data updated (rare, admin-triggered)
+ * REQUEST_STATUS_CHANGED  // any status transition logged here
+ * REQUEST_ASSIGNED        // admin assigned request to a manager
+ * REQUEST_NOTE_ADDED      // admin added an internal note
+ * REQUEST_CANCELLED       // user or admin cancelled
+ * REQUEST_REJECTED        // admin rejected with reason
+ * REQUEST_COMPLETED       // admin marked as completed
+ * REQUEST_QUOTE_SET       // admin set the quoted price
+ * // ─── PAYMENT ACTIONS (who: admin)
+ * PAYMENT_SUBMITTED       // user submitted payment proof
+ * PAYMENT_VERIFIED        // admin verified the payment
+ * PAYMENT_REJECTED        // admin rejected the payment
+ * PAYMENT_REFUNDED        // admin processed a refund
+ * // ─── DOCUMENT ACTIONS (who: user, admin, or manager)
+ * DOCUMENT_UPLOADED       // anyone uploaded a file to a request
+ * DOCUMENT_DELETED        // admin deleted a document
+ * // ─── USER MANAGEMENT (who: admin)
+ * USER_CREATED            // new user registered
+ * USER_UPDATED            // profile updated
+ * USER_ROLE_CHANGED       // admin changed user role
+ * USER_ACTIVATED          // admin reactivated a deactivated account
+ * USER_DEACTIVATED        // admin deactivated an account
+ * // ─── SERVICE MANAGEMENT (who: admin)
+ * SERVICE_CREATED         // admin created a new service
+ * SERVICE_UPDATED         // admin edited service details
+ * SERVICE_TOGGLED         // admin enabled or disabled a service
+ * // ─── AUTH EVENTS (who: user)
+ * USER_LOGIN              // successful login
+ * USER_LOGOUT             // user logged out
+ * PASSWORD_RESET          // user reset their password
+ * }
+ */

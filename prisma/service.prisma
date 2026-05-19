@@ -43,17 +43,17 @@ model Service {
 }
 
 model ServiceRequest {
-  id           String  @id @default(uuid())
-  requestNo    String  @unique // NSX-2025-001234
+  id           String      @id @default(uuid())
+  requestNo    String      @unique // NSX-2025-001234
   userId       String?
   serviceId    String
   assignedToId String?
-  isGuest Boolean @default(true)
+  isGuest      Boolean     @default(true)
   guestName    String?
   guestEmail   String?
   guestPhone   String?
   guestAddress String?
-  guestSource GuestSource @default(REFERRAL)
+  guestSource  GuestSource @default(REFERRAL)
 
   status     RequestStatus @default(SUBMITTED)
   formData   Json // captured at submission, immutable snapshot
@@ -61,9 +61,10 @@ model ServiceRequest {
   adminNotes String? // internal notes, not visible to user
 
   // Pricing
-  quotedPrice Decimal? @db.Decimal(10, 2)
-  finalPrice  Decimal? @db.Decimal(10, 2)
-  currency    String   @default("BDT")
+  quotedPrice     Decimal? @db.Decimal(10, 2)
+  finalPrice      Decimal? @db.Decimal(10, 2)
+  currency        String   @default("BDT")
+  deliveryMessage String?
 
   // Timestamps
   submittedAt DateTime  @default(now())
@@ -73,9 +74,9 @@ model ServiceRequest {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  user UserDetails? @relation("UserRequests", fields: [userId], references: [id])
-  assignedTo    UserDetails? @relation("AssignedManager", fields: [assignedToId], references: [id])
-  service       Service      @relation(fields: [serviceId], references: [id])
+  user       UserDetails? @relation("UserRequests", fields: [userId], references: [id])
+  assignedTo UserDetails? @relation("AssignedManager", fields: [assignedToId], references: [id])
+  service    Service      @relation(fields: [serviceId], references: [id])
 
   payment       Payment?
   statusHistory RequestStatusHistory[]
@@ -97,6 +98,7 @@ model RequestStatusHistory {
   id          String         @id @default(uuid())
   requestId   String
   changedById String
+  action      ActionType?
   fromStatus  RequestStatus?
   toStatus    RequestStatus
   note        String?

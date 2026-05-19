@@ -28,6 +28,7 @@ export type RequestStatusHistoryMinAggregateOutputType = {
   id: string | null
   requestId: string | null
   changedById: string | null
+  action: $Enums.ActionType | null
   fromStatus: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus | null
   note: string | null
@@ -38,6 +39,7 @@ export type RequestStatusHistoryMaxAggregateOutputType = {
   id: string | null
   requestId: string | null
   changedById: string | null
+  action: $Enums.ActionType | null
   fromStatus: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus | null
   note: string | null
@@ -48,6 +50,7 @@ export type RequestStatusHistoryCountAggregateOutputType = {
   id: number
   requestId: number
   changedById: number
+  action: number
   fromStatus: number
   toStatus: number
   note: number
@@ -60,6 +63,7 @@ export type RequestStatusHistoryMinAggregateInputType = {
   id?: true
   requestId?: true
   changedById?: true
+  action?: true
   fromStatus?: true
   toStatus?: true
   note?: true
@@ -70,6 +74,7 @@ export type RequestStatusHistoryMaxAggregateInputType = {
   id?: true
   requestId?: true
   changedById?: true
+  action?: true
   fromStatus?: true
   toStatus?: true
   note?: true
@@ -80,6 +85,7 @@ export type RequestStatusHistoryCountAggregateInputType = {
   id?: true
   requestId?: true
   changedById?: true
+  action?: true
   fromStatus?: true
   toStatus?: true
   note?: true
@@ -163,6 +169,7 @@ export type RequestStatusHistoryGroupByOutputType = {
   id: string
   requestId: string
   changedById: string
+  action: $Enums.ActionType | null
   fromStatus: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note: string | null
@@ -194,6 +201,7 @@ export type RequestStatusHistoryWhereInput = {
   id?: Prisma.StringFilter<"RequestStatusHistory"> | string
   requestId?: Prisma.StringFilter<"RequestStatusHistory"> | string
   changedById?: Prisma.StringFilter<"RequestStatusHistory"> | string
+  action?: Prisma.EnumActionTypeNullableFilter<"RequestStatusHistory"> | $Enums.ActionType | null
   fromStatus?: Prisma.EnumRequestStatusNullableFilter<"RequestStatusHistory"> | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFilter<"RequestStatusHistory"> | $Enums.RequestStatus
   note?: Prisma.StringNullableFilter<"RequestStatusHistory"> | string | null
@@ -206,6 +214,7 @@ export type RequestStatusHistoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   changedById?: Prisma.SortOrder
+  action?: Prisma.SortOrderInput | Prisma.SortOrder
   fromStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -221,6 +230,7 @@ export type RequestStatusHistoryWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.RequestStatusHistoryWhereInput | Prisma.RequestStatusHistoryWhereInput[]
   requestId?: Prisma.StringFilter<"RequestStatusHistory"> | string
   changedById?: Prisma.StringFilter<"RequestStatusHistory"> | string
+  action?: Prisma.EnumActionTypeNullableFilter<"RequestStatusHistory"> | $Enums.ActionType | null
   fromStatus?: Prisma.EnumRequestStatusNullableFilter<"RequestStatusHistory"> | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFilter<"RequestStatusHistory"> | $Enums.RequestStatus
   note?: Prisma.StringNullableFilter<"RequestStatusHistory"> | string | null
@@ -233,6 +243,7 @@ export type RequestStatusHistoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   changedById?: Prisma.SortOrder
+  action?: Prisma.SortOrderInput | Prisma.SortOrder
   fromStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -249,6 +260,7 @@ export type RequestStatusHistoryScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"RequestStatusHistory"> | string
   requestId?: Prisma.StringWithAggregatesFilter<"RequestStatusHistory"> | string
   changedById?: Prisma.StringWithAggregatesFilter<"RequestStatusHistory"> | string
+  action?: Prisma.EnumActionTypeNullableWithAggregatesFilter<"RequestStatusHistory"> | $Enums.ActionType | null
   fromStatus?: Prisma.EnumRequestStatusNullableWithAggregatesFilter<"RequestStatusHistory"> | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusWithAggregatesFilter<"RequestStatusHistory"> | $Enums.RequestStatus
   note?: Prisma.StringNullableWithAggregatesFilter<"RequestStatusHistory"> | string | null
@@ -257,6 +269,7 @@ export type RequestStatusHistoryScalarWhereWithAggregatesInput = {
 
 export type RequestStatusHistoryCreateInput = {
   id?: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -269,6 +282,7 @@ export type RequestStatusHistoryUncheckedCreateInput = {
   id?: string
   requestId: string
   changedById: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -277,6 +291,7 @@ export type RequestStatusHistoryUncheckedCreateInput = {
 
 export type RequestStatusHistoryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -289,6 +304,7 @@ export type RequestStatusHistoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   requestId?: Prisma.StringFieldUpdateOperationsInput | string
   changedById?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -299,6 +315,7 @@ export type RequestStatusHistoryCreateManyInput = {
   id?: string
   requestId: string
   changedById: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -307,6 +324,7 @@ export type RequestStatusHistoryCreateManyInput = {
 
 export type RequestStatusHistoryUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -317,6 +335,7 @@ export type RequestStatusHistoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   requestId?: Prisma.StringFieldUpdateOperationsInput | string
   changedById?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -337,6 +356,7 @@ export type RequestStatusHistoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   changedById?: Prisma.SortOrder
+  action?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -347,6 +367,7 @@ export type RequestStatusHistoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   changedById?: Prisma.SortOrder
+  action?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -357,6 +378,7 @@ export type RequestStatusHistoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   requestId?: Prisma.SortOrder
   changedById?: Prisma.SortOrder
+  action?: Prisma.SortOrder
   fromStatus?: Prisma.SortOrder
   toStatus?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -403,6 +425,10 @@ export type RequestStatusHistoryUncheckedUpdateManyWithoutRequestNestedInput = {
   update?: Prisma.RequestStatusHistoryUpdateWithWhereUniqueWithoutRequestInput | Prisma.RequestStatusHistoryUpdateWithWhereUniqueWithoutRequestInput[]
   updateMany?: Prisma.RequestStatusHistoryUpdateManyWithWhereWithoutRequestInput | Prisma.RequestStatusHistoryUpdateManyWithWhereWithoutRequestInput[]
   deleteMany?: Prisma.RequestStatusHistoryScalarWhereInput | Prisma.RequestStatusHistoryScalarWhereInput[]
+}
+
+export type NullableEnumActionTypeFieldUpdateOperationsInput = {
+  set?: $Enums.ActionType | null
 }
 
 export type NullableEnumRequestStatusFieldUpdateOperationsInput = {
@@ -453,6 +479,7 @@ export type RequestStatusHistoryUncheckedUpdateManyWithoutChangedByNestedInput =
 
 export type RequestStatusHistoryCreateWithoutRequestInput = {
   id?: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -463,6 +490,7 @@ export type RequestStatusHistoryCreateWithoutRequestInput = {
 export type RequestStatusHistoryUncheckedCreateWithoutRequestInput = {
   id?: string
   changedById: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -502,6 +530,7 @@ export type RequestStatusHistoryScalarWhereInput = {
   id?: Prisma.StringFilter<"RequestStatusHistory"> | string
   requestId?: Prisma.StringFilter<"RequestStatusHistory"> | string
   changedById?: Prisma.StringFilter<"RequestStatusHistory"> | string
+  action?: Prisma.EnumActionTypeNullableFilter<"RequestStatusHistory"> | $Enums.ActionType | null
   fromStatus?: Prisma.EnumRequestStatusNullableFilter<"RequestStatusHistory"> | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFilter<"RequestStatusHistory"> | $Enums.RequestStatus
   note?: Prisma.StringNullableFilter<"RequestStatusHistory"> | string | null
@@ -510,6 +539,7 @@ export type RequestStatusHistoryScalarWhereInput = {
 
 export type RequestStatusHistoryCreateWithoutChangedByInput = {
   id?: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -520,6 +550,7 @@ export type RequestStatusHistoryCreateWithoutChangedByInput = {
 export type RequestStatusHistoryUncheckedCreateWithoutChangedByInput = {
   id?: string
   requestId: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -555,6 +586,7 @@ export type RequestStatusHistoryUpdateManyWithWhereWithoutChangedByInput = {
 export type RequestStatusHistoryCreateManyRequestInput = {
   id?: string
   changedById: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -563,6 +595,7 @@ export type RequestStatusHistoryCreateManyRequestInput = {
 
 export type RequestStatusHistoryUpdateWithoutRequestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -573,6 +606,7 @@ export type RequestStatusHistoryUpdateWithoutRequestInput = {
 export type RequestStatusHistoryUncheckedUpdateWithoutRequestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   changedById?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -582,6 +616,7 @@ export type RequestStatusHistoryUncheckedUpdateWithoutRequestInput = {
 export type RequestStatusHistoryUncheckedUpdateManyWithoutRequestInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   changedById?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -591,6 +626,7 @@ export type RequestStatusHistoryUncheckedUpdateManyWithoutRequestInput = {
 export type RequestStatusHistoryCreateManyChangedByInput = {
   id?: string
   requestId: string
+  action?: $Enums.ActionType | null
   fromStatus?: $Enums.RequestStatus | null
   toStatus: $Enums.RequestStatus
   note?: string | null
@@ -599,6 +635,7 @@ export type RequestStatusHistoryCreateManyChangedByInput = {
 
 export type RequestStatusHistoryUpdateWithoutChangedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -609,6 +646,7 @@ export type RequestStatusHistoryUpdateWithoutChangedByInput = {
 export type RequestStatusHistoryUncheckedUpdateWithoutChangedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   requestId?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -618,6 +656,7 @@ export type RequestStatusHistoryUncheckedUpdateWithoutChangedByInput = {
 export type RequestStatusHistoryUncheckedUpdateManyWithoutChangedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   requestId?: Prisma.StringFieldUpdateOperationsInput | string
+  action?: Prisma.NullableEnumActionTypeFieldUpdateOperationsInput | $Enums.ActionType | null
   fromStatus?: Prisma.NullableEnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus | null
   toStatus?: Prisma.EnumRequestStatusFieldUpdateOperationsInput | $Enums.RequestStatus
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -630,6 +669,7 @@ export type RequestStatusHistorySelect<ExtArgs extends runtime.Types.Extensions.
   id?: boolean
   requestId?: boolean
   changedById?: boolean
+  action?: boolean
   fromStatus?: boolean
   toStatus?: boolean
   note?: boolean
@@ -642,6 +682,7 @@ export type RequestStatusHistorySelectCreateManyAndReturn<ExtArgs extends runtim
   id?: boolean
   requestId?: boolean
   changedById?: boolean
+  action?: boolean
   fromStatus?: boolean
   toStatus?: boolean
   note?: boolean
@@ -654,6 +695,7 @@ export type RequestStatusHistorySelectUpdateManyAndReturn<ExtArgs extends runtim
   id?: boolean
   requestId?: boolean
   changedById?: boolean
+  action?: boolean
   fromStatus?: boolean
   toStatus?: boolean
   note?: boolean
@@ -666,13 +708,14 @@ export type RequestStatusHistorySelectScalar = {
   id?: boolean
   requestId?: boolean
   changedById?: boolean
+  action?: boolean
   fromStatus?: boolean
   toStatus?: boolean
   note?: boolean
   createdAt?: boolean
 }
 
-export type RequestStatusHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestId" | "changedById" | "fromStatus" | "toStatus" | "note" | "createdAt", ExtArgs["result"]["requestStatusHistory"]>
+export type RequestStatusHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "requestId" | "changedById" | "action" | "fromStatus" | "toStatus" | "note" | "createdAt", ExtArgs["result"]["requestStatusHistory"]>
 export type RequestStatusHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>
   changedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>
@@ -696,6 +739,7 @@ export type $RequestStatusHistoryPayload<ExtArgs extends runtime.Types.Extension
     id: string
     requestId: string
     changedById: string
+    action: $Enums.ActionType | null
     fromStatus: $Enums.RequestStatus | null
     toStatus: $Enums.RequestStatus
     note: string | null
@@ -1128,6 +1172,7 @@ export interface RequestStatusHistoryFieldRefs {
   readonly id: Prisma.FieldRef<"RequestStatusHistory", 'String'>
   readonly requestId: Prisma.FieldRef<"RequestStatusHistory", 'String'>
   readonly changedById: Prisma.FieldRef<"RequestStatusHistory", 'String'>
+  readonly action: Prisma.FieldRef<"RequestStatusHistory", 'ActionType'>
   readonly fromStatus: Prisma.FieldRef<"RequestStatusHistory", 'RequestStatus'>
   readonly toStatus: Prisma.FieldRef<"RequestStatusHistory", 'RequestStatus'>
   readonly note: Prisma.FieldRef<"RequestStatusHistory", 'String'>
