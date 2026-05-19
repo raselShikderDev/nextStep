@@ -50,6 +50,7 @@
 		"otp-generator": "^4.0.1",
 		"pg": "^8.20.0",
 		"rate-limiter-flexible": "^11.1.0",
+		"resend": "^6.12.3",
 		"uuid": "^14.0.0",
 		"xss": "^1.0.15",
 		"zod": "^4.4.3"

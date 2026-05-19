@@ -17,6 +17,8 @@ const envVar = {
 	HASH_ROUND: process.env.HASH_ROUND as string,
 	JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as string,
 	JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN as string,
+	RESEND_API_KEY: process.env.RESEND_API_KEY as string,
+	EMAIL_FROM: process.env.EMAIL_FROM as string,
 };
 
 export default envVar;
