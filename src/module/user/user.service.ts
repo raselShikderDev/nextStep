@@ -2,368 +2,368 @@ import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 
 interface IUpdateUserPayload {
-  name?: string;
-  phone?: string;
-  address?: string;
-  avatarUrl?: string;
+	name?: string;
+	phone?: string;
+	address?: string;
+	avatarUrl?: string;
 }
 
 // Update my own profile
 const updateOwnProfile = async (
-  userId: string,
-  payload: IUpdateUserPayload,
+	userId: string,
+	payload: IUpdateUserPayload,
 ) => {
-  // CHECK USER EXIST
+	// CHECK USER EXIST
 
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
+	const existingUser = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
 
-    include: {
-      userDetails: true,
-    },
-  });
+		include: {
+			userDetails: true,
+		},
+	});
 
-  if (!existingUser) {
-    throw new AppError(404, "User not found");
-  }
+	if (!existingUser) {
+		throw new AppError(404, "User not found");
+	}
 
-  // CHECK PHONE DUPLICATE
+	// CHECK PHONE DUPLICATE
 
-  if (payload.phone) {
-    const existingPhone = await prisma.userDetails.findFirst({
-      where: {
-        phone: payload.phone,
+	if (payload.phone) {
+		const existingPhone = await prisma.userDetails.findFirst({
+			where: {
+				phone: payload.phone,
 
-        NOT: {
-          userId,
-        },
-      },
-    });
+				NOT: {
+					userId,
+				},
+			},
+		});
 
-    if (existingPhone) {
-      throw new AppError(409, "Phone number already exists");
-    }
-  }
+		if (existingPhone) {
+			throw new AppError(409, "Phone number already exists");
+		}
+	}
 
-  // UPDATE USER DETAILS
+	// UPDATE USER DETAILS
 
-  const updatedUser = await prisma.userDetails.update({
-    where: {
-      userId,
-    },
+	const updatedUser = await prisma.userDetails.update({
+		where: {
+			userId,
+		},
 
-    data: {
-      name: payload.name,
+		data: {
+			name: payload.name,
 
-      phone: payload.phone,
+			phone: payload.phone,
 
-      address: payload.address,
+			address: payload.address,
 
-      avatarUrl: payload.avatarUrl,
-    },
+			avatarUrl: payload.avatarUrl,
+		},
 
-    include: {
-      user: {
-        select: {
-          id: true,
+		include: {
+			user: {
+				select: {
+					id: true,
 
-          email: true,
+					email: true,
 
-          role: true,
+					role: true,
 
-          isActive: true,
+					isActive: true,
 
-          isVerified: true,
+					isVerified: true,
 
-          createdAt: true,
-        },
-      },
-    },
-  });
+					createdAt: true,
+				},
+			},
+		},
+	});
 
-  return updatedUser;
+	return updatedUser;
 };
 
 // Get my own profile
 const getMyProfile = async (userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
 
-    select: {
-      id: true,
+		select: {
+			id: true,
 
-      email: true,
+			email: true,
 
-      role: true,
+			role: true,
 
-      isActive: true,
+			isActive: true,
 
-      isVerified: true,
+			isVerified: true,
 
-      createdAt: true,
+			createdAt: true,
 
-      updatedAt: true,
+			updatedAt: true,
 
-      userDetails: true,
-    },
-  });
+			userDetails: true,
+		},
+	});
 
-  if (!user) {
-    throw new AppError(404, "User not found");
-  }
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
 
-  return user;
+	return user;
 };
 
 // Role Restricted
 // USER REQUEST EMAIL CHANGE
 
 const requestEmailChange = async (
-  userId: string,
+	userId: string,
 
-  payload: {
-    requestedEmail: string;
+	payload: {
+		requestedEmail: string;
 
-    reason?: string;
-  },
+		reason?: string;
+	},
 ) => {
-  // FIND USER
+	// FIND USER
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+	});
 
-  if (!user) {
-    throw new AppError(404, "User not found");
-  }
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
 
-  // BLOCK SUPER ADMIN
+	// BLOCK SUPER ADMIN
 
-  if (user.role === "SUPER_ADMIN") {
-    throw new AppError(403, "Super admin email change request is restricted");
-  }
+	if (user.role === "SUPER_ADMIN") {
+		throw new AppError(403, "Super admin email change request is restricted");
+	}
 
-  // SAME EMAIL CHECK
+	// SAME EMAIL CHECK
 
-  if (user.email === payload.requestedEmail) {
-    throw new AppError(400, "Requested email cannot be same as current email");
-  }
+	if (user.email === payload.requestedEmail) {
+		throw new AppError(400, "Requested email cannot be same as current email");
+	}
 
-  // EMAIL EXISTS CHECK
+	// EMAIL EXISTS CHECK
 
-  const existingEmail = await prisma.user.findUnique({
-    where: {
-      email: payload.requestedEmail,
-    },
-  });
+	const existingEmail = await prisma.user.findUnique({
+		where: {
+			email: payload.requestedEmail,
+		},
+	});
 
-  if (existingEmail) {
-    throw new AppError(409, "Email already exists");
-  }
+	if (existingEmail) {
+		throw new AppError(409, "Email already exists");
+	}
 
-  // PENDING REQUEST CHECK
+	// PENDING REQUEST CHECK
 
-  const pendingRequest = await prisma.emailChangeRequest.findFirst({
-    where: {
-      userId,
+	const pendingRequest = await prisma.emailChangeRequest.findFirst({
+		where: {
+			userId,
 
-      status: "PENDING",
-    },
-  });
+			status: "PENDING",
+		},
+	});
 
-  if (pendingRequest) {
-    throw new AppError(409, "You already have a pending email change request");
-  }
+	if (pendingRequest) {
+		throw new AppError(409, "You already have a pending email change request");
+	}
 
-  // CREATE REQUEST
+	// CREATE REQUEST
 
-  const request = await prisma.emailChangeRequest.create({
-    data: {
-      userId,
+	const request = await prisma.emailChangeRequest.create({
+		data: {
+			userId,
 
-      currentEmail: user.email,
+			currentEmail: user.email,
 
-      requestedEmail: payload.requestedEmail,
+			requestedEmail: payload.requestedEmail,
 
-      reason: payload.reason,
-    },
-  });
+			reason: payload.reason,
+		},
+	});
 
-  return request;
+	return request;
 };
 
 // GET ALL PENDING EMAIL REQUESTS
 
 const getAllPendingEmailRequests = async () => {
-  const requests = await prisma.emailChangeRequest.findMany({
-    where: {
-      status: "PENDING",
-    },
+	const requests = await prisma.emailChangeRequest.findMany({
+		where: {
+			status: "PENDING",
+		},
 
-    orderBy: {
-      createdAt: "desc",
-    },
+		orderBy: {
+			createdAt: "desc",
+		},
 
-    include: {
-      user: {
-        select: {
-          id: true,
+		include: {
+			user: {
+				select: {
+					id: true,
 
-          email: true,
+					email: true,
 
-          role: true,
+					role: true,
 
-          userDetails: true,
-        },
-      },
-    },
-  });
+					userDetails: true,
+				},
+			},
+		},
+	});
 
-  return requests;
+	return requests;
 };
 
 // APPROVE / REJECT REQUEST
 
 const approveEmailChangeRequest = async (
-  requestId: string,
+	requestId: string,
 
-  approverId: string,
+	approverId: string,
 ) => {
-  const request = await prisma.emailChangeRequest.findUnique({
-    where: {
-      id: requestId,
-    },
+	const request = await prisma.emailChangeRequest.findUnique({
+		where: {
+			id: requestId,
+		},
 
-    include: {
-      user: true,
-    },
-  });
+		include: {
+			user: true,
+		},
+	});
 
-  if (!request) {
-    throw new AppError(404, "Request not found");
-  }
+	if (!request) {
+		throw new AppError(404, "Request not found");
+	}
 
-  if (request.status !== "PENDING") {
-    throw new AppError(400, "Request already processed");
-  }
+	if (request.status !== "PENDING") {
+		throw new AppError(400, "Request already processed");
+	}
 
-  const approver = await prisma.user.findUnique({
-    where: {
-      id: approverId,
-    },
-  });
+	const approver = await prisma.user.findUnique({
+		where: {
+			id: approverId,
+		},
+	});
 
-  if (!approver) {
-    throw new AppError(404, "Approver not found");
-  }
+	if (!approver) {
+		throw new AppError(404, "Approver not found");
+	}
 
-  // ROLE BASED APPROVAL
+	// ROLE BASED APPROVAL
 
-  if (request.user.role === "USER" || request.user.role === "MANAGER") {
-    if (approver.role !== "ADMIN" && approver.role !== "SUPER_ADMIN") {
-      throw new AppError(403, "You are not authorized to approve this request");
-    }
-  }
+	if (request.user.role === "USER" || request.user.role === "MANAGER") {
+		if (approver.role !== "ADMIN" && approver.role !== "SUPER_ADMIN") {
+			throw new AppError(403, "You are not authorized to approve this request");
+		}
+	}
 
-  if (request.user.role === "ADMIN") {
-    if (approver.role !== "SUPER_ADMIN") {
-      throw new AppError(
-        403,
-        "Only super admin can approve admin email change requests",
-      );
-    }
-  }
+	if (request.user.role === "ADMIN") {
+		if (approver.role !== "SUPER_ADMIN") {
+			throw new AppError(
+				403,
+				"Only super admin can approve admin email change requests",
+			);
+		}
+	}
 
-  // UPDATE EMAIL + REQUEST
+	// UPDATE EMAIL + REQUEST
 
-  const result = await prisma.$transaction(async (transactionClient) => {
-    await transactionClient.user.update({
-      where: {
-        id: request.userId,
-      },
+	const result = await prisma.$transaction(async (transactionClient) => {
+		await transactionClient.user.update({
+			where: {
+				id: request.userId,
+			},
 
-      data: {
-        email: request.requestedEmail,
-      },
-    });
+			data: {
+				email: request.requestedEmail,
+			},
+		});
 
-    const updatedRequest = await transactionClient.emailChangeRequest.update({
-      where: {
-        id: requestId,
-      },
+		const updatedRequest = await transactionClient.emailChangeRequest.update({
+			where: {
+				id: requestId,
+			},
 
-      data: {
-        status: "APPROVED",
+			data: {
+				status: "APPROVED",
 
-        approvedById: approverId,
+				approvedById: approverId,
 
-        approvedAt: new Date(),
-      },
-    });
+				approvedAt: new Date(),
+			},
+		});
 
-    return updatedRequest;
-  });
+		return updatedRequest;
+	});
 
-  return result;
+	return result;
 };
 
 // REJECT REQUEST
 
 const rejectEmailChangeRequest = async (
-  requestId: string,
+	requestId: string,
 
-  approverId: string,
+	approverId: string,
 
-  rejectedReason?: string,
+	rejectedReason?: string,
 ) => {
-  const request = await prisma.emailChangeRequest.findUnique({
-    where: {
-      id: requestId,
-    },
+	const request = await prisma.emailChangeRequest.findUnique({
+		where: {
+			id: requestId,
+		},
 
-    include: {
-      user: true,
-    },
-  });
+		include: {
+			user: true,
+		},
+	});
 
-  if (!request) {
-    throw new AppError(404, "Request not found");
-  }
+	if (!request) {
+		throw new AppError(404, "Request not found");
+	}
 
-  if (request.status !== "PENDING") {
-    throw new AppError(400, "Request already processed");
-  }
+	if (request.status !== "PENDING") {
+		throw new AppError(400, "Request already processed");
+	}
 
-  const updatedRequest = await prisma.emailChangeRequest.update({
-    where: {
-      id: requestId,
-    },
+	const updatedRequest = await prisma.emailChangeRequest.update({
+		where: {
+			id: requestId,
+		},
 
-    data: {
-      status: "REJECTED",
+		data: {
+			status: "REJECTED",
 
-      rejectedReason,
+			rejectedReason,
 
-      approvedById: approverId,
+			approvedById: approverId,
 
-      approvedAt: new Date(),
-    },
-  });
+			approvedAt: new Date(),
+		},
+	});
 
-  return updatedRequest;
+	return updatedRequest;
 };
 
 export const UserServices = {
-  updateOwnProfile,
-  getMyProfile,
-  requestEmailChange,
-  getAllPendingEmailRequests,
-  approveEmailChangeRequest,
-  rejectEmailChangeRequest,
+	updateOwnProfile,
+	getMyProfile,
+	requestEmailChange,
+	getAllPendingEmailRequests,
+	approveEmailChangeRequest,
+	rejectEmailChangeRequest,
 };

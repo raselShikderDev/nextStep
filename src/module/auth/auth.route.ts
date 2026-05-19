@@ -10,21 +10,12 @@ router.post("/register", AuthControllers.registerUser);
 router.post("/login", AuthControllers.loginUser);
 
 // Send otp for reseting password after forgetting
-router.post(
-	"/forgot-password",
-	AuthControllers.forgotPassword,
-);
+router.post("/forgot-password", AuthControllers.forgotPassword);
 
 // Reset password after forgeting
-router.post(
-	"/reset-password",
-	AuthControllers.resetPassword,
-);
+router.post("/reset-password", AuthControllers.resetPassword);
 
 // Chnage password - For logged in user
-router.post(
-	"/change-password",
-	AuthControllers.changePassword,
-);
+router.post("/change-password", AuthControllers.changePassword);
 
 export const authRouter = router;

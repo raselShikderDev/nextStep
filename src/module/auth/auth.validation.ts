@@ -11,8 +11,6 @@ export const loginValidationSchema = z.object({
 	password: z.string().min(6),
 });
 
-
-
 export const forgotPasswordValidationSchema = z.object({
 	email: z.email(),
 });

@@ -13,22 +13,14 @@ export const updateUserValidationSchema = z.object({
 	avatarUrl: z.url().optional(),
 });
 
+export const requestEmailChangeSchema = z.object({
+	requestedEmail: z.email(),
 
-export const requestEmailChangeSchema =
-	z.object({
-		requestedEmail: z.email(),
+	reason: z.string().optional(),
+});
 
-		reason:
-			z.string().optional(),
-	});
+export const approveEmailChangeSchema = z.object({
+	status: z.enum(["APPROVED", "REJECTED"]),
 
-export const approveEmailChangeSchema =
-	z.object({
-		status: z.enum([
-			"APPROVED",
-			"REJECTED",
-		]),
-
-		rejectedReason:
-			z.string().optional(),
-	});
+	rejectedReason: z.string().optional(),
+});

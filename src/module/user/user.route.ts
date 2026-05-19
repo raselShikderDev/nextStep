@@ -3,7 +3,7 @@ import { UserControllers } from "./user.controller";
 
 const router = Router();
 
-router.get("/me", UserControllers.getMyProfile)
+router.get("/me", UserControllers.getMyProfile);
 router.patch("/update-profile", UserControllers.updateOwnProfile);
 router.post(
 	"/request-email-change",
@@ -17,8 +17,6 @@ router.post(
 	UserControllers.requestEmailChange,
 );
 
-
-
 router.get(
 	"/pending-email-change-requests",
 
@@ -30,8 +28,6 @@ router.get(
 	UserControllers.getAllPendingEmailRequests,
 );
 
-
-
 router.patch(
 	"/approve-email-change/:id",
 
@@ -42,8 +38,6 @@ router.patch(
 
 	UserControllers.approveEmailChangeRequest,
 );
-
-
 
 router.patch(
 	"/reject-email-change/:id",
