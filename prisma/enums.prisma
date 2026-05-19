@@ -89,6 +89,33 @@ enum ActionType {
 }
 
 
+enum FieldType {
+  TEXT
+  TEXTAREA
+  NUMBER
+  EMAIL
+  PHONE
+  PASSWORD
+  DATE
+  FILE
+  SELECT
+  MULTI_SELECT
+  RADIO
+  CHECKBOX
+  URL
+}
+
+enum GuestSource {
+    FACEBOOK
+     WHATSAPP
+     LINKEDIN
+     TELEGRAM
+     WEBSITE
+    REFERRAL
+    OTHERS
+}
+
+
 /*
 
 enum RequestStatus {

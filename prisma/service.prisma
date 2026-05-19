@@ -25,7 +25,7 @@ model Service {
   features     String[] // bullet points of what's included
   deliverables String[] // what user receives on completion
   turnaround   String? // e.g. "2-3 business days"
-  price     Decimal  @db.Decimal(10, 2)
+  price        Decimal  @db.Decimal(10, 2)
   currency     String   @default("BDT")
   formSchema   Json // dynamic form field definitions
   isActive     Boolean  @default(true)
@@ -45,9 +45,15 @@ model Service {
 model ServiceRequest {
   id           String  @id @default(uuid())
   requestNo    String  @unique // NSX-2025-001234
-  userId       String
+  userId       String?
   serviceId    String
   assignedToId String?
+  isGuest Boolean @default(true)
+  guestName    String?
+  guestEmail   String?
+  guestPhone   String?
+  guestAddress String?
+  guestSource GuestSource @default(REFERRAL)
 
   status     RequestStatus @default(SUBMITTED)
   formData   Json // captured at submission, immutable snapshot
@@ -67,9 +73,9 @@ model ServiceRequest {
   updatedAt   DateTime  @updatedAt
 
   // Relations
-  UserDetailsId       UserDetails    @relation("UserRequests", fields: [userId], references: [id])
-  assignedTo UserDetails?   @relation("AssignedManager", fields: [assignedToId], references: [id])
-  service    Service @relation(fields: [serviceId], references: [id])
+  user UserDetails? @relation("UserRequests", fields: [userId], references: [id])
+  assignedTo    UserDetails? @relation("AssignedManager", fields: [assignedToId], references: [id])
+  service       Service      @relation(fields: [serviceId], references: [id])
 
   payment       Payment?
   statusHistory RequestStatusHistory[]
@@ -97,7 +103,7 @@ model RequestStatusHistory {
   createdAt   DateTime       @default(now())
 
   request   ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  changedBy UserDetails           @relation("ChangedBy", fields: [changedById], references: [id])
+  changedBy UserDetails    @relation("ChangedBy", fields: [changedById], references: [id])
 
   @@index([requestId])
   @@index([createdAt])
@@ -105,7 +111,7 @@ model RequestStatusHistory {
 }
 
 model RequestDocument {
-  id             String             @id @default(uuid())
+  id             String   @id @default(uuid())
   requestId      String
   uploadedById   String
   uploadedByRole Role
@@ -116,10 +122,10 @@ model RequestDocument {
   mimeType       String
   size           Int // bytes
   description    String? // e.g. "Payment screenshot", "Existing CV"
-  createdAt      DateTime           @default(now())
+  createdAt      DateTime @default(now())
 
   request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  uploadedBy UserDetails           @relation("UploadedBy", fields: [uploadedById], references: [id])
+  uploadedBy UserDetails    @relation("UploadedBy", fields: [uploadedById], references: [id])
 
   @@index([requestId])
   @@index([uploadedById])
