@@ -97,7 +97,7 @@ model ServiceRequest {
 model RequestStatusHistory {
   id          String         @id @default(uuid())
   requestId   String
-  changedById String
+  changedById String?
   action      ActionType?
   fromStatus  RequestStatus?
   toStatus    RequestStatus
@@ -105,7 +105,7 @@ model RequestStatusHistory {
   createdAt   DateTime       @default(now())
 
   request   ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  changedBy UserDetails    @relation("ChangedBy", fields: [changedById], references: [id])
+  changedBy UserDetails?    @relation("ChangedBy", fields: [changedById], references: [id])
 
   @@index([requestId])
   @@index([createdAt])

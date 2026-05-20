@@ -1,10 +1,10 @@
 import type { Response } from "express";
 
 interface IMeta {
-	totalPage?: string;
-	currentPage?: string;
-	limit?: string;
-	total?: string;
+	totalPage?: number;
+	currentPage?: number;
+	limit?: number;
+	total?: number;
 }
 
 interface IData<T> {

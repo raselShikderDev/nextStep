@@ -7,7 +7,7 @@ import envVar from "@/config/env.config";
 import AppError from "@/errorHelper/appError";
 import { verifyJwtToken } from "@/utils/jwtHelper";
 
-const auth =
+const authChek =
 	(...authRoles: string[]) =>
 	async (req: Request, _res: Response, next: NextFunction) => {
 		try {
@@ -78,4 +78,4 @@ const auth =
 		}
 	};
 
-export default auth;
+export default authChek;
