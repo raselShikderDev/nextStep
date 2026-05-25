@@ -2,15 +2,11 @@ import type { Request, Response } from "express";
 import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { UserServices } from "./user.service";
-import { updateUserValidationSchema } from "./user.validation";
 
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
-	const validatedData = updateUserValidationSchema.parse(req.body);
-
-	const userId = req.user.userId;
-
-	const result = await UserServices.updateOwnProfile(userId, validatedData);
+	const id = req.user.userId;
+	const result = await UserServices.updateOwnProfile(id as string, req.body);
 
 	sendResponse(res, {
 		statusCode: 200,
@@ -22,17 +18,15 @@ const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
 
 // Fetch own profile
 const getMyProfile = asyncHelper(async (req: Request, res: Response) => {
-	const userId = req.user.userId;
-
-	const result = await UserServices.getMyProfile(userId);
+	const id = req.user.id;
+	console.log({id});
+	
+	const result = await UserServices.getMyProfile(id as string);
 
 	sendResponse(res, {
 		statusCode: 200,
-
 		success: true,
-
 		message: "My profile retrieved successfully",
-
 		data: result,
 	});
 });
