@@ -12,7 +12,7 @@ export const updateUserValidationSchema = z.object({
 
 export const requestEmailChangeSchema = z.object({
 	requestedEmail: z.email(),
-
+	currentPassword: z.string().min(8),
 	reason: z.string().optional(),
 });
 

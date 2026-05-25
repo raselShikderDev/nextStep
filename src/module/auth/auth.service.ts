@@ -79,9 +79,9 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		throw new AppError(403, "User account is disabled");
 	}
 
-	  if (!user.isVerified) {
-	  	throw new AppError(403, "User is not verified");
-	  }
+	if (!user.isVerified) {
+		throw new AppError(403, "User is not verified");
+	}
 
 	const isPasswordMatched = await bcrypt.compare(
 		payload.password,
@@ -132,9 +132,9 @@ const forgotPassword = async (email: string) => {
 		throw new AppError(403, "User account is disabled");
 	}
 
-	  if (!user.isVerified) {
-	  	throw new AppError(403, "User is not verified");
-	  }
+	if (!user.isVerified) {
+		throw new AppError(403, "User is not verified");
+	}
 
 	const otp = otpGenerator.generate(6, {
 		upperCaseAlphabets: false,
@@ -190,9 +190,9 @@ const resetPassword = async (payload: {
 		throw new AppError(403, "User account is disabled");
 	}
 
-	  if (!user.isVerified) {
-	  	throw new AppError(403, "User is not verified");
-	  }
+	if (!user.isVerified) {
+		throw new AppError(403, "User is not verified");
+	}
 
 	const storedOtp = await redisClient.get(`forgot-password:${email}`);
 
@@ -250,9 +250,9 @@ const changePassword = async (
 		throw new AppError(403, "User account is disabled");
 	}
 
-	  if (!user.isVerified) {
-	  	throw new AppError(403, "User is not verified");
-	  }
+	if (!user.isVerified) {
+		throw new AppError(403, "User is not verified");
+	}
 
 	const isOldPasswordMatched = await bcrypt.compare(
 		oldPassword,
