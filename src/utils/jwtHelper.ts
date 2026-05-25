@@ -12,10 +12,10 @@ export const createJwtToken = async (
 		role: user.role,
 		isActive: user.isActive,
 	};
-	const accessToken = jwt.sign(jwtPayload, secret, {
-		expiresIn: expires,
+	const token = jwt.sign(jwtPayload, secret, {
+		expiresIn: String(expires),
 	} as SignOptions);
-	return accessToken;
+	return token;
 };
 
 export const verifyJwtToken = async (token: string, secret: string) => {

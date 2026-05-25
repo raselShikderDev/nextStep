@@ -10,6 +10,7 @@ import sendEmail from "@/utils/sendEmail";
 import resetPasswordTemplate from "@/utils/templates/resetPasswordTemplate";
 import type { User } from "../../../prisma/generated/prisma/client";
 
+
 // Register user
 const registerUser = async (payload: {
 	name: string;
@@ -79,9 +80,9 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		throw new AppError(403, "User account is disabled");
 	}
 
-	if (!user.isVerified) {
-		throw new AppError(403, "User is not verified");
-	}
+	// if (!user.isVerified) {
+	// 	throw new AppError(403, "User is not verified");
+	// }
 
 	const isPasswordMatched = await bcrypt.compare(
 		payload.password,
@@ -92,16 +93,23 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		throw new AppError(401, "Invalid credentials");
 	}
 
-	const accessToken = createJwtToken(
+	console.log({"In service expires": envVar.JWT_ACCESS_EXPIRES_IN as string});
+	console.log({"In service expires": envVar.JWT_ACCESS_EXPIRES_IN as string});
+	
+
+	const accessToken = await createJwtToken(
 		user as User,
 		envVar.JWT_ACCESS_SECRET as string,
 		envVar.JWT_ACCESS_EXPIRES_IN as string,
 	);
-	const refreshToken = createJwtToken(
+	const refreshToken = await createJwtToken(
 		user as User,
 		envVar.JWT_REFRESH_SECRET as string,
-		envVar.JWT_REFRESH_SECRET as string,
+		envVar.JWT_REFRESH_EXPIRES_IN as string,
 	);
+
+	console.log({refreshToken, accessToken});
+	
 
 	return {
 		accessToken,
