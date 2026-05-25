@@ -92,9 +92,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		throw new AppError(401, "Invalid credentials");
 	}
 
-	console.log({ "In service expires": envVar.JWT_ACCESS_EXPIRES_IN as string });
-	console.log({ "In service expires": envVar.JWT_ACCESS_EXPIRES_IN as string });
-
 	const accessToken = await createJwtToken(
 		user as User,
 		envVar.JWT_ACCESS_SECRET as string,
@@ -105,8 +102,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		envVar.JWT_REFRESH_SECRET as string,
 		envVar.JWT_REFRESH_EXPIRES_IN as string,
 	);
-
-	console.log({ refreshToken, accessToken });
 
 	return {
 		accessToken,

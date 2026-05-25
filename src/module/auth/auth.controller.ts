@@ -1,6 +1,9 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+import AppError from "@/errorHelper/appError";
 import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
+import { removeCookie, setAuthCookie } from "@/utils/setCookie";
 import { AuthServices } from "./auth.service";
 import {
 	loginValidationSchema,
@@ -26,6 +29,14 @@ const loginUser = asyncHelper(async (req: Request, res: Response) => {
 	const validatedData = loginValidationSchema.parse(req.body);
 	const result = await AuthServices.loginUser(validatedData);
 
+	if (result.accessToken || result.refreshToken) {
+		await setAuthCookie(res, {
+			accessToken: result.accessToken,
+			refreshToken: result.refreshToken,
+		});
+	} else {
+		throw new AppError(StatusCodes.FORBIDDEN, "Login unsuccessful");
+	}
 	sendResponse(res, {
 		statusCode: 200,
 		success: true,
@@ -33,6 +44,19 @@ const loginUser = asyncHelper(async (req: Request, res: Response) => {
 		data: result,
 	});
 });
+
+// Logout user by deleting accessToken and refreshToken from cookies
+const logoutUser = asyncHelper(
+	async (_req: Request, res: Response, _next: NextFunction) => {
+		await removeCookie(res);
+		sendResponse(res, {
+			statusCode: StatusCodes.OK,
+			success: true,
+			message: "User successfully logout",
+			data: null,
+		});
+	},
+);
 
 // Send otp for reseting password after forgetting
 const forgotPassword = asyncHelper(async (req: Request, res: Response) => {
@@ -80,6 +104,7 @@ const changePassword = asyncHelper(async (req: Request, res: Response) => {
 export const AuthControllers = {
 	registerUser,
 	loginUser,
+	logoutUser,
 	forgotPassword,
 	resetPassword,
 	changePassword,

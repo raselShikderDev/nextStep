@@ -588,13 +588,15 @@ export type UserDetailsCreateNestedOneWithoutStatusChangesInput = {
 	connect?: Prisma.UserDetailsWhereUniqueInput;
 };
 
-export type UserDetailsUpdateOneRequiredWithoutStatusChangesNestedInput = {
+export type UserDetailsUpdateOneWithoutStatusChangesNestedInput = {
 	create?: Prisma.XOR<
 		Prisma.UserDetailsCreateWithoutStatusChangesInput,
 		Prisma.UserDetailsUncheckedCreateWithoutStatusChangesInput
 	>;
 	connectOrCreate?: Prisma.UserDetailsCreateOrConnectWithoutStatusChangesInput;
 	upsert?: Prisma.UserDetailsUpsertWithoutStatusChangesInput;
+	disconnect?: Prisma.UserDetailsWhereInput | boolean;
+	delete?: Prisma.UserDetailsWhereInput | boolean;
 	connect?: Prisma.UserDetailsWhereUniqueInput;
 	update?: Prisma.XOR<
 		Prisma.XOR<
