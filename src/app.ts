@@ -10,6 +10,7 @@ import morgan from "morgan";
 import { mainRoutes } from "./routes/mainRoutes";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import notFound from "./errorHelper/notFound";
+import globalRateLimiter from "./middleware/globalRateLimiter";
 
 const expressApp: Application = express();
 
@@ -17,6 +18,9 @@ expressApp.use(helmet());
 expressApp.use(express.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
+
+
+expressApp.use(globalRateLimiter)
 
 expressApp.use("/api/v1", mainRoutes);
 
