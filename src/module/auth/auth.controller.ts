@@ -92,6 +92,8 @@ const resetPassword = asyncHelper(async (req: Request, res: Response) => {
 
 // Chnage password - For logged in user
 const changePassword = asyncHelper(async (req: Request, res: Response) => {
+	console.log(req.user.id as string, req.body);
+	
 	await AuthServices.changePassword(req.user.id as string, req.body);
 
 	sendResponse(res, {

@@ -11,6 +11,9 @@ router.post("/register", AuthControllers.registerUser);
 // Login User
 router.post("/login", AuthControllers.loginUser);
 
+// LogOut User
+router.post("/logout", AuthControllers.logoutUser);
+
 // Send otp for reseting password after forgetting
 router.post("/forgot-password", AuthControllers.forgotPassword);
 

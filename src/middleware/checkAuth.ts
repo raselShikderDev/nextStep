@@ -26,13 +26,16 @@ const authCheck =
 				envVar.JWT_ACCESS_SECRET as string,
 			)) as JwtPayload;
 
+			console.log({verifiedToken});
+			
+
 			if (!verifiedToken) {
 				throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid access token");
 			}
 
 			const user = await prisma.user.findUnique({
 				where: {
-					id: verifiedToken.userId,
+					id: verifiedToken.id,
 				},
 				select: {
 					id: true,
@@ -74,6 +77,8 @@ const authCheck =
 
 			next();
 		} catch (error) {
+			console.log("Error in checkauth", error);
+			
 			next(error);
 		}
 	};
