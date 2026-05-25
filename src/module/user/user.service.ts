@@ -31,12 +31,10 @@ const updateOwnProfile = async (
   }
 
   // CHECK PHONE DUPLICATE
-
   if (payload.phone) {
     const existingPhone = await prisma.userDetails.findFirst({
       where: {
         phone: payload.phone,
-
         NOT: {
           userId,
         },
@@ -49,7 +47,6 @@ const updateOwnProfile = async (
   }
 
   // UPDATE USER DETAILS
-
   const updatedUser = await prisma.userDetails.update({
     where: {
       userId,
@@ -57,11 +54,8 @@ const updateOwnProfile = async (
 
     data: {
       name: payload.name,
-
       phone: payload.phone,
-
       address: payload.address,
-
       avatarUrl: payload.avatarUrl,
     },
 
@@ -69,15 +63,10 @@ const updateOwnProfile = async (
       user: {
         select: {
           id: true,
-
           email: true,
-
           role: true,
-
           isActive: true,
-
           isVerified: true,
-
           createdAt: true,
         },
       },

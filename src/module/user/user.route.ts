@@ -6,7 +6,7 @@ import { UserControllers } from "./user.controller";
 const router = Router();
 
 router.get("/me", authCheck(...Object.values(Role)), UserControllers.getMyProfile);
-router.patch("/update-profile", UserControllers.updateOwnProfile);
+router.patch("/update-profile", authCheck(...Object.values(Role)), UserControllers.updateOwnProfile);
 router.post(
 	"/request-email-change",
 	authCheck(Role.USER, Role.MANAGER, Role.ADMIN),

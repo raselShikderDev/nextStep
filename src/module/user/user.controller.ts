@@ -5,93 +5,92 @@ import { UserServices } from "./user.service";
 
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
-	const id = req.user.userId;
-	const result = await UserServices.updateOwnProfile(id as string, req.body);
+  const id = req.user.id;
+  const result = await UserServices.updateOwnProfile(id as string, req.body);
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Profile updated successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Profile updated successfully",
+    data: result,
+  });
 });
 
 // Fetch own profile
 const getMyProfile = asyncHelper(async (req: Request, res: Response) => {
-	const id = req.user.id;
-	console.log({id});
-	
-	const result = await UserServices.getMyProfile(id as string);
+  const id = req.user.id;
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "My profile retrieved successfully",
-		data: result,
-	});
+  const result = await UserServices.getMyProfile(id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "My profile retrieved successfully",
+    data: result,
+  });
 });
 
 // Role Restricted
 const requestEmailChange = asyncHelper(async (req, res) => {
-	const result = await UserServices.requestEmailChange(
-		req.user.userId,
-		req.body,
-	);
+  const result = await UserServices.requestEmailChange(
+    req.user.userId,
+    req.body,
+  );
 
-	sendResponse(res, {
-		statusCode: 201,
-		success: true,
-		message: "Email change request submitted successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Email change request submitted successfully",
+    data: result,
+  });
 });
 
 const getAllPendingEmailRequests = asyncHelper(async (_req, res) => {
-	const result = await UserServices.getAllPendingEmailRequests();
+  const result = await UserServices.getAllPendingEmailRequests();
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Pending email requests retrieved successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Pending email requests retrieved successfully",
+    data: result,
+  });
 });
 
 const approveEmailChangeRequest = asyncHelper(async (req, res) => {
-	const result = await UserServices.approveEmailChangeRequest(
-		req.params.id as string,
-		req.user.userId,
-	);
+  const result = await UserServices.approveEmailChangeRequest(
+    req.params.id as string,
+    req.user.userId,
+  );
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Email request approved successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Email request approved successfully",
+    data: result,
+  });
 });
 
 const rejectEmailChangeRequest = asyncHelper(async (req, res) => {
-	const { validatedData } = req.body;
-	const result = await UserServices.rejectEmailChangeRequest(
-		req.params.id as string,
-		req.user.userId,
-		validatedData.rejectedReason,
-	);
+  const { validatedData } = req.body;
+  const result = await UserServices.rejectEmailChangeRequest(
+    req.params.id as string,
+    req.user.userId,
+    validatedData.rejectedReason,
+  );
 
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Email request rejected successfully",
-		data: result,
-	});
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Email request rejected successfully",
+    data: result,
+  });
 });
 
 export const UserControllers = {
-	updateOwnProfile,
-	getMyProfile,
-	requestEmailChange,
-	getAllPendingEmailRequests,
-	approveEmailChangeRequest,
-	rejectEmailChangeRequest,
+  updateOwnProfile,
+  getMyProfile,
+  requestEmailChange,
+  getAllPendingEmailRequests,
+  approveEmailChangeRequest,
+  rejectEmailChangeRequest,
 };
