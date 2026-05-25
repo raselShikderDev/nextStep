@@ -14,13 +14,12 @@ const sendEmail = async (options: ISendEmailOptions) => {
 		subject: options.subject,
 		html: options.html,
 	});
-console.log({emailSent});
+	console.log({ emailSent });
 
-return emailSent	
+	return emailSent;
 };
 
 export default sendEmail;
-
 
 // {
 //   data: null,

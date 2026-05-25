@@ -7,7 +7,6 @@ import {
 	registerValidationSchema,
 } from "./auth.validation";
 
-
 // Register user
 const registerUser = asyncHelper(async (req: Request, res: Response) => {
 	const validatedData = registerValidationSchema.parse(req.body);
@@ -39,14 +38,14 @@ const loginUser = asyncHelper(async (req: Request, res: Response) => {
 const forgotPassword = asyncHelper(async (req: Request, res: Response) => {
 	const data = await AuthServices.forgotPassword(req.body.email);
 
-let message = "OTP sent successfully";
-let statusCode = 200
-let success = true
+	let message = "OTP sent successfully";
+	let statusCode = 200;
+	let success = true;
 
 	if (data?.error) {
 		message = data?.error.message;
 		statusCode = data.error.statusCode as number;
-		success = data?.data !==null
+		success = data?.data !== null;
 	}
 
 	sendResponse(res, {

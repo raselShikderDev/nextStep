@@ -19,8 +19,7 @@ expressApp.use(express.json());
 expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
 
-
-expressApp.use(globalRateLimiter)
+expressApp.use(globalRateLimiter);
 
 expressApp.use("/api/v1", mainRoutes);
 

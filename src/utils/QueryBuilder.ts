@@ -1,4 +1,4 @@
-class QueryBuilder{
+class QueryBuilder {
 	public query: Record<string, unknown>;
 	public queryString: Record<string, unknown>;
 

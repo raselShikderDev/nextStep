@@ -11,7 +11,8 @@
 		"db:studio": "bunx prisma studio --schema=./prisma/schema.prisma",
 		"db:reset": "bunx prisma migrate reset --schema=./prisma/schema.prisma",
 		"db:seed": "bun run prisma/seed.ts",
-		"postinstall": "prisma generate"
+		"postinstall": "prisma generate",
+		"biome:fix": "npx @biomejs/biome check --write .  "
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.14",
