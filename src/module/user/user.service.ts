@@ -344,7 +344,3 @@ export const UserServices = {
 	approveEmailChangeRequest,
 	rejectEmailChangeRequest,
 };
-
-// make route for get singel user, all user, toggle route for active and deactivate user with customized message to clinet, users admin analytics, total user, user register last 7 days, 30 days and 1 years, graph data,
-
-// make a function for super admin what will be called in server

@@ -19,6 +19,8 @@ const envVar = {
 	JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN as string,
 	RESEND_API_KEY: process.env.RESEND_API_KEY as string,
 	EMAIL_FROM: process.env.EMAIL_FROM as string,
+	SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS as string,
+	SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
 };
 
 export default envVar;
