@@ -3,7 +3,6 @@ import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { UserServices } from "./user.service";
 
-
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
 	const id = req.user.id;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import authChek from "@/middleware/checkAuth";
+import authCheck from "@/middleware/checkAuth";
 import requestZodValidator from "@/middleware/requestZodValidator";
 import { Role } from "../../../prisma/generated/prisma/enums";
 import { ServiceControllers } from "./service.controller";
@@ -14,14 +14,14 @@ console.log("in service catogry");
 
 router.post(
 	"/category-create",
-	authChek(Role.ADMIN, Role.SUPER_ADMIN),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(createServiceCategoryValidationSchema),
 	ServiceControllers.createCategory,
 );
 
 router.post(
 	"/create",
-	authChek("ADMIN", "SUPER_ADMIN", "MANAGER"),
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
 	requestZodValidator(createServiceValidationSchema),
 	ServiceControllers.createService,
 );
