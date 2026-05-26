@@ -16,6 +16,7 @@ router.get(
 	authCheck(...Object.values(Role)),
 	UserControllers.getMyProfile,
 );
+
 router.patch(
 	"/update-profile",
 	requestZodValidator(updateUserValidationSchema),
@@ -46,6 +47,30 @@ router.patch(
 	"/reject-email-change/:id",
 	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
 	UserControllers.rejectEmailChangeRequest,
+);
+
+router.get(
+	"/",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+	UserControllers.getAllUsers,
+);
+
+router.get(
+	"/analytics",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+	UserControllers.getUserAnalytics,
+);
+
+router.get(
+	"/:id",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+	UserControllers.getSingleUser,
+);
+
+router.patch(
+	"/toggle-status/:id",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+	UserControllers.toggleUserStatus,
 );
 
 export const userRouter = router;

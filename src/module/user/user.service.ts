@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
+import QueryBuilder from "@/utils/QueryBuilder";
 import { RequestStatus } from "../../../prisma/generated/prisma/enums";
 
 interface IUpdateUserPayload {
@@ -336,6 +337,140 @@ const rejectEmailChangeRequest = async (
 	return updatedRequest;
 };
 
+const getAllUsers = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder({}, query).search(["email"]).filter();
+
+	const where = queryBuilder.build();
+
+	const paginationQuery = new QueryBuilder(where, query)
+		.sort()
+		.paginate()
+		.build();
+
+	const users = await prisma.user.findMany({
+		...paginationQuery,
+		include: {
+			userDetails: true,
+		},
+	});
+
+	const total = await prisma.user.count({
+		where,
+	});
+
+	return {
+		meta: {
+			total,
+		},
+		data: users,
+	};
+};
+
+const getSingleUser = async (id: string) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			userDetails: true,
+		},
+	});
+
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
+
+	return user;
+};
+
+const toggleUserStatus = async (
+	id: string,
+	payload: {
+		message: string;
+	},
+) => {
+	const user = await prisma.user.findUnique({
+		where: {
+			id,
+		},
+	});
+
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
+
+	const updatedUser = await prisma.user.update({
+		where: {
+			id,
+		},
+		data: {
+			isActive: !user.isActive,
+		},
+	});
+
+	return {
+		user: updatedUser,
+		message: payload.message,
+	};
+};
+
+const getUserAnalytics = async () => {
+	const now = new Date();
+
+	const last7Days = new Date();
+	last7Days.setDate(now.getDate() - 7);
+
+	const last30Days = new Date();
+	last30Days.setDate(now.getDate() - 30);
+
+	const last1Year = new Date();
+	last1Year.setFullYear(now.getFullYear() - 1);
+
+	const [totalUsers, last7DaysUsers, last30DaysUsers, last1YearUsers] =
+		await Promise.all([
+			prisma.user.count(),
+			prisma.user.count({
+				where: {
+					createdAt: {
+						gte: last7Days,
+					},
+				},
+			}),
+			prisma.user.count({
+				where: {
+					createdAt: {
+						gte: last30Days,
+					},
+				},
+			}),
+			prisma.user.count({
+				where: {
+					createdAt: {
+						gte: last1Year,
+					},
+				},
+			}),
+		]);
+
+	const monthlyUsers = await prisma.$queryRaw`
+		SELECT 
+			TO_CHAR("createdAt", 'Mon') as month,
+			COUNT(*)::int as total
+		FROM users
+		WHERE "createdAt" >= NOW() - INTERVAL '12 months'
+		GROUP BY month
+		ORDER BY MIN("createdAt")
+	`;
+
+	return {
+		totalUsers,
+		last7DaysUsers,
+		last30DaysUsers,
+		last1YearUsers,
+		graphData: monthlyUsers,
+	};
+};
+
 export const UserServices = {
 	updateOwnProfile,
 	getMyProfile,
@@ -343,4 +478,8 @@ export const UserServices = {
 	getAllPendingEmailRequests,
 	approveEmailChangeRequest,
 	rejectEmailChangeRequest,
+	getAllUsers,
+	getSingleUser,
+	toggleUserStatus,
+	getUserAnalytics,
 };

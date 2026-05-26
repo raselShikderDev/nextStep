@@ -3,6 +3,7 @@ import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { UserServices } from "./user.service";
 
+
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
 	const id = req.user.id;
@@ -83,6 +84,54 @@ const rejectEmailChangeRequest = asyncHelper(async (req, res) => {
 	});
 });
 
+const getAllUsers = asyncHelper(async (req: Request, res: Response) => {
+	const result = await UserServices.getAllUsers(req.query);
+
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Users fetched successfully",
+		data: result.data,
+		meta: result.meta,
+	});
+});
+
+const getSingleUser = asyncHelper(async (req: Request, res: Response) => {
+	const result = await UserServices.getSingleUser(req.params.id as string);
+
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "User fetched successfully",
+		data: result,
+	});
+});
+
+const toggleUserStatus = asyncHelper(async (req: Request, res: Response) => {
+	const result = await UserServices.toggleUserStatus(
+		req.params.id as string,
+		req.body,
+	);
+
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "User status updated successfully",
+		data: result,
+	});
+});
+
+const getUserAnalytics = asyncHelper(async (_req: Request, res: Response) => {
+	const result = await UserServices.getUserAnalytics();
+
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "User analytics fetched successfully",
+		data: result,
+	});
+});
+
 export const UserControllers = {
 	updateOwnProfile,
 	getMyProfile,
@@ -90,4 +139,8 @@ export const UserControllers = {
 	getAllPendingEmailRequests,
 	approveEmailChangeRequest,
 	rejectEmailChangeRequest,
+	getAllUsers,
+	getSingleUser,
+	toggleUserStatus,
+	getUserAnalytics,
 };

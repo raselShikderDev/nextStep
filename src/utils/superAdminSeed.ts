@@ -6,7 +6,7 @@ import { Role } from "../../prisma/generated/prisma/enums";
 const seedSuperAdmin = async () => {
 	const isExist = await prisma.user.findFirst({
 		where: {
-			role: "SUPER_ADMIN",
+			email: envVar.SUPER_ADMIN_EMAIL as string,
 		},
 	});
 

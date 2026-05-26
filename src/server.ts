@@ -3,7 +3,6 @@ import expressApp from "@/app";
 import prisma from "@/config/db.config";
 import envVar from "@/config/env.config";
 import redisClient from "./config/redis.config";
-import seedSuperAdmin from "./utils/superAdminSeed";
 
 async function startServer() {
 	let server: Server;
@@ -50,5 +49,4 @@ async function startServer() {
 
 (async () => {
 	await startServer();
-	await seedSuperAdmin()
 })();
