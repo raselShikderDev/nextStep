@@ -11,6 +11,7 @@ export const createServiceCategoryValidationSchema = z.object({
 export const createServiceValidationSchema = z.object({
 	categoryId: z.string(),
 	name: z.string().min(2),
+	requiresQuotation: z.boolean().optional(),
 	slug: z.string().min(2),
 	description: z.string().optional(),
 	features: z.array(z.string()),

@@ -45,6 +45,7 @@ export type ServiceMinAggregateOutputType = {
 	turnaround: string | null;
 	price: runtime.Decimal | null;
 	currency: string | null;
+	requiresQuotation: boolean | null;
 	isActive: boolean | null;
 	sortOrder: number | null;
 	createdAt: Date | null;
@@ -60,6 +61,7 @@ export type ServiceMaxAggregateOutputType = {
 	turnaround: string | null;
 	price: runtime.Decimal | null;
 	currency: string | null;
+	requiresQuotation: boolean | null;
 	isActive: boolean | null;
 	sortOrder: number | null;
 	createdAt: Date | null;
@@ -77,6 +79,7 @@ export type ServiceCountAggregateOutputType = {
 	turnaround: number;
 	price: number;
 	currency: number;
+	requiresQuotation: number;
 	formSchema: number;
 	isActive: number;
 	sortOrder: number;
@@ -104,6 +107,7 @@ export type ServiceMinAggregateInputType = {
 	turnaround?: true;
 	price?: true;
 	currency?: true;
+	requiresQuotation?: true;
 	isActive?: true;
 	sortOrder?: true;
 	createdAt?: true;
@@ -119,6 +123,7 @@ export type ServiceMaxAggregateInputType = {
 	turnaround?: true;
 	price?: true;
 	currency?: true;
+	requiresQuotation?: true;
 	isActive?: true;
 	sortOrder?: true;
 	createdAt?: true;
@@ -136,6 +141,7 @@ export type ServiceCountAggregateInputType = {
 	turnaround?: true;
 	price?: true;
 	currency?: true;
+	requiresQuotation?: true;
 	formSchema?: true;
 	isActive?: true;
 	sortOrder?: true;
@@ -248,6 +254,7 @@ export type ServiceGroupByOutputType = {
 	turnaround: string | null;
 	price: runtime.Decimal;
 	currency: string;
+	requiresQuotation: boolean;
 	formSchema: runtime.JsonValue;
 	isActive: boolean;
 	sortOrder: number;
@@ -292,6 +299,7 @@ export type ServiceWhereInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFilter<"Service"> | string;
+	requiresQuotation?: Prisma.BoolFilter<"Service"> | boolean;
 	formSchema?: Prisma.JsonFilter<"Service">;
 	isActive?: Prisma.BoolFilter<"Service"> | boolean;
 	sortOrder?: Prisma.IntFilter<"Service"> | number;
@@ -315,6 +323,7 @@ export type ServiceOrderByWithRelationInput = {
 	turnaround?: Prisma.SortOrderInput | Prisma.SortOrder;
 	price?: Prisma.SortOrder;
 	currency?: Prisma.SortOrder;
+	requiresQuotation?: Prisma.SortOrder;
 	formSchema?: Prisma.SortOrder;
 	isActive?: Prisma.SortOrder;
 	sortOrder?: Prisma.SortOrder;
@@ -344,6 +353,7 @@ export type ServiceWhereUniqueInput = Prisma.AtLeast<
 			| number
 			| string;
 		currency?: Prisma.StringFilter<"Service"> | string;
+		requiresQuotation?: Prisma.BoolFilter<"Service"> | boolean;
 		formSchema?: Prisma.JsonFilter<"Service">;
 		isActive?: Prisma.BoolFilter<"Service"> | boolean;
 		sortOrder?: Prisma.IntFilter<"Service"> | number;
@@ -369,6 +379,7 @@ export type ServiceOrderByWithAggregationInput = {
 	turnaround?: Prisma.SortOrderInput | Prisma.SortOrder;
 	price?: Prisma.SortOrder;
 	currency?: Prisma.SortOrder;
+	requiresQuotation?: Prisma.SortOrder;
 	formSchema?: Prisma.SortOrder;
 	isActive?: Prisma.SortOrder;
 	sortOrder?: Prisma.SortOrder;
@@ -410,6 +421,7 @@ export type ServiceScalarWhereWithAggregatesInput = {
 		| number
 		| string;
 	currency?: Prisma.StringWithAggregatesFilter<"Service"> | string;
+	requiresQuotation?: Prisma.BoolWithAggregatesFilter<"Service"> | boolean;
 	formSchema?: Prisma.JsonWithAggregatesFilter<"Service">;
 	isActive?: Prisma.BoolWithAggregatesFilter<"Service"> | boolean;
 	sortOrder?: Prisma.IntWithAggregatesFilter<"Service"> | number;
@@ -427,6 +439,7 @@ export type ServiceCreateInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -447,6 +460,7 @@ export type ServiceUncheckedCreateInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -470,6 +484,7 @@ export type ServiceUpdateInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -495,6 +510,7 @@ export type ServiceUncheckedUpdateInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -514,6 +530,7 @@ export type ServiceCreateManyInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -536,6 +553,7 @@ export type ServiceUpdateManyMutationInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -559,6 +577,7 @@ export type ServiceUncheckedUpdateManyInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -595,6 +614,7 @@ export type ServiceCountOrderByAggregateInput = {
 	turnaround?: Prisma.SortOrder;
 	price?: Prisma.SortOrder;
 	currency?: Prisma.SortOrder;
+	requiresQuotation?: Prisma.SortOrder;
 	formSchema?: Prisma.SortOrder;
 	isActive?: Prisma.SortOrder;
 	sortOrder?: Prisma.SortOrder;
@@ -616,6 +636,7 @@ export type ServiceMaxOrderByAggregateInput = {
 	turnaround?: Prisma.SortOrder;
 	price?: Prisma.SortOrder;
 	currency?: Prisma.SortOrder;
+	requiresQuotation?: Prisma.SortOrder;
 	isActive?: Prisma.SortOrder;
 	sortOrder?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
@@ -631,6 +652,7 @@ export type ServiceMinOrderByAggregateInput = {
 	turnaround?: Prisma.SortOrder;
 	price?: Prisma.SortOrder;
 	currency?: Prisma.SortOrder;
+	requiresQuotation?: Prisma.SortOrder;
 	isActive?: Prisma.SortOrder;
 	sortOrder?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
@@ -795,6 +817,7 @@ export type ServiceCreateWithoutCategoryInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -813,6 +836,7 @@ export type ServiceUncheckedCreateWithoutCategoryInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -883,6 +907,7 @@ export type ServiceScalarWhereInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFilter<"Service"> | string;
+	requiresQuotation?: Prisma.BoolFilter<"Service"> | boolean;
 	formSchema?: Prisma.JsonFilter<"Service">;
 	isActive?: Prisma.BoolFilter<"Service"> | boolean;
 	sortOrder?: Prisma.IntFilter<"Service"> | number;
@@ -900,6 +925,7 @@ export type ServiceCreateWithoutRequestsInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -919,6 +945,7 @@ export type ServiceUncheckedCreateWithoutRequestsInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -969,6 +996,7 @@ export type ServiceUpdateWithoutRequestsInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -993,6 +1021,7 @@ export type ServiceUncheckedUpdateWithoutRequestsInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1010,6 +1039,7 @@ export type ServiceCreateManyCategoryInput = {
 	turnaround?: string | null;
 	price: runtime.Decimal | runtime.DecimalJsLike | number | string;
 	currency?: string;
+	requiresQuotation?: boolean;
 	formSchema: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: boolean;
 	sortOrder?: number;
@@ -1032,6 +1062,7 @@ export type ServiceUpdateWithoutCategoryInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1055,6 +1086,7 @@ export type ServiceUncheckedUpdateWithoutCategoryInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1078,6 +1110,7 @@ export type ServiceUncheckedUpdateManyWithoutCategoryInput = {
 		| number
 		| string;
 	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	requiresQuotation?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	formSchema?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
 	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	sortOrder?: Prisma.IntFieldUpdateOperationsInput | number;
@@ -1138,6 +1171,7 @@ export type ServiceSelect<
 		turnaround?: boolean;
 		price?: boolean;
 		currency?: boolean;
+		requiresQuotation?: boolean;
 		formSchema?: boolean;
 		isActive?: boolean;
 		sortOrder?: boolean;
@@ -1165,6 +1199,7 @@ export type ServiceSelectCreateManyAndReturn<
 		turnaround?: boolean;
 		price?: boolean;
 		currency?: boolean;
+		requiresQuotation?: boolean;
 		formSchema?: boolean;
 		isActive?: boolean;
 		sortOrder?: boolean;
@@ -1190,6 +1225,7 @@ export type ServiceSelectUpdateManyAndReturn<
 		turnaround?: boolean;
 		price?: boolean;
 		currency?: boolean;
+		requiresQuotation?: boolean;
 		formSchema?: boolean;
 		isActive?: boolean;
 		sortOrder?: boolean;
@@ -1211,6 +1247,7 @@ export type ServiceSelectScalar = {
 	turnaround?: boolean;
 	price?: boolean;
 	currency?: boolean;
+	requiresQuotation?: boolean;
 	formSchema?: boolean;
 	isActive?: boolean;
 	sortOrder?: boolean;
@@ -1232,6 +1269,7 @@ export type ServiceOmit<
 	| "turnaround"
 	| "price"
 	| "currency"
+	| "requiresQuotation"
 	| "formSchema"
 	| "isActive"
 	| "sortOrder"
@@ -1281,6 +1319,7 @@ export type $ServicePayload<
 			turnaround: string | null;
 			price: runtime.Decimal;
 			currency: string;
+			requiresQuotation: boolean;
 			formSchema: runtime.JsonValue;
 			isActive: boolean;
 			sortOrder: number;
@@ -1913,6 +1952,7 @@ export interface ServiceFieldRefs {
 	readonly turnaround: Prisma.FieldRef<"Service", "String">;
 	readonly price: Prisma.FieldRef<"Service", "Decimal">;
 	readonly currency: Prisma.FieldRef<"Service", "String">;
+	readonly requiresQuotation: Prisma.FieldRef<"Service", "Boolean">;
 	readonly formSchema: Prisma.FieldRef<"Service", "Json">;
 	readonly isActive: Prisma.FieldRef<"Service", "Boolean">;
 	readonly sortOrder: Prisma.FieldRef<"Service", "Int">;

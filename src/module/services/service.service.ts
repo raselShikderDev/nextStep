@@ -1,15 +1,38 @@
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import QueryBuilder from "@/utils/QueryBuilder";
-import type { Prisma } from "../../../prisma/generated/prisma/client";
 
-const createCategory = async (payload: {
-	name: string;
-	slug: string;
-	description?: string;
-	icon?: string;
-	sortOrder?: number;
-}) => {
+import {
+	ActionType,
+	type Prisma,
+	RequestStatus,
+} from "../../../prisma/generated/prisma/client";
+
+/*
+|--------------------------------------------------------------------------
+| CREATE SERVICE CATEGORY
+|--------------------------------------------------------------------------
+*/
+const createCategory = async (
+	payload: Prisma.ServiceCategoryUncheckedCreateInput,
+) => {
+	const isExist = await prisma.serviceCategory.findFirst({
+		where: {
+			OR: [
+				{
+					name: payload.name,
+				},
+				{
+					slug: payload.slug,
+				},
+			],
+		},
+	});
+
+	if (isExist) {
+		throw new AppError(409, "Service category already exists");
+	}
+
 	const category = await prisma.serviceCategory.create({
 		data: payload,
 	});
@@ -17,10 +40,15 @@ const createCategory = async (payload: {
 	return category;
 };
 
+/*
+|--------------------------------------------------------------------------
+| CREATE SERVICE
+|--------------------------------------------------------------------------
+*/
 const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 	const category = await prisma.serviceCategory.findUnique({
 		where: {
-			id: payload.categoryId as string,
+			id: payload.categoryId,
 		},
 	});
 
@@ -28,13 +56,38 @@ const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 		throw new AppError(404, "Category not found");
 	}
 
+	const isExist = await prisma.service.findFirst({
+		where: {
+			OR: [
+				{
+					name: payload.name,
+				},
+				{
+					slug: payload.slug,
+				},
+			],
+		},
+	});
+
+	if (isExist) {
+		throw new AppError(409, "Service already exists");
+	}
+
 	const service = await prisma.service.create({
 		data: payload,
+		include: {
+			category: true,
+		},
 	});
 
 	return service;
 };
 
+/*
+|--------------------------------------------------------------------------
+| GET ALL SERVICES
+|--------------------------------------------------------------------------
+*/
 const getAllServices = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder({}, query)
 		.search(["name", "slug"])
@@ -67,6 +120,11 @@ const getAllServices = async (query: Record<string, unknown>) => {
 	};
 };
 
+/*
+|--------------------------------------------------------------------------
+| GET SINGLE SERVICE
+|--------------------------------------------------------------------------
+*/
 const getSingleService = async (slug: string) => {
 	const service = await prisma.service.findUnique({
 		where: {
@@ -84,17 +142,26 @@ const getSingleService = async (slug: string) => {
 	return service;
 };
 
+/*
+|--------------------------------------------------------------------------
+| CREATE SERVICE REQUEST
+|--------------------------------------------------------------------------
+*/
 const createServiceRequest = async (
 	payload: Prisma.ServiceRequestUncheckedCreateInput,
 ) => {
 	const service = await prisma.service.findUnique({
 		where: {
-			id: payload.serviceId as string,
+			id: payload.serviceId,
 		},
 	});
 
 	if (!service) {
 		throw new AppError(404, "Service not found");
+	}
+
+	if (!service.isActive) {
+		throw new AppError(400, "Service is currently unavailable");
 	}
 
 	const totalRequest = await prisma.serviceRequest.count();
@@ -107,18 +174,28 @@ const createServiceRequest = async (
 		data: {
 			...payload,
 			requestNo,
+			status: service.requiresQuotation
+				? RequestStatus.UNDER_REVIEW
+				: RequestStatus.PAYMENT_PENDING,
+			currency: service.currency,
 		},
 		include: {
 			service: true,
 		},
 	});
 
+	/*
+	|--------------------------------------------------------------------------
+	| CREATE REQUEST HISTORY
+	|--------------------------------------------------------------------------
+	*/
 	await prisma.requestStatusHistory.create({
 		data: {
 			requestId: request.id,
 			changedById: "SYSTEM",
-			toStatus: "SUBMITTED",
+			toStatus: request.status,
 			note: "Request submitted successfully",
+			action: ActionType.REQUEST_CREATED,
 		},
 	});
 

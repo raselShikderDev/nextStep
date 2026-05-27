@@ -1498,6 +1498,7 @@ export const ServiceScalarFieldEnum = {
 	turnaround: "turnaround",
 	price: "price",
 	currency: "currency",
+	requiresQuotation: "requiresQuotation",
 	formSchema: "formSchema",
 	isActive: "isActive",
 	sortOrder: "sortOrder",

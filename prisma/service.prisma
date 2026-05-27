@@ -17,23 +17,24 @@ model ServiceCategory {
 }
 
 model Service {
-  id           String   @id @default(uuid())
-  categoryId   String
-  name         String
-  slug         String   @unique
-  description  String?
-  features     String[] // bullet points of what's included
-  deliverables String[] // what user receives on completion
-  turnaround   String? // e.g. "2-3 business days"
-  price        Decimal  @db.Decimal(10, 2)
-  currency     String   @default("BDT")
-  formSchema   Json // dynamic form field definitions
-  isActive     Boolean  @default(true)
-  sortOrder    Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  categoryId         String
+  name               String
+  slug               String   @unique
+  description        String?
+  features           String[]
+  deliverables       String[]
+  turnaround         String?
+  price              Decimal  @db.Decimal(10, 2)
+  currency           String   @default("BDT")
+  requiresQuotation  Boolean  @default(false)
+  formSchema         Json
+  isActive           Boolean  @default(true)
+  sortOrder          Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  category ServiceCategory  @relation(fields: [categoryId], references: [id])
+  category ServiceCategory @relation(fields: [categoryId], references: [id])
   requests ServiceRequest[]
 
   @@index([categoryId])
