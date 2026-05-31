@@ -142,7 +142,7 @@ const getSingleService = async (slug: string) => {
 
 /*
 |
-| CREATE SERVICE REQUEST FPR GUEST
+| CREATE SERVICE REQUEST BY GUEST
 |
 */
 const createServiceRequest = async (
