@@ -1,12 +1,14 @@
 class QueryBuilder {
-	public query: Record<string, unknown>;
-	public queryString: Record<string, unknown>;
+	private where: Record<string, unknown>;
+	private queryString: Record<string, unknown>;
 
-	constructor(
-		query: Record<string, unknown>,
-		queryString: Record<string, unknown>,
-	) {
-		this.query = query;
+	private orderBy?: Record<string, string>[];
+	private skip?: number;
+	private take?: number;
+	private select?: Record<string, boolean>;
+
+	constructor(queryString: Record<string, unknown>) {
+		this.where = {};
 		this.queryString = queryString;
 	}
 
@@ -14,7 +16,7 @@ class QueryBuilder {
 		const searchTerm = this.queryString.searchTerm;
 
 		if (searchTerm) {
-			this.query.OR = searchableFields.map((field) => ({
+			this.where.OR = searchableFields.map((field) => ({
 				[field]: {
 					contains: searchTerm,
 					mode: "insensitive",
@@ -26,16 +28,23 @@ class QueryBuilder {
 	}
 
 	filter() {
-		const excludeFields = ["searchTerm", "sort", "page", "limit", "fields"];
+		const excludeFields = [
+			"searchTerm",
+			"sort",
+			"page",
+			"limit",
+			"fields",
+		];
 
 		const filters = { ...this.queryString };
 
-		// biome-ignore lint/suspicious/useIterableCallbackReturn: >
-		excludeFields.forEach((field) => delete filters[field]);
+		excludeFields.forEach((field) => {
+			delete filters[field];
+		});
 
 		Object.entries(filters).forEach(([key, value]) => {
 			if (value !== undefined) {
-				this.query[key] = value;
+				this.where[key] = value;
 			}
 		});
 
@@ -44,14 +53,14 @@ class QueryBuilder {
 
 	sort() {
 		const sort =
-			(this.queryString.sort as string)?.split(",").join(" ") || "-createdAt";
+			(this.queryString.sort as string)
+				?.split(",")
+				.join(" ") || "-createdAt";
 
-		const sortFields = sort.split(" ");
-
-		const orderBy = sortFields.map((field) => {
+		this.orderBy = sort.split(" ").map((field) => {
 			if (field.startsWith("-")) {
 				return {
-					[field.substring(1)]: "desc",
+					[field.slice(1)]: "desc",
 				};
 			}
 
@@ -60,21 +69,14 @@ class QueryBuilder {
 			};
 		});
 
-		this.query.orderBy = orderBy;
-
 		return this;
 	}
 
 	paginate() {
 		const page = Number(this.queryString.page) || 1;
-
 		const limit = Number(this.queryString.limit) || 10;
-
-		const skip = (page - 1) * limit;
-
-		this.query.skip = skip;
-
-		this.query.take = limit;
+		this.skip = (page - 1) * limit;
+		this.take = limit;
 
 		return this;
 	}
@@ -82,24 +84,48 @@ class QueryBuilder {
 	fields() {
 		const fields = this.queryString.fields as string;
 
-		if (fields) {
-			const selectedFields = fields.split(",");
-
-			const select: Record<string, boolean> = {};
-
-			selectedFields.forEach((field) => {
-				select[field] = true;
-			});
-
-			this.query.select = select;
+		if (!fields) {
+			return this;
 		}
+
+		const select: Record<string, boolean> = {};
+
+		fields.split(",").forEach((field) => {
+			select[field] = true;
+		});
+
+		this.select = select;
 
 		return this;
 	}
 
-	build() {
-		return this.query;
+	getWhere() {
+		return this.where;
 	}
+
+	build() {
+	const query: Record<string, unknown> = {
+		where: this.where,
+	};
+
+	if (this.orderBy) {
+		query.orderBy = this.orderBy;
+	}
+
+	if (this.skip !== undefined) {
+		query.skip = this.skip;
+	}
+
+	if (this.take !== undefined) {
+		query.take = this.take;
+	}
+
+	if (this.select) {
+		query.select = this.select;
+	}
+
+	return query;
+}
 }
 
 export default QueryBuilder;

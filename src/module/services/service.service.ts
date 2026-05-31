@@ -89,27 +89,21 @@ const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 |
 */
 const getAllServices = async (query: Record<string, unknown>) => {
-  const queryBuilder = new QueryBuilder({}, query)
+  const queryBuilder = new QueryBuilder(query)
     .search(["name", "slug"])
-    .filter();
-
-  const where = queryBuilder.build();
-
-  const paginationQuery = new QueryBuilder(where, query)
+    .filter()
     .sort()
-    .paginate()
-    .fields()
-    .build();
+    .paginate();
 
   const services = await prisma.service.findMany({
-    ...paginationQuery,
+    ...queryBuilder.build(),
     include: {
       category: true,
     },
   });
 
   const total = await prisma.service.count({
-    where,
+    where: queryBuilder.getWhere(),
   });
 
   return {
