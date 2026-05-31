@@ -9,14 +9,14 @@ import { PaymentServices } from "./payment.service";
 |
 */
 const submitPayment = asyncHelper(async (req: Request, res: Response) => {
-  const result = await PaymentServices.submitPayment(req.body);
+	const result = await PaymentServices.submitPayment(req.body);
 
-  sendResponse(res, {
-    statusCode: 201,
-    success: true,
-    message: "Payment submitted successfully",
-    data: result,
-  });
+	sendResponse(res, {
+		statusCode: 201,
+		success: true,
+		message: "Payment submitted successfully",
+		data: result,
+	});
 });
 
 /*
@@ -25,18 +25,18 @@ const submitPayment = asyncHelper(async (req: Request, res: Response) => {
 |
 */
 const verifyPayment = asyncHelper(async (req: Request, res: Response) => {
-  const result = await PaymentServices.verifyPayment(
-    req.params.id as string,
-    req.body,
-    req.user.id,
-  );
+	const result = await PaymentServices.verifyPayment(
+		req.params.id as string,
+		req.body,
+		req.user.id as string,
+	);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Payment verified successfully",
-    data: result,
-  });
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Payment verified successfully",
+		data: result,
+	});
 });
 
 /*
@@ -45,51 +45,51 @@ const verifyPayment = asyncHelper(async (req: Request, res: Response) => {
 |
 */
 const rejectPayment = asyncHelper(async (req: Request, res: Response) => {
-  const result = await PaymentServices.rejectPayment(
-    req.params.id as string,
-    req.body,
-    req.user.id,
-  );
+	const result = await PaymentServices.rejectPayment(
+		req.params.id as string,
+		req.body,
+		req.user.id,
+	);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Payment rejected successfully",
-    data: result,
-  });
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Payment rejected successfully",
+		data: result,
+	});
 });
 
 const getAllPayments = asyncHelper(async (req: Request, res: Response) => {
-  const result = await PaymentServices.getAllPayments(
-    req.query as Record<string, unknown>,
-  );
+	const result = await PaymentServices.getAllPayments(
+		req.query as Record<string, unknown>,
+	);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Payments fetched successfully",
-    data: result.data,
-    meta: result.meta,
-  });
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Payments fetched successfully",
+		data: result.data,
+		meta: result.meta,
+	});
 });
 
 const getSinglePayment = asyncHelper(async (req: Request, res: Response) => {
-  const result = await PaymentServices.getSinglePayment(
-    req.params.id as string,
-  );
+	const result = await PaymentServices.getSinglePayment(
+		req.params.id as string,
+	);
 
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: "Payment fetched successfully",
-    data: result,
-  });
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Payment fetched successfully",
+		data: result,
+	});
 });
 
 export const PaymentControllers = {
-  submitPayment,
-  verifyPayment,
-  rejectPayment,
-  getAllPayments,
-  getSinglePayment,
+	submitPayment,
+	verifyPayment,
+	rejectPayment,
+	getAllPayments,
+	getSinglePayment,
 };

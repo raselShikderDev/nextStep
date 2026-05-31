@@ -1,13 +1,13 @@
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
+import generateMeta from "@/utils/generateMeta";
+import QueryBuilder from "@/utils/QueryBuilder";
 import {
 	ActionType,
 	PaymentStatus,
 	type Prisma,
 	RequestStatus,
 } from "../../../prisma/generated/prisma/client";
-import generateMeta from "@/utils/generateMeta";
-import QueryBuilder from "@/utils/QueryBuilder";
 
 /*
 |
@@ -93,40 +93,45 @@ const verifyPayment = async (
 	if (!payment) {
 		throw new AppError(404, "Payment not found");
 	}
-
-	const updatedPayment = await prisma.payment.update({
-		where: {
-			id,
-		},
-		data: {
-			status: PaymentStatus.VERIFIED,
-			adminNote: payload.adminNote,
-			verifiedAt: new Date(),
-			verifiedById: userId,
-		},
+	const userDetails = await prisma.userDetails.findUniqueOrThrow({
+		where: { userId },
 	});
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedPayment = await tx.payment.update({
+			where: {
+				id,
+			},
+			data: {
+				status: PaymentStatus.VERIFIED,
+				adminNote: payload.adminNote,
+				verifiedAt: new Date(),
+				verifiedById: userDetails.id,
+			},
+		});
 
-	await prisma.serviceRequest.update({
-		where: {
-			id: payment.requestId,
-		},
-		data: {
-			status: RequestStatus.PAYMENT_VERIFIED,
-		},
+		await tx.serviceRequest.update({
+			where: {
+				id: payment.requestId,
+			},
+			data: {
+				status: RequestStatus.PAYMENT_VERIFIED,
+			},
+		});
+
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId: payment.requestId,
+				changedById: userDetails.id,
+				fromStatus: RequestStatus.PAYMENT_SUBMITTED,
+				toStatus: RequestStatus.PAYMENT_VERIFIED,
+				note: "Payment verified successfully",
+				action: ActionType.PAYMENT_VERIFIED,
+			},
+		});
+
+		return updatedPayment;
 	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: payment.requestId,
-			changedById: userId,
-			fromStatus: RequestStatus.PAYMENT_SUBMITTED,
-			toStatus: RequestStatus.PAYMENT_VERIFIED,
-			note: "Payment verified successfully",
-			action: ActionType.PAYMENT_VERIFIED,
-		},
-	});
-
-	return updatedPayment;
+	return result;
 };
 
 /*
@@ -185,15 +190,14 @@ const rejectPayment = async (
 
 	return updatedPayment;
 };
-
-const getAllPayments = async (
-	query: Record<string, unknown>,
-) => {
+/*
+|
+| GET ALL PAYMENT
+|
+*/
+const getAllPayments = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder(query)
-		.search([
-			"transactionId",
-			"senderNumber",
-		])
+		.search(["transactionId", "senderNumber"])
 		.filter()
 		.sort()
 		.paginate();
@@ -232,31 +236,29 @@ const getAllPayments = async (
 		data: payments,
 	};
 };
-
-const getSinglePayment = async (
-	id: string,
-) => {
-	const payment =
-		await prisma.payment.findUnique({
-			where: {
-				id,
-			},
-			include: {
-				request: {
-					include: {
-						service: true,
-						assignedTo: true,
-					},
+/*
+|
+| GET A PAYMENT
+|
+*/
+const getSinglePayment = async (id: string) => {
+	const payment = await prisma.payment.findUnique({
+		where: {
+			id,
+		},
+		include: {
+			request: {
+				include: {
+					service: true,
+					assignedTo: true,
 				},
-				verifiedBy: true,
 			},
-		});
+			verifiedBy: true,
+		},
+	});
 
 	if (!payment) {
-		throw new AppError(
-			404,
-			"Payment not found",
-		);
+		throw new AppError(404, "Payment not found");
 	}
 
 	return payment;
@@ -266,6 +268,6 @@ export const PaymentServices = {
 	submitPayment,
 	verifyPayment,
 	rejectPayment,
-		getAllPayments,
+	getAllPayments,
 	getSinglePayment,
 };
