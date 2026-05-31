@@ -4,6 +4,7 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import { RequestControllers } from "./requests.controller";
 
 const router = Router();
+console.log("in requesr route");
 
 router.get(
 	"/",

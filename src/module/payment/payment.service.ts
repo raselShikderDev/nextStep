@@ -33,36 +33,38 @@ const submitPayment = async (payload: Prisma.PaymentUncheckedCreateInput) => {
 
 	const payableAmount = request.quotedPrice || request.service.price;
 
-	const payment = await prisma.payment.create({
-		data: {
-			...payload,
-			amount: payableAmount,
-			currency: request.currency,
-			status: PaymentStatus.SUBMITTED,
-		},
-	});
+	const result = await prisma.$transaction(async (tx) => {
+		const payment = await tx.payment.create({
+			data: {
+				...payload,
+				amount: payableAmount,
+				currency: request.currency,
+				status: PaymentStatus.SUBMITTED,
+			},
+		});
 
-	await prisma.serviceRequest.update({
-		where: {
-			id: request.id,
-		},
-		data: {
-			status: RequestStatus.PAYMENT_SUBMITTED,
-		},
-	});
+		await tx.serviceRequest.update({
+			where: {
+				id: request.id,
+			},
+			data: {
+				status: RequestStatus.PAYMENT_SUBMITTED,
+			},
+		});
 
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: request.id,
-			changedById: "SYSTEM",
-			fromStatus: request.status,
-			toStatus: RequestStatus.PAYMENT_SUBMITTED,
-			note: "Payment submitted successfully",
-			action: ActionType.PAYMENT_SUBMITTED,
-		},
-	});
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId: request.id,
+				fromStatus: request.status,
+				toStatus: RequestStatus.PAYMENT_SUBMITTED,
+				note: "Payment submitted successfully",
+				action: ActionType.PAYMENT_SUBMITTED,
+			},
+		});
 
-	return payment;
+		return payment;
+	});
+	return result;
 };
 
 /*
