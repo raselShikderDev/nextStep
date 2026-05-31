@@ -10,7 +10,6 @@ import {
 } from "./service.validation";
 
 const router = Router();
-console.log("in service catogry");
 
 router.post(
 	"/category-create",
