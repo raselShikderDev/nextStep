@@ -118,6 +118,7 @@ const getRequestAnalytics = asyncHelper(
 	},
 );
 
+
 const claimRequest = asyncHelper(
 	async (req: Request, res: Response) => {
 		const result =
@@ -135,6 +136,24 @@ const claimRequest = asyncHelper(
 	},
 );
 
+
+const startWork = asyncHelper(
+	async (req: Request, res: Response) => {
+		const result =
+			await RequestServices.startWork(
+				req.params.id as string,
+				req.user.id,
+			);
+
+		sendResponse(res, {
+			statusCode: 200,
+			success: true,
+			message: "Work started successfully",
+			data: result,
+		});
+	},
+);
+
 export const RequestControllers = {
 	getAllRequests,
 	getSingleRequest,
@@ -145,4 +164,5 @@ export const RequestControllers = {
 	cancelRequest,
 	getRequestAnalytics,
 	claimRequest,
+	startWork,
 };

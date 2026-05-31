@@ -72,4 +72,14 @@ router.patch(
 	RequestControllers.claimRequest,
 );
 
+router.patch(
+	"/start-work/:id",
+	authCheck(
+		Role.MANAGER,
+		Role.ADMIN,
+		Role.SUPER_ADMIN,
+	),
+	RequestControllers.startWork,
+);
+
 export const requestsRouter = router;

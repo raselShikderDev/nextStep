@@ -415,6 +415,78 @@ const claimRequest = async (
 };
 
 
+const startWork = async (
+	requestId: string,
+	userId: string,
+) => {
+	const request =
+		await prisma.serviceRequest.findUnique({
+			where: {
+				id: requestId,
+			},
+		});
+
+	if (!request) {
+		throw new AppError(
+			404,
+			"Request not found",
+		);
+	}
+
+	if (
+		request.status !==
+		RequestStatus.PAYMENT_VERIFIED
+	) {
+		throw new AppError(
+			400,
+			"Payment must be verified before starting work",
+		);
+	}
+
+	const user =
+		await prisma.userDetails.findUnique({
+			where: {
+				userId,
+			},
+		});
+
+	if (!user) {
+		throw new AppError(
+			404,
+			"User not found",
+		);
+	}
+
+	const updatedRequest =
+		await prisma.serviceRequest.update({
+			where: {
+				id: requestId,
+			},
+			data: {
+				status: RequestStatus.IN_PROGRESS,
+				assignedToId:
+					request.assignedToId ??
+					user.id,
+			},
+		});
+
+	await prisma.requestStatusHistory.create({
+		data: {
+			requestId,
+			changedById: user.id,
+			action:
+				ActionType.REQUEST_STATUS_CHANGED,
+			fromStatus:
+				RequestStatus.PAYMENT_VERIFIED,
+			toStatus:
+				RequestStatus.IN_PROGRESS,
+			note: "Work started",
+		},
+	});
+
+	return updatedRequest;
+};
+
 export const RequestServices = {
 	getSingleRequest,
 	getAllRequests,
@@ -425,6 +497,7 @@ export const RequestServices = {
 	cancelRequest,
 	getRequestAnalytics,
     claimRequest,
+    startWork,
 };
 
 // GET /api/v1/requests?status=PAYMENT_PENDING
