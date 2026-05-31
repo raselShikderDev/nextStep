@@ -6,6 +6,8 @@ import {
 	type Prisma,
 	RequestStatus,
 } from "../../../prisma/generated/prisma/client";
+import generateMeta from "@/utils/generateMeta";
+import QueryBuilder from "@/utils/QueryBuilder";
 
 /*
 |
@@ -184,8 +186,86 @@ const rejectPayment = async (
 	return updatedPayment;
 };
 
+const getAllPayments = async (
+	query: Record<string, unknown>,
+) => {
+	const queryBuilder = new QueryBuilder(query)
+		.search([
+			"transactionId",
+			"senderNumber",
+		])
+		.filter()
+		.sort()
+		.paginate();
+
+	const payments = await prisma.payment.findMany({
+		...queryBuilder.build(),
+		include: {
+			request: {
+				select: {
+					id: true,
+					requestNo: true,
+					guestName: true,
+					guestEmail: true,
+					status: true,
+				},
+			},
+			verifiedBy: {
+				select: {
+					id: true,
+					name: true,
+				},
+			},
+		},
+	});
+
+	const total = await prisma.payment.count({
+		where: queryBuilder.getWhere(),
+	});
+
+	return {
+		meta: generateMeta({
+			total,
+			page: Number(query.page) || 1,
+			limit: Number(query.limit) || 10,
+		}),
+		data: payments,
+	};
+};
+
+const getSinglePayment = async (
+	id: string,
+) => {
+	const payment =
+		await prisma.payment.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				request: {
+					include: {
+						service: true,
+						assignedTo: true,
+					},
+				},
+				verifiedBy: true,
+			},
+		});
+
+	if (!payment) {
+		throw new AppError(
+			404,
+			"Payment not found",
+		);
+	}
+
+	return payment;
+};
+
 export const PaymentServices = {
 	submitPayment,
 	verifyPayment,
 	rejectPayment,
+		getAllPayments,
+	getSinglePayment,
 };

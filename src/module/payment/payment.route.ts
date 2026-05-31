@@ -31,4 +31,23 @@ router.patch(
 	PaymentControllers.rejectPayment,
 );
 
+router.get(
+	"/",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
+	PaymentControllers.getAllPayments,
+);
+
+router.get(
+	"/:id",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
+	PaymentControllers.getSinglePayment,
+);
+
 export const PaymentRoutes = router;
+
+// GET /api/v1/payments?status=VERIFIED
+// GET /api/v1/payments?status=SUBMITTED
+// GET /api/v1/payments?method=BKASH
+// GET /api/v1/payments?searchTerm=TXN123
+// GET /api/v1/payments?page=1&limit=20
+// GET /api/v1/payments?sort=-createdAt
