@@ -50,5 +50,5 @@ async function startServer() {
 
 (async () => {
 	await startServer();
-	await seedSuperAdmin()
+	await seedSuperAdmin();
 })();

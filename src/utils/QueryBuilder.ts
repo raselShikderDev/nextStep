@@ -28,13 +28,7 @@ class QueryBuilder {
 	}
 
 	filter() {
-		const excludeFields = [
-			"searchTerm",
-			"sort",
-			"page",
-			"limit",
-			"fields",
-		];
+		const excludeFields = ["searchTerm", "sort", "page", "limit", "fields"];
 
 		const filters = { ...this.queryString };
 
@@ -53,9 +47,7 @@ class QueryBuilder {
 
 	sort() {
 		const sort =
-			(this.queryString.sort as string)
-				?.split(",")
-				.join(" ") || "-createdAt";
+			(this.queryString.sort as string)?.split(",").join(" ") || "-createdAt";
 
 		this.orderBy = sort.split(" ").map((field) => {
 			if (field.startsWith("-")) {
@@ -104,28 +96,28 @@ class QueryBuilder {
 	}
 
 	build() {
-	const query: Record<string, unknown> = {
-		where: this.where,
-	};
+		const query: Record<string, unknown> = {
+			where: this.where,
+		};
 
-	if (this.orderBy) {
-		query.orderBy = this.orderBy;
+		if (this.orderBy) {
+			query.orderBy = this.orderBy;
+		}
+
+		if (this.skip !== undefined) {
+			query.skip = this.skip;
+		}
+
+		if (this.take !== undefined) {
+			query.take = this.take;
+		}
+
+		if (this.select) {
+			query.select = this.select;
+		}
+
+		return query;
 	}
-
-	if (this.skip !== undefined) {
-		query.skip = this.skip;
-	}
-
-	if (this.take !== undefined) {
-		query.take = this.take;
-	}
-
-	if (this.select) {
-		query.select = this.select;
-	}
-
-	return query;
-}
 }
 
 export default QueryBuilder;
