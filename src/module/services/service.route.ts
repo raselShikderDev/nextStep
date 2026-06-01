@@ -5,7 +5,6 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import { ServiceControllers } from "./service.controller";
 import {
 	createServiceCategoryValidationSchema,
-	createServiceRequestValidationSchema,
 	createServiceValidationSchema,
 } from "./service.validation";
 
@@ -28,11 +27,5 @@ router.post(
 router.get("/", ServiceControllers.getAllServices);
 
 router.get("/:slug", ServiceControllers.getSingleService);
-
-router.post(
-	"/request/create",
-	requestZodValidator(createServiceRequestValidationSchema),
-	ServiceControllers.createServiceRequest,
-);
 
 export const servicesRouter = router;

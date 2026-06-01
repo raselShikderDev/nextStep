@@ -145,6 +145,19 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+const createServiceRequest = asyncHelper(
+	async (req: Request, res: Response) => {
+		const result = await RequestServices.createServiceRequest(req.body);
+
+		sendResponse(res, {
+			statusCode: 201,
+			success: true,
+			message: "Service request submitted successfully",
+			data: result,
+		});
+	},
+);
+
 export const RequestControllers = {
 	getAllRequests,
 	getSingleRequest,
@@ -156,4 +169,5 @@ export const RequestControllers = {
 	getRequestAnalytics,
 	claimRequest,
 	startWork,
+	createServiceRequest,
 };

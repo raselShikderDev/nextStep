@@ -50,23 +50,9 @@ const getSingleService = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
-const createServiceRequest = asyncHelper(
-	async (req: Request, res: Response) => {
-		const result = await ServiceServices.createServiceRequest(req.body);
-
-		sendResponse(res, {
-			statusCode: 201,
-			success: true,
-			message: "Service request submitted successfully",
-			data: result,
-		});
-	},
-);
-
 export const ServiceControllers = {
 	createCategory,
 	createService,
 	getAllServices,
 	getSingleService,
-	createServiceRequest,
 };

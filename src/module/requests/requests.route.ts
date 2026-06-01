@@ -5,6 +5,7 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import {
 	assignManagerValidationSchema,
 	cancelRequestValidationSchema,
+	createServiceRequestValidationSchema,
 	setQuotationValidationSchema,
 	updateRequestStatusValidationSchema,
 } from "./request.validation";
@@ -80,6 +81,12 @@ router.get(
 	"/analytics",
 	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
 	RequestControllers.getRequestAnalytics,
+);
+
+router.post(
+	"/create",
+	requestZodValidator(createServiceRequestValidationSchema),
+	RequestControllers.createServiceRequest,
 );
 
 export const requestsRouter = router;

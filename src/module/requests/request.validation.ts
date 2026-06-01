@@ -19,3 +19,14 @@ export const setQuotationValidationSchema = z.object({
 export const cancelRequestValidationSchema = z.object({
 	note: z.string().optional(),
 });
+
+export const createServiceRequestValidationSchema = z.object({
+	serviceId: z.string(),
+	guestName: z.string().min(2),
+	guestEmail: z.email(),
+	guestPhone: z.string().min(11),
+	guestAddress: z.string().optional(),
+	guestSource: z.string().optional(),
+	formData: z.record(z.string(), z.any()),
+	userNotes: z.string().optional(),
+});
