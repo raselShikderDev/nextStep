@@ -147,7 +147,6 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
 
 const createServiceRequest = asyncHelper(
 	async (req: Request, res: Response) => {
-		console.log({ formData: JSON.parse(req.body.formData || "{}") });
 
 		const parsedData = JSON.parse(req.body.formData || "{}");
 
@@ -167,6 +166,25 @@ const createServiceRequest = asyncHelper(
 	},
 );
 
+const deliverRequest = asyncHelper(
+	async (req, res) => {
+		const result =
+			await RequestServices.deliverRequest(
+				req.params.id as string,
+				req.body,
+				req.user.id,
+			);
+
+		sendResponse(res, {
+			statusCode: 200,
+			success: true,
+			message:
+				"Request delivered successfully",
+			data: result,
+		});
+	},
+);
+
 export const RequestControllers = {
 	getAllRequests,
 	getSingleRequest,
@@ -179,4 +197,5 @@ export const RequestControllers = {
 	claimRequest,
 	startWork,
 	createServiceRequest,
+	deliverRequest
 };

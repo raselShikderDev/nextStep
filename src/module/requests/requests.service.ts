@@ -231,10 +231,13 @@ const setQuotation = async (
 	return updatedRequest;
 };
 
-const markCompleted = async (id: string, userId: string) => {
+const markCompleted = async (
+	requestId: string,
+	userId: string,
+) => {
 	const request = await prisma.serviceRequest.findUnique({
 		where: {
-			id,
+			id: requestId,
 		},
 	});
 
@@ -242,24 +245,38 @@ const markCompleted = async (id: string, userId: string) => {
 		throw new AppError(404, "Request not found");
 	}
 
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id,
-		},
-		data: {
-			status: RequestStatus.COMPLETED,
-			completedAt: new Date(),
-		},
-	});
+	if (
+		request.status !== RequestStatus.IN_PROGRESS
+	) {
+		throw new AppError(
+			400,
+			"Request must be in progress",
+		);
+	}
+
+	const updatedRequest =
+		await prisma.serviceRequest.update({
+			where: {
+				id: requestId,
+			},
+			data: {
+				status:
+					RequestStatus.READY_FOR_DELIVERY,
+			},
+		});
 
 	await prisma.requestStatusHistory.create({
 		data: {
-			requestId: id,
+			requestId,
 			changedById: userId,
-			fromStatus: request.status,
-			toStatus: RequestStatus.COMPLETED,
-			note: "Request completed successfully",
-			action: ActionType.REQUEST_COMPLETED,
+			action:
+				ActionType.REQUEST_COMPLETED,
+			fromStatus:
+				RequestStatus.IN_PROGRESS,
+			toStatus:
+				RequestStatus.READY_FOR_DELIVERY,
+			note:
+				"Work completed and ready for delivery",
 		},
 	});
 
@@ -679,6 +696,75 @@ const createServiceRequest = async (
 	return result;
 };
 
+const deliverRequest = async (
+	requestId: string,
+	payload: {
+		deliveryMessage?: string;
+	},
+	userId: string,
+) => {
+	const request =
+		await prisma.serviceRequest.findUnique({
+			where: {
+				id: requestId,
+			},
+			include: {
+				documents: true,
+			},
+		});
+
+	if (!request) {
+		throw new AppError(404, "Request not found");
+	}
+
+	if (
+		request.status !==
+		RequestStatus.READY_FOR_DELIVERY
+	) {
+		throw new AppError(
+			400,
+			"Request is not ready for delivery",
+		);
+	}
+
+	const updatedRequest =
+		await prisma.serviceRequest.update({
+			where: {
+				id: requestId,
+			},
+			data: {
+				status:
+					RequestStatus.DELIVERED,
+				deliveryMessage:
+					payload.deliveryMessage,
+				completedAt: new Date(),
+			},
+		});
+
+	await prisma.requestStatusHistory.create({
+		data: {
+			requestId,
+			changedById: userId,
+			action:
+				ActionType.REQUEST_DELIVERED,
+			fromStatus:
+				RequestStatus.READY_FOR_DELIVERY,
+			toStatus:
+				RequestStatus.DELIVERED,
+			note:
+				payload.deliveryMessage ??
+				"Delivered to client",
+		},
+	});
+
+	/*
+		TODO:
+		send email here
+	*/
+
+	return updatedRequest;
+};
+
 export const RequestServices = {
 	getSingleRequest,
 	getAllRequests,
@@ -691,6 +777,7 @@ export const RequestServices = {
 	claimRequest,
 	startWork,
 	createServiceRequest,
+	deliverRequest
 };
 
 // GET /api/v1/requests?status=PAYMENT_PENDING

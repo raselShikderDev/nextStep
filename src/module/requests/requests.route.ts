@@ -89,4 +89,14 @@ router.post(
 	RequestControllers.createServiceRequest,
 );
 
+router.patch(
+	"/:id/deliver",
+	authCheck(
+		Role.MANAGER,
+		Role.ADMIN,
+		Role.SUPER_ADMIN,
+	),
+	RequestControllers.deliverRequest,
+);
+
 export const requestsRouter = router;
