@@ -30,7 +30,6 @@ const getSingleRequest = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
-
 const assignManager = asyncHelper(async (req: Request, res: Response) => {
 	const result = await RequestServices.assignManager(
 		req.params.id as string,
@@ -118,43 +117,33 @@ const getRequestAnalytics = asyncHelper(
 	},
 );
 
+const claimRequest = asyncHelper(async (req: Request, res: Response) => {
+	const result = await RequestServices.claimRequest(
+		req.params.id as string,
+		req.user.id as string,
+	);
 
-const claimRequest = asyncHelper(
-	async (req: Request, res: Response) => {
-		const result =
-			await RequestServices.claimRequest(
-				req.params.id as string,
-				req.user.id as string,
-			);
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Request assigned successfully",
+		data: result,
+	});
+});
 
-		sendResponse(res, {
-			statusCode: 200,
-			success: true,
-			message: "Request assigned successfully",
-			data: result,
-		});
-	},
-);
+const startWork = asyncHelper(async (req: Request, res: Response) => {
+	const result = await RequestServices.startWork(
+		req.params.id as string,
+		req.user.id,
+	);
 
-
-const startWork = asyncHelper(
-	async (req: Request, res: Response) => {
-		const result =
-			await RequestServices.startWork(
-				req.params.id as string,
-				req.user.id,
-			);
-
-		sendResponse(res, {
-			statusCode: 200,
-			success: true,
-			message: "Work started successfully",
-			data: result,
-		});
-	},
-);
-
-
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Work started successfully",
+		data: result,
+	});
+});
 
 export const RequestControllers = {
 	getAllRequests,

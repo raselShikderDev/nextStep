@@ -2,7 +2,11 @@ import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import generateMeta from "@/utils/generateMeta";
 import QueryBuilder from "@/utils/QueryBuilder";
-import { ActionType, RequestStatus, Role } from "../../../prisma/generated/prisma/enums";
+import {
+	ActionType,
+	RequestStatus,
+	Role,
+} from "../../../prisma/generated/prisma/enums";
 
 const getAllRequests = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder(query)
@@ -351,55 +355,39 @@ const getRequestAnalytics = async () => {
 	};
 };
 
-
-const claimRequest = async (
-	requestId: string,
-	userId: string,
-) => {
-	const request =
-		await prisma.serviceRequest.findUnique({
-			where: {
-				id: requestId,
-			},
-		});
+const claimRequest = async (requestId: string, userId: string) => {
+	const request = await prisma.serviceRequest.findUnique({
+		where: {
+			id: requestId,
+		},
+	});
 
 	if (!request) {
-		throw new AppError(
-			404,
-			"Request not found",
-		);
+		throw new AppError(404, "Request not found");
 	}
 
 	if (request.assignedToId) {
-		throw new AppError(
-			400,
-			"Request already assigned",
-		);
+		throw new AppError(400, "Request already assigned");
 	}
 
-	const user =
-		await prisma.userDetails.findUnique({
-			where: {
-				userId,
-			},
-		});
+	const user = await prisma.userDetails.findUnique({
+		where: {
+			userId,
+		},
+	});
 
 	if (!user) {
-		throw new AppError(
-			404,
-			"User not found",
-		);
+		throw new AppError(404, "User not found");
 	}
 
-	const updatedRequest =
-		await prisma.serviceRequest.update({
-			where: {
-				id: requestId,
-			},
-			data: {
-				assignedToId: user.id,
-			},
-		});
+	const updatedRequest = await prisma.serviceRequest.update({
+		where: {
+			id: requestId,
+		},
+		data: {
+			assignedToId: user.id,
+		},
+	});
 
 	await prisma.requestStatusHistory.create({
 		data: {
@@ -414,72 +402,48 @@ const claimRequest = async (
 	return updatedRequest;
 };
 
-
-const startWork = async (
-	requestId: string,
-	userId: string,
-) => {
-	const request =
-		await prisma.serviceRequest.findUnique({
-			where: {
-				id: requestId,
-			},
-		});
+const startWork = async (requestId: string, userId: string) => {
+	const request = await prisma.serviceRequest.findUnique({
+		where: {
+			id: requestId,
+		},
+	});
 
 	if (!request) {
-		throw new AppError(
-			404,
-			"Request not found",
-		);
+		throw new AppError(404, "Request not found");
 	}
 
-	if (
-		request.status !==
-		RequestStatus.PAYMENT_VERIFIED
-	) {
-		throw new AppError(
-			400,
-			"Payment must be verified before starting work",
-		);
+	if (request.status !== RequestStatus.PAYMENT_VERIFIED) {
+		throw new AppError(400, "Payment must be verified before starting work");
 	}
 
-	const user =
-		await prisma.userDetails.findUnique({
-			where: {
-				userId,
-			},
-		});
+	const user = await prisma.userDetails.findUnique({
+		where: {
+			userId,
+		},
+	});
 
 	if (!user) {
-		throw new AppError(
-			404,
-			"User not found",
-		);
+		throw new AppError(404, "User not found");
 	}
 
-	const updatedRequest =
-		await prisma.serviceRequest.update({
-			where: {
-				id: requestId,
-			},
-			data: {
-				status: RequestStatus.IN_PROGRESS,
-				assignedToId:
-					request.assignedToId ??
-					user.id,
-			},
-		});
+	const updatedRequest = await prisma.serviceRequest.update({
+		where: {
+			id: requestId,
+		},
+		data: {
+			status: RequestStatus.IN_PROGRESS,
+			assignedToId: request.assignedToId ?? user.id,
+		},
+	});
 
 	await prisma.requestStatusHistory.create({
 		data: {
 			requestId,
 			changedById: user.id,
-			action:
-				ActionType.REQUEST_STATUS_CHANGED,
-			fromStatus:
-				RequestStatus.PAYMENT_VERIFIED,
-			toStatus:
-				RequestStatus.IN_PROGRESS,
+			action: ActionType.REQUEST_STATUS_CHANGED,
+			fromStatus: RequestStatus.PAYMENT_VERIFIED,
+			toStatus: RequestStatus.IN_PROGRESS,
 			note: "Work started",
 		},
 	});
@@ -490,14 +454,14 @@ const startWork = async (
 export const RequestServices = {
 	getSingleRequest,
 	getAllRequests,
-    assignManager,
+	assignManager,
 	updateRequestStatus,
 	setQuotation,
 	markCompleted,
 	cancelRequest,
 	getRequestAnalytics,
-    claimRequest,
-    startWork,
+	claimRequest,
+	startWork,
 };
 
 // GET /api/v1/requests?status=PAYMENT_PENDING

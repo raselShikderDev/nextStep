@@ -86,20 +86,16 @@ const getSinglePayment = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
-const getPaymentAnalytics = asyncHelper(
-	async (req, res) => {
-		const result =
-			await PaymentServices.getPaymentAnalytics();
+const getPaymentAnalytics = asyncHelper(async (_req, res) => {
+	const result = await PaymentServices.getPaymentAnalytics();
 
-		sendResponse(res, {
-			statusCode: 200,
-			success: true,
-			message:
-				"Payment analytics fetched successfully",
-			data: result,
-		});
-	},
-);
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Payment analytics fetched successfully",
+		data: result,
+	});
+});
 
 export const PaymentControllers = {
 	submitPayment,

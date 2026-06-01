@@ -45,11 +45,7 @@ router.get(
 
 router.get(
 	"/analytics",
-	authCheck(
-		Role.SUPER_ADMIN,
-		Role.ADMIN,
-		Role.MANAGER,
-	),
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
 	PaymentControllers.getPaymentAnalytics,
 );
 

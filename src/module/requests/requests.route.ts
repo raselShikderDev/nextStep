@@ -1,9 +1,14 @@
 import { Router } from "express";
 import authCheck from "@/middleware/checkAuth";
-import { Role } from "../../../prisma/generated/prisma/enums";
-import { RequestControllers } from "./requests.controller";
 import requestZodValidator from "@/middleware/requestZodValidator";
-import { assignManagerValidationSchema, cancelRequestValidationSchema, setQuotationValidationSchema, updateRequestStatusValidationSchema } from "./request.validation";
+import { Role } from "../../../prisma/generated/prisma/enums";
+import {
+	assignManagerValidationSchema,
+	cancelRequestValidationSchema,
+	setQuotationValidationSchema,
+	updateRequestStatusValidationSchema,
+} from "./request.validation";
+import { RequestControllers } from "./requests.controller";
 
 const router = Router();
 
@@ -19,14 +24,11 @@ router.get(
 	RequestControllers.getSingleRequest,
 );
 
-
 router.get(
 	"/analytics",
 	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	RequestControllers.getRequestAnalytics,
 );
-
-
 
 router.patch(
 	"/assign/:id",
@@ -64,31 +66,19 @@ router.patch(
 
 router.patch(
 	"/claim-request/:id",
-	authCheck(
-		Role.MANAGER,
-		Role.ADMIN,
-		Role.SUPER_ADMIN,
-	),
+	authCheck(Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN),
 	RequestControllers.claimRequest,
 );
 
 router.patch(
 	"/start-work/:id",
-	authCheck(
-		Role.MANAGER,
-		Role.ADMIN,
-		Role.SUPER_ADMIN,
-	),
+	authCheck(Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN),
 	RequestControllers.startWork,
 );
 
 router.get(
 	"/analytics",
-	authCheck(
-		Role.SUPER_ADMIN,
-		Role.ADMIN,
-		Role.MANAGER,
-	),
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
 	RequestControllers.getRequestAnalytics,
 );
 

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authRouter } from "@/module/auth/auth.route";
+import { documentRouter } from "@/module/document/document.route";
 import { PaymentRoutes } from "@/module/payment/payment.route";
 import { requestsRouter } from "@/module/requests/requests.route";
 import { servicesRouter } from "@/module/services/service.route";
@@ -27,6 +28,10 @@ const allRoutes = [
 	{
 		path: "/payment",
 		route: PaymentRoutes,
+	},
+	{
+		path: "/document",
+		route: documentRouter,
 	},
 ];
 

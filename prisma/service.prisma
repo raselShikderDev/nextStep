@@ -134,3 +134,4 @@ model RequestDocument {
   @@index([uploadedById])
   @@map("request_documents")
 }
+

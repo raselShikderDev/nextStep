@@ -373,44 +373,28 @@ const getPaymentAnalytics = async () => {
 	const monthlyRevenue = [];
 
 	for (let i = 11; i >= 0; i--) {
-		const start = new Date(
-			now.getFullYear(),
-			now.getMonth() - i,
-			1,
-		);
+		const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
 
-		const end = new Date(
-			now.getFullYear(),
-			now.getMonth() - i + 1,
-			1,
-		);
+		const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
 
-		const revenue =
-			await prisma.payment.aggregate({
-				where: {
-					status:
-						PaymentStatus.VERIFIED,
-					verifiedAt: {
-						gte: start,
-						lt: end,
-					},
+		const revenue = await prisma.payment.aggregate({
+			where: {
+				status: PaymentStatus.VERIFIED,
+				verifiedAt: {
+					gte: start,
+					lt: end,
 				},
-				_sum: {
-					amount: true,
-				},
-			});
+			},
+			_sum: {
+				amount: true,
+			},
+		});
 
 		monthlyRevenue.push({
-			month: start.toLocaleString(
-				"default",
-				{
-					month: "short",
-				},
-			),
-			revenue:
-				Number(
-					revenue._sum.amount,
-				) || 0,
+			month: start.toLocaleString("default", {
+				month: "short",
+			}),
+			revenue: Number(revenue._sum.amount) || 0,
 		});
 	}
 
@@ -420,30 +404,15 @@ const getPaymentAnalytics = async () => {
 		verifiedPayments,
 		rejectedPayments,
 
-		totalRevenue:
-			Number(
-				totalRevenue._sum.amount,
-			) || 0,
+		totalRevenue: Number(totalRevenue._sum.amount) || 0,
 
-		verifiedRevenue:
-			Number(
-				verifiedRevenue._sum.amount,
-			) || 0,
+		verifiedRevenue: Number(verifiedRevenue._sum.amount) || 0,
 
-		todayRevenue:
-			Number(
-				todayRevenue._sum.amount,
-			) || 0,
+		todayRevenue: Number(todayRevenue._sum.amount) || 0,
 
-		last7DaysRevenue:
-			Number(
-				last7DaysRevenue._sum.amount,
-			) || 0,
+		last7DaysRevenue: Number(last7DaysRevenue._sum.amount) || 0,
 
-		last30DaysRevenue:
-			Number(
-				last30DaysRevenue._sum.amount,
-			) || 0,
+		last30DaysRevenue: Number(last30DaysRevenue._sum.amount) || 0,
 
 		methodStats,
 

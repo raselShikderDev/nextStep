@@ -11,6 +11,7 @@ import { mainRoutes } from "./routes/mainRoutes";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import notFound from "./errorHelper/notFound";
 import globalRateLimiter from "./middleware/globalRateLimiter";
+import path from "node:path";
 
 const expressApp: Application = express();
 
@@ -20,6 +21,8 @@ expressApp.use(cookieParser());
 expressApp.use(morgan("dev"));
 
 expressApp.use(globalRateLimiter);
+
+expressApp.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 expressApp.use("/api/v1", mainRoutes);
 
