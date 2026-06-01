@@ -4,11 +4,7 @@ import generateMeta from "@/utils/generateMeta";
 import QueryBuilder from "@/utils/QueryBuilder";
 import type { Prisma } from "../../../prisma/generated/prisma/client";
 
-/*
-|
-| CREATE SERVICE CATEGORY
-|
-*/
+// CREATE SERVICE CATEGORY
 const createCategory = async (
 	payload: Prisma.ServiceCategoryUncheckedCreateInput,
 ) => {
@@ -36,11 +32,7 @@ const createCategory = async (
 	return category;
 };
 
-/*
-|
-| CREATE SERVICE
-|
-*/
+// CREATE SERVICE
 const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 	const category = await prisma.serviceCategory.findUnique({
 		where: {
@@ -79,11 +71,7 @@ const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 	return service;
 };
 
-/*
-|
-| GET ALL SERVICES
-|
-*/
+// GET ALL SERVICES
 const getAllServices = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder(query)
 		.search(["name", "slug"])
@@ -114,11 +102,7 @@ const getAllServices = async (query: Record<string, unknown>) => {
 	};
 };
 
-/*
-|
-| GET SINGLE SERVICE
-|
-*/
+// GET SINGLE SERVICE
 const getSingleService = async (slug: string) => {
 	const service = await prisma.service.findUnique({
 		where: {

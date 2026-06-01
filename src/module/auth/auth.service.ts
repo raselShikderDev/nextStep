@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import { StatusCodes } from "http-status-codes";
+import type { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
 import prisma from "@/config/db.config";
 import envVar from "@/config/env.config";
@@ -9,8 +11,6 @@ import { createJwtToken } from "@/utils/jwtHelper";
 import sendEmail from "@/utils/sendEmail";
 import resetPasswordTemplate from "@/utils/templates/resetPasswordTemplate";
 import type { User } from "../../../prisma/generated/prisma/client";
-import type { JwtPayload } from "jsonwebtoken";
-import jwt from "jsonwebtoken"
 
 // Register user
 const registerUser = async (payload: {
@@ -330,5 +330,5 @@ export const AuthServices = {
 	forgotPassword,
 	resetPassword,
 	changePassword,
-	refreshToken
+	refreshToken,
 };

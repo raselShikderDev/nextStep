@@ -7,7 +7,6 @@ import {
 	assignManagerValidationSchema,
 	cancelRequestValidationSchema,
 	setQuotationValidationSchema,
-	updateRequestStatusValidationSchema,
 } from "./request.validation";
 import { RequestControllers } from "./requests.controller";
 
@@ -36,13 +35,6 @@ router.patch(
 	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(assignManagerValidationSchema),
 	RequestControllers.assignManager,
-);
-
-router.patch(
-	"/status/:id",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN, Role.MANAGER),
-	requestZodValidator(updateRequestStatusValidationSchema),
-	RequestControllers.updateRequestStatus,
 );
 
 router.patch(
@@ -91,11 +83,7 @@ router.post(
 
 router.patch(
 	"/:id/deliver",
-	authCheck(
-		Role.MANAGER,
-		Role.ADMIN,
-		Role.SUPER_ADMIN,
-	),
+	authCheck(Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN),
 	RequestControllers.deliverRequest,
 );
 

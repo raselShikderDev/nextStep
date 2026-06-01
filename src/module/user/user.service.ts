@@ -17,7 +17,6 @@ const updateOwnProfile = async (
 	payload: IUpdateUserPayload,
 ) => {
 	// CHECK USER EXIST
-
 	const existingUser = await prisma.user.findUnique({
 		where: {
 			id: userId,
@@ -80,8 +79,6 @@ const updateOwnProfile = async (
 
 // Get my own profile
 const getMyProfile = async (userId: string) => {
-	console.log({ userId });
-
 	const user = await prisma.user.findUnique({
 		where: {
 			id: userId,
@@ -107,7 +104,7 @@ const getMyProfile = async (userId: string) => {
 };
 
 // Role Restricted
-// USER REQUEST EMAIL CHANGE
+// CREATE REQUEST EMAIL CHANGE
 const requestEmailChange = async (
 	userId: string,
 	payload: {
@@ -190,7 +187,7 @@ const requestEmailChange = async (
 	return request;
 };
 
-// GET ALL PENDING EMAIL REQUESTS
+// GET ALL PENDING EMAIL CHANAGE REQUESTS
 const getAllPendingEmailRequests = async () => {
 	const requests = await prisma.emailChangeRequest.findMany({
 		where: {
@@ -216,7 +213,7 @@ const getAllPendingEmailRequests = async () => {
 	return requests;
 };
 
-// APPROVE / REJECT REQUEST
+// APPROVE / REJECT EMAIL CHANAGE REQUEST
 const approveEmailChangeRequest = async (
 	requestId: string,
 	approverId: string,
@@ -250,7 +247,6 @@ const approveEmailChangeRequest = async (
 	}
 
 	// ROLE BASED APPROVAL
-
 	if (request.user.role === "USER" || request.user.role === "MANAGER") {
 		if (approver.role !== "ADMIN" && approver.role !== "SUPER_ADMIN") {
 			throw new AppError(403, "You are not authorized to approve this request");
@@ -267,7 +263,6 @@ const approveEmailChangeRequest = async (
 	}
 
 	// UPDATE EMAIL + REQUEST
-
 	const result = await prisma.$transaction(async (transactionClient) => {
 		await transactionClient.user.update({
 			where: {
@@ -283,7 +278,6 @@ const approveEmailChangeRequest = async (
 			where: {
 				id: requestId,
 			},
-
 			data: {
 				status: RequestStatus.APPROVED,
 				approvedById: approverId,
@@ -297,7 +291,7 @@ const approveEmailChangeRequest = async (
 	return result;
 };
 
-// REJECT REQUEST
+// REJECT EMAIL CHANAGE REQUEST
 const rejectEmailChangeRequest = async (
 	requestId: string,
 	approverId: string,
@@ -337,12 +331,13 @@ const rejectEmailChangeRequest = async (
 	return updatedRequest;
 };
 
+// GET ALL USERS
 const getAllUsers = async (query: Record<string, unknown>) => {
-	const queryBuilder = new QueryBuilder({}, query).search(["email"]).filter();
+	const queryBuilder = new QueryBuilder( query).search(["email"]).filter();
 
 	const where = queryBuilder.build();
 
-	const paginationQuery = new QueryBuilder(where, query)
+	const paginationQuery = new QueryBuilder(query)
 		.sort()
 		.paginate()
 		.build();
@@ -366,6 +361,7 @@ const getAllUsers = async (query: Record<string, unknown>) => {
 	};
 };
 
+// GET A USER
 const getSingleUser = async (id: string) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -383,6 +379,7 @@ const getSingleUser = async (id: string) => {
 	return user;
 };
 
+// TOGGOLE USER STATUS CHANAGE
 const toggleUserStatus = async (
 	id: string,
 	payload: {
@@ -414,6 +411,7 @@ const toggleUserStatus = async (
 	};
 };
 
+// GET USER ANALYTIC
 const getUserAnalytics = async () => {
 	const now = new Date();
 

@@ -3,6 +3,7 @@ import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { RequestServices } from "./requests.service";
 
+// Get all requests
 const getAllRequests = asyncHelper(async (req: Request, res: Response) => {
 	const result = await RequestServices.getAllRequests(
 		req.query as Record<string, unknown>,
@@ -17,6 +18,7 @@ const getAllRequests = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+// Get Singel Requesr
 const getSingleRequest = asyncHelper(async (req: Request, res: Response) => {
 	const result = await RequestServices.getSingleRequest(
 		req.params.id as string,
@@ -30,6 +32,7 @@ const getSingleRequest = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+// Assign worker to a request
 const assignManager = asyncHelper(async (req: Request, res: Response) => {
 	const result = await RequestServices.assignManager(
 		req.params.id as string,
@@ -41,21 +44,6 @@ const assignManager = asyncHelper(async (req: Request, res: Response) => {
 		statusCode: 200,
 		success: true,
 		message: "Manager assigned successfully",
-		data: result,
-	});
-});
-
-const updateRequestStatus = asyncHelper(async (req: Request, res: Response) => {
-	const result = await RequestServices.updateRequestStatus(
-		req.params.id as string,
-		req.body,
-		req.user.id,
-	);
-
-	sendResponse(res, {
-		statusCode: 200,
-		success: true,
-		message: "Request status updated successfully",
 		data: result,
 	});
 });
@@ -147,7 +135,6 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
 
 const createServiceRequest = asyncHelper(
 	async (req: Request, res: Response) => {
-
 		const parsedData = JSON.parse(req.body.formData || "{}");
 
 		const result = await RequestServices.createServiceRequest(
@@ -166,30 +153,25 @@ const createServiceRequest = asyncHelper(
 	},
 );
 
-const deliverRequest = asyncHelper(
-	async (req, res) => {
-		const result =
-			await RequestServices.deliverRequest(
-				req.params.id as string,
-				req.body,
-				req.user.id,
-			);
+const deliverRequest = asyncHelper(async (req, res) => {
+	const result = await RequestServices.deliverRequest(
+		req.params.id as string,
+		req.body,
+		req.user.id,
+	);
 
-		sendResponse(res, {
-			statusCode: 200,
-			success: true,
-			message:
-				"Request delivered successfully",
-			data: result,
-		});
-	},
-);
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Request delivered successfully",
+		data: result,
+	});
+});
 
 export const RequestControllers = {
 	getAllRequests,
 	getSingleRequest,
 	assignManager,
-	updateRequestStatus,
 	setQuotation,
 	markCompleted,
 	cancelRequest,
@@ -197,5 +179,5 @@ export const RequestControllers = {
 	claimRequest,
 	startWork,
 	createServiceRequest,
-	deliverRequest
+	deliverRequest,
 };

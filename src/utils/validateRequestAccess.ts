@@ -2,10 +2,7 @@ import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import { Role } from "../../prisma/generated/prisma/enums";
 
-const validateRequestOwnership = async (
-	requestId: string,
-	userId: string,
-) => {
+const validateRequestAccess = async (requestId: string, userId: string) => {
 	const user = await prisma.userDetails.findUnique({
 		where: {
 			userId,
@@ -29,10 +26,7 @@ const validateRequestOwnership = async (
 		throw new AppError(404, "Request not found");
 	}
 
-	if (
-		user.user.role === Role.ADMIN ||
-		user.user.role === Role.SUPER_ADMIN
-	) {
+	if (user.user.role === Role.ADMIN || user.user.role === Role.SUPER_ADMIN) {
 		return {
 			user,
 			request,
@@ -40,10 +34,7 @@ const validateRequestOwnership = async (
 	}
 
 	if (request.assignedToId !== user.id) {
-		throw new AppError(
-			403,
-			"You are not assigned to this request",
-		);
+		throw new AppError(403, "You are not assigned to this request");
 	}
 
 	return {
@@ -52,4 +43,7 @@ const validateRequestOwnership = async (
 	};
 };
 
-export default validateRequestOwnership
+export default validateRequestAccess;
+
+// assignManager()
+// setQuotation()

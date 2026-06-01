@@ -3,13 +3,16 @@ import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import generateMeta from "@/utils/generateMeta";
 import QueryBuilder from "@/utils/QueryBuilder";
-import type { Prisma } from "../../../prisma/generated/prisma/client";
+import validateAssignedWorker from "@/utils/validateAssignedWorker";
+import validateRequestAccess from "@/utils/validateRequestAccess";
 import {
 	ActionType,
 	RequestStatus,
 	Role,
 } from "../../../prisma/generated/prisma/enums";
+import type { CreateRequestPayload } from "./request.types";
 
+// Get all requests
 const getAllRequests = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder(query)
 		.search(["requestNo", "guestName", "guestEmail", "guestPhone"])
@@ -59,6 +62,7 @@ const getAllRequests = async (query: Record<string, unknown>) => {
 	};
 };
 
+// Get singel request
 const getSingleRequest = async (id: string) => {
 	const request = await prisma.serviceRequest.findUnique({
 		where: {
@@ -84,6 +88,7 @@ const getSingleRequest = async (id: string) => {
 	return request;
 };
 
+// Assign Worker
 const assignManager = async (
 	id: string,
 	payload: {
@@ -91,11 +96,7 @@ const assignManager = async (
 	},
 	userId: string,
 ) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id,
-		},
-	});
+	const { request } = await validateRequestAccess(id, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
@@ -117,77 +118,33 @@ const assignManager = async (
 	if (manager.user.role !== Role.MANAGER && manager.user.role !== Role.ADMIN) {
 		throw new AppError(400, "Assigned user must be manager or admin");
 	}
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
+			where: {
+				id,
+			},
+			data: {
+				assignedToId: payload.assignedToId,
+			},
+		});
 
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id,
-		},
-		data: {
-			assignedToId: payload.assignedToId,
-		},
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId: id,
+				changedById: userId,
+				fromStatus: request.status,
+				toStatus: request.status,
+				note: `Assigned request to ${manager.name}`,
+				action: ActionType.REQUEST_ASSIGNED,
+			},
+		});
+
+		return updatedRequest;
 	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: id,
-			changedById: userId,
-			fromStatus: request.status,
-			toStatus: request.status,
-			note: `Assigned request to ${manager.name}`,
-			action: ActionType.REQUEST_ASSIGNED,
-		},
-	});
-
-	return updatedRequest;
+	return result;
 };
 
-const updateRequestStatus = async (
-	id: string,
-	payload: {
-		status: RequestStatus;
-		note?: string;
-	},
-	userId: string,
-) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id,
-		},
-	});
-
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
-
-	if (request.status === RequestStatus.COMPLETED) {
-		throw new AppError(400, "Completed request status cannot be changed");
-	}
-
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id,
-		},
-		data: {
-			status: payload.status,
-			completedAt:
-				payload.status === RequestStatus.COMPLETED ? new Date() : null,
-		},
-	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: id,
-			changedById: userId,
-			fromStatus: request.status,
-			toStatus: payload.status,
-			note: payload.note,
-			action: ActionType.REQUEST_STATUS_CHANGED,
-		},
-	});
-
-	return updatedRequest;
-};
-
+// Set qotation for some services
 const setQuotation = async (
 	id: string,
 	payload: {
@@ -196,93 +153,72 @@ const setQuotation = async (
 	},
 	userId: string,
 ) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id,
-		},
-	});
+	const { request } = await validateRequestAccess(id, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
 	}
-
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id,
-		},
-		data: {
-			quotedPrice: payload.quotedPrice,
-			adminNotes: payload.adminNotes,
-			status: RequestStatus.PAYMENT_PENDING,
-		},
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
+			where: {
+				id,
+			},
+			data: {
+				quotedPrice: payload.quotedPrice,
+				adminNotes: payload.adminNotes,
+				status: RequestStatus.PAYMENT_PENDING,
+			},
+		});
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId: id,
+				changedById: userId,
+				fromStatus: request.status,
+				toStatus: RequestStatus.PAYMENT_PENDING,
+				note: "Quotation sent to client",
+				action: ActionType.REQUEST_QUOTE_SET,
+			},
+		});
+		return updatedRequest;
 	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: id,
-			changedById: userId,
-			fromStatus: request.status,
-			toStatus: RequestStatus.PAYMENT_PENDING,
-			note: "Quotation sent to client",
-			action: ActionType.REQUEST_QUOTE_SET,
-		},
-	});
-
-	return updatedRequest;
+	return result;
 };
 
-const markCompleted = async (
-	requestId: string,
-	userId: string,
-) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id: requestId,
-		},
-	});
+// Mark complete after finishing the job
+const markCompleted = async (requestId: string, userId: string) => {
+	const { user, request } = await validateAssignedWorker(requestId, userId);
 
-	if (!request) {
-		throw new AppError(404, "Request not found");
+	if (request.status !== RequestStatus.IN_PROGRESS) {
+		throw new AppError(400, "Request must be in progress");
 	}
 
-	if (
-		request.status !== RequestStatus.IN_PROGRESS
-	) {
-		throw new AppError(
-			400,
-			"Request must be in progress",
-		);
-	}
-
-	const updatedRequest =
-		await prisma.serviceRequest.update({
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
 			where: {
 				id: requestId,
 			},
 			data: {
-				status:
-					RequestStatus.READY_FOR_DELIVERY,
+				status: RequestStatus.READY_FOR_DELIVERY,
 			},
 		});
 
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId,
-			changedById: userId,
-			action:
-				ActionType.REQUEST_COMPLETED,
-			fromStatus:
-				RequestStatus.IN_PROGRESS,
-			toStatus:
-				RequestStatus.READY_FOR_DELIVERY,
-			note:
-				"Work completed and ready for delivery",
-		},
-	});
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId,
+				changedById: user.id,
+				action: ActionType.REQUEST_COMPLETED,
+				fromStatus: RequestStatus.IN_PROGRESS,
+				toStatus: RequestStatus.READY_FOR_DELIVERY,
+				note: "Work completed and ready for delivery",
+			},
+		});
 
-	return updatedRequest;
+		return updatedRequest;
+	});
+	return result;
 };
 
+// Cancel a request
 const cancelRequest = async (
 	id: string,
 	payload: {
@@ -290,39 +226,38 @@ const cancelRequest = async (
 	},
 	userId: string,
 ) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id,
-		},
-	});
+	const { request } = await validateRequestAccess(id, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
 	}
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
+			where: {
+				id,
+			},
+			data: {
+				status: RequestStatus.CANCELLED,
+			},
+		});
 
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id,
-		},
-		data: {
-			status: RequestStatus.CANCELLED,
-		},
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId: id,
+				changedById: userId,
+				fromStatus: request.status,
+				toStatus: RequestStatus.CANCELLED,
+				note: payload.note,
+				action: ActionType.REQUEST_CANCELLED,
+			},
+		});
+
+		return updatedRequest;
 	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId: id,
-			changedById: userId,
-			fromStatus: request.status,
-			toStatus: RequestStatus.CANCELLED,
-			note: payload.note,
-			action: ActionType.REQUEST_CANCELLED,
-		},
-	});
-
-	return updatedRequest;
+	return result;
 };
 
+// Get request Analytics
 const getRequestAnalytics = async () => {
 	const [
 		totalRequests,
@@ -374,6 +309,7 @@ const getRequestAnalytics = async () => {
 	};
 };
 
+// Assinging a request to myself
 const claimRequest = async (requestId: string, userId: string) => {
 	const request = await prisma.serviceRequest.findUnique({
 		where: {
@@ -398,92 +334,69 @@ const claimRequest = async (requestId: string, userId: string) => {
 	if (!user) {
 		throw new AppError(404, "User not found");
 	}
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
+			where: {
+				id: requestId,
+			},
+			data: {
+				assignedToId: user.id,
+			},
+		});
 
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id: requestId,
-		},
-		data: {
-			assignedToId: user.id,
-		},
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId,
+				changedById: user.id,
+				action: ActionType.REQUEST_ASSIGNED,
+				toStatus: request.status,
+				note: "Request claimed",
+			},
+		});
+
+		return updatedRequest;
 	});
-
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId,
-			changedById: user.id,
-			action: ActionType.REQUEST_ASSIGNED,
-			toStatus: request.status,
-			note: "Request claimed",
-		},
-	});
-
-	return updatedRequest;
+	return result;
 };
 
+// STARTING WORK AFTER ASSIGNING
 const startWork = async (requestId: string, userId: string) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id: requestId,
-		},
-	});
-
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
-
+	const { user, request } = await validateAssignedWorker(requestId, userId);
 	if (request.status !== RequestStatus.PAYMENT_VERIFIED) {
 		throw new AppError(400, "Payment must be verified before starting work");
 	}
 
-	const user = await prisma.userDetails.findUnique({
-		where: {
-			userId,
-		},
-	});
-
-	if (!user) {
-		throw new AppError(404, "User not found");
+	if (!request.assignedToId) {
+		throw new AppError(400, "Request must be claimed or assigned first");
 	}
 
-	const updatedRequest = await prisma.serviceRequest.update({
-		where: {
-			id: requestId,
-		},
-		data: {
-			status: RequestStatus.IN_PROGRESS,
-			assignedToId: request.assignedToId ?? user.id,
-		},
-	});
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
+			where: {
+				id: requestId,
+			},
+			data: {
+				status: RequestStatus.IN_PROGRESS,
+			},
+		});
 
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId,
-			changedById: user.id,
-			action: ActionType.REQUEST_STATUS_CHANGED,
-			fromStatus: RequestStatus.PAYMENT_VERIFIED,
-			toStatus: RequestStatus.IN_PROGRESS,
-			note: "Work started",
-		},
-	});
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId,
+				changedById: user.id,
+				action: ActionType.REQUEST_STATUS_CHANGED,
+				fromStatus: RequestStatus.PAYMENT_VERIFIED,
+				toStatus: RequestStatus.IN_PROGRESS,
+				note: "Work started",
+			},
+		});
 
-	return updatedRequest;
+		return updatedRequest;
+	});
+	return result;
 };
 
-/*
-|
-| CREATE SERVICE REQUEST BY GUEST
-|
-*/
-type CreateRequestPayload = {
-	serviceId: string;
-	guestName?: string;
-	guestEmail?: string;
-	guestPhone?: string;
-	guestAddress?: string;
-	userNotes?: string;
-	formData: Prisma.InputJsonValue;
-};
+// CREATE SERVICE REQUEST BY GUEST
 const createServiceRequest = async (
 	payload: CreateRequestPayload,
 	files: Express.Multer.File[],
@@ -600,6 +513,7 @@ const createServiceRequest = async (
 	return result;
 };
 
+// Deliver request after finishing the job
 const deliverRequest = async (
 	requestId: string,
 	payload: {
@@ -607,73 +521,48 @@ const deliverRequest = async (
 	},
 	userId: string,
 ) => {
-	const request =
-		await prisma.serviceRequest.findUnique({
-			where: {
-				id: requestId,
-			},
-			include: {
-				documents: true,
-			},
-		});
+	const { request } = await validateAssignedWorker(requestId, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
 	}
 
-	if (
-		request.status !==
-		RequestStatus.READY_FOR_DELIVERY
-	) {
-		throw new AppError(
-			400,
-			"Request is not ready for delivery",
-		);
+	if (request.status !== RequestStatus.READY_FOR_DELIVERY) {
+		throw new AppError(400, "Request is not ready for delivery");
 	}
 
-	const updatedRequest =
-		await prisma.serviceRequest.update({
+	const result = await prisma.$transaction(async (tx) => {
+		const updatedRequest = await tx.serviceRequest.update({
 			where: {
 				id: requestId,
 			},
 			data: {
-				status:
-					RequestStatus.DELIVERED,
-				deliveryMessage:
-					payload.deliveryMessage,
+				status: RequestStatus.DELIVERED,
+				deliveryMessage: payload.deliveryMessage,
 				completedAt: new Date(),
 			},
 		});
 
-	await prisma.requestStatusHistory.create({
-		data: {
-			requestId,
-			changedById: userId,
-			action:
-				ActionType.REQUEST_DELIVERED,
-			fromStatus:
-				RequestStatus.READY_FOR_DELIVERY,
-			toStatus:
-				RequestStatus.DELIVERED,
-			note:
-				payload.deliveryMessage ??
-				"Delivered to client",
-		},
+		await tx.requestStatusHistory.create({
+			data: {
+				requestId,
+				changedById: userId,
+				action: ActionType.REQUEST_DELIVERED,
+				fromStatus: RequestStatus.READY_FOR_DELIVERY,
+				toStatus: RequestStatus.DELIVERED,
+				note: payload.deliveryMessage ?? "Delivered to client",
+			},
+		});
+
+		return updatedRequest;
 	});
-
-	/*
-		TODO:
-		send email here
-	*/
-
-	return updatedRequest;
+	return result;
 };
 
 export const RequestServices = {
 	getSingleRequest,
 	getAllRequests,
 	assignManager,
-	updateRequestStatus,
 	setQuotation,
 	markCompleted,
 	cancelRequest,
@@ -681,7 +570,7 @@ export const RequestServices = {
 	claimRequest,
 	startWork,
 	createServiceRequest,
-	deliverRequest
+	deliverRequest,
 };
 
 // GET /api/v1/requests?status=PAYMENT_PENDING
