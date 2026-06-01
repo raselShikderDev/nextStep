@@ -1372,13 +1372,15 @@ export type ServiceRequestCreateNestedOneWithoutDocumentsInput = {
 	connect?: Prisma.ServiceRequestWhereUniqueInput;
 };
 
-export type ServiceRequestUpdateOneRequiredWithoutDocumentsNestedInput = {
+export type ServiceRequestUpdateOneWithoutDocumentsNestedInput = {
 	create?: Prisma.XOR<
 		Prisma.ServiceRequestCreateWithoutDocumentsInput,
 		Prisma.ServiceRequestUncheckedCreateWithoutDocumentsInput
 	>;
 	connectOrCreate?: Prisma.ServiceRequestCreateOrConnectWithoutDocumentsInput;
 	upsert?: Prisma.ServiceRequestUpsertWithoutDocumentsInput;
+	disconnect?: Prisma.ServiceRequestWhereInput | boolean;
+	delete?: Prisma.ServiceRequestWhereInput | boolean;
 	connect?: Prisma.ServiceRequestWhereUniqueInput;
 	update?: Prisma.XOR<
 		Prisma.XOR<

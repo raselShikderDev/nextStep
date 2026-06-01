@@ -233,7 +233,7 @@ export type RequestDocumentGroupByArgs<
 
 export type RequestDocumentGroupByOutputType = {
 	id: string;
-	requestId: string;
+	requestId: string | null;
 	uploadedById: string;
 	uploadedByRole: $Enums.Role;
 	name: string;
@@ -271,7 +271,7 @@ export type RequestDocumentWhereInput = {
 	OR?: Prisma.RequestDocumentWhereInput[];
 	NOT?: Prisma.RequestDocumentWhereInput | Prisma.RequestDocumentWhereInput[];
 	id?: Prisma.StringFilter<"RequestDocument"> | string;
-	requestId?: Prisma.StringFilter<"RequestDocument"> | string;
+	requestId?: Prisma.StringNullableFilter<"RequestDocument"> | string | null;
 	uploadedById?: Prisma.StringFilter<"RequestDocument"> | string;
 	uploadedByRole?: Prisma.EnumRoleFilter<"RequestDocument"> | $Enums.Role;
 	name?: Prisma.StringFilter<"RequestDocument"> | string;
@@ -283,9 +283,9 @@ export type RequestDocumentWhereInput = {
 	description?: Prisma.StringNullableFilter<"RequestDocument"> | string | null;
 	createdAt?: Prisma.DateTimeFilter<"RequestDocument"> | Date | string;
 	request?: Prisma.XOR<
-		Prisma.ServiceRequestScalarRelationFilter,
+		Prisma.ServiceRequestNullableScalarRelationFilter,
 		Prisma.ServiceRequestWhereInput
-	>;
+	> | null;
 	uploadedBy?: Prisma.XOR<
 		Prisma.UserDetailsScalarRelationFilter,
 		Prisma.UserDetailsWhereInput
@@ -294,7 +294,7 @@ export type RequestDocumentWhereInput = {
 
 export type RequestDocumentOrderByWithRelationInput = {
 	id?: Prisma.SortOrder;
-	requestId?: Prisma.SortOrder;
+	requestId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	uploadedById?: Prisma.SortOrder;
 	uploadedByRole?: Prisma.SortOrder;
 	name?: Prisma.SortOrder;
@@ -315,7 +315,7 @@ export type RequestDocumentWhereUniqueInput = Prisma.AtLeast<
 		AND?: Prisma.RequestDocumentWhereInput | Prisma.RequestDocumentWhereInput[];
 		OR?: Prisma.RequestDocumentWhereInput[];
 		NOT?: Prisma.RequestDocumentWhereInput | Prisma.RequestDocumentWhereInput[];
-		requestId?: Prisma.StringFilter<"RequestDocument"> | string;
+		requestId?: Prisma.StringNullableFilter<"RequestDocument"> | string | null;
 		uploadedById?: Prisma.StringFilter<"RequestDocument"> | string;
 		uploadedByRole?: Prisma.EnumRoleFilter<"RequestDocument"> | $Enums.Role;
 		name?: Prisma.StringFilter<"RequestDocument"> | string;
@@ -330,9 +330,9 @@ export type RequestDocumentWhereUniqueInput = Prisma.AtLeast<
 			| null;
 		createdAt?: Prisma.DateTimeFilter<"RequestDocument"> | Date | string;
 		request?: Prisma.XOR<
-			Prisma.ServiceRequestScalarRelationFilter,
+			Prisma.ServiceRequestNullableScalarRelationFilter,
 			Prisma.ServiceRequestWhereInput
-		>;
+		> | null;
 		uploadedBy?: Prisma.XOR<
 			Prisma.UserDetailsScalarRelationFilter,
 			Prisma.UserDetailsWhereInput
@@ -343,7 +343,7 @@ export type RequestDocumentWhereUniqueInput = Prisma.AtLeast<
 
 export type RequestDocumentOrderByWithAggregationInput = {
 	id?: Prisma.SortOrder;
-	requestId?: Prisma.SortOrder;
+	requestId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	uploadedById?: Prisma.SortOrder;
 	uploadedByRole?: Prisma.SortOrder;
 	name?: Prisma.SortOrder;
@@ -370,7 +370,10 @@ export type RequestDocumentScalarWhereWithAggregatesInput = {
 		| Prisma.RequestDocumentScalarWhereWithAggregatesInput
 		| Prisma.RequestDocumentScalarWhereWithAggregatesInput[];
 	id?: Prisma.StringWithAggregatesFilter<"RequestDocument"> | string;
-	requestId?: Prisma.StringWithAggregatesFilter<"RequestDocument"> | string;
+	requestId?:
+		| Prisma.StringNullableWithAggregatesFilter<"RequestDocument">
+		| string
+		| null;
 	uploadedById?: Prisma.StringWithAggregatesFilter<"RequestDocument"> | string;
 	uploadedByRole?:
 		| Prisma.EnumRoleWithAggregatesFilter<"RequestDocument">
@@ -402,13 +405,13 @@ export type RequestDocumentCreateInput = {
 	size: number;
 	description?: string | null;
 	createdAt?: Date | string;
-	request: Prisma.ServiceRequestCreateNestedOneWithoutDocumentsInput;
+	request?: Prisma.ServiceRequestCreateNestedOneWithoutDocumentsInput;
 	uploadedBy: Prisma.UserDetailsCreateNestedOneWithoutUploadedDocumentsInput;
 };
 
 export type RequestDocumentUncheckedCreateInput = {
 	id?: string;
-	requestId: string;
+	requestId?: string | null;
 	uploadedById: string;
 	uploadedByRole: $Enums.Role;
 	name: string;
@@ -432,13 +435,13 @@ export type RequestDocumentUpdateInput = {
 	size?: Prisma.IntFieldUpdateOperationsInput | number;
 	description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	request?: Prisma.ServiceRequestUpdateOneRequiredWithoutDocumentsNestedInput;
+	request?: Prisma.ServiceRequestUpdateOneWithoutDocumentsNestedInput;
 	uploadedBy?: Prisma.UserDetailsUpdateOneRequiredWithoutUploadedDocumentsNestedInput;
 };
 
 export type RequestDocumentUncheckedUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	requestId?: Prisma.StringFieldUpdateOperationsInput | string;
+	requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	uploadedById?: Prisma.StringFieldUpdateOperationsInput | string;
 	uploadedByRole?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
 	name?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -453,7 +456,7 @@ export type RequestDocumentUncheckedUpdateInput = {
 
 export type RequestDocumentCreateManyInput = {
 	id?: string;
-	requestId: string;
+	requestId?: string | null;
 	uploadedById: string;
 	uploadedByRole: $Enums.Role;
 	name: string;
@@ -481,7 +484,7 @@ export type RequestDocumentUpdateManyMutationInput = {
 
 export type RequestDocumentUncheckedUpdateManyInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	requestId?: Prisma.StringFieldUpdateOperationsInput | string;
+	requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	uploadedById?: Prisma.StringFieldUpdateOperationsInput | string;
 	uploadedByRole?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
 	name?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -861,7 +864,7 @@ export type RequestDocumentScalarWhereInput = {
 		| Prisma.RequestDocumentScalarWhereInput
 		| Prisma.RequestDocumentScalarWhereInput[];
 	id?: Prisma.StringFilter<"RequestDocument"> | string;
-	requestId?: Prisma.StringFilter<"RequestDocument"> | string;
+	requestId?: Prisma.StringNullableFilter<"RequestDocument"> | string | null;
 	uploadedById?: Prisma.StringFilter<"RequestDocument"> | string;
 	uploadedByRole?: Prisma.EnumRoleFilter<"RequestDocument"> | $Enums.Role;
 	name?: Prisma.StringFilter<"RequestDocument"> | string;
@@ -885,12 +888,12 @@ export type RequestDocumentCreateWithoutUploadedByInput = {
 	size: number;
 	description?: string | null;
 	createdAt?: Date | string;
-	request: Prisma.ServiceRequestCreateNestedOneWithoutDocumentsInput;
+	request?: Prisma.ServiceRequestCreateNestedOneWithoutDocumentsInput;
 };
 
 export type RequestDocumentUncheckedCreateWithoutUploadedByInput = {
 	id?: string;
-	requestId: string;
+	requestId?: string | null;
 	uploadedByRole: $Enums.Role;
 	name: string;
 	originalName: string;
@@ -1003,7 +1006,7 @@ export type RequestDocumentUncheckedUpdateManyWithoutRequestInput = {
 
 export type RequestDocumentCreateManyUploadedByInput = {
 	id?: string;
-	requestId: string;
+	requestId?: string | null;
 	uploadedByRole: $Enums.Role;
 	name: string;
 	originalName: string;
@@ -1026,12 +1029,12 @@ export type RequestDocumentUpdateWithoutUploadedByInput = {
 	size?: Prisma.IntFieldUpdateOperationsInput | number;
 	description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	request?: Prisma.ServiceRequestUpdateOneRequiredWithoutDocumentsNestedInput;
+	request?: Prisma.ServiceRequestUpdateOneWithoutDocumentsNestedInput;
 };
 
 export type RequestDocumentUncheckedUpdateWithoutUploadedByInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	requestId?: Prisma.StringFieldUpdateOperationsInput | string;
+	requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	uploadedByRole?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
 	name?: Prisma.StringFieldUpdateOperationsInput | string;
 	originalName?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -1045,7 +1048,7 @@ export type RequestDocumentUncheckedUpdateWithoutUploadedByInput = {
 
 export type RequestDocumentUncheckedUpdateManyWithoutUploadedByInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	requestId?: Prisma.StringFieldUpdateOperationsInput | string;
+	requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	uploadedByRole?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
 	name?: Prisma.StringFieldUpdateOperationsInput | string;
 	originalName?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -1074,7 +1077,7 @@ export type RequestDocumentSelect<
 		size?: boolean;
 		description?: boolean;
 		createdAt?: boolean;
-		request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+		request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 		uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 	},
 	ExtArgs["result"]["requestDocument"]
@@ -1097,7 +1100,7 @@ export type RequestDocumentSelectCreateManyAndReturn<
 		size?: boolean;
 		description?: boolean;
 		createdAt?: boolean;
-		request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+		request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 		uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 	},
 	ExtArgs["result"]["requestDocument"]
@@ -1120,7 +1123,7 @@ export type RequestDocumentSelectUpdateManyAndReturn<
 		size?: boolean;
 		description?: boolean;
 		createdAt?: boolean;
-		request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+		request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 		uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 	},
 	ExtArgs["result"]["requestDocument"]
@@ -1163,21 +1166,21 @@ export type RequestDocumentInclude<
 	ExtArgs extends
 		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+	request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 	uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 };
 export type RequestDocumentIncludeCreateManyAndReturn<
 	ExtArgs extends
 		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+	request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 	uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 };
 export type RequestDocumentIncludeUpdateManyAndReturn<
 	ExtArgs extends
 		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
-	request?: boolean | Prisma.ServiceRequestDefaultArgs<ExtArgs>;
+	request?: boolean | Prisma.RequestDocument$requestArgs<ExtArgs>;
 	uploadedBy?: boolean | Prisma.UserDetailsDefaultArgs<ExtArgs>;
 };
 
@@ -1187,13 +1190,13 @@ export type $RequestDocumentPayload<
 > = {
 	name: "RequestDocument";
 	objects: {
-		request: Prisma.$ServiceRequestPayload<ExtArgs>;
+		request: Prisma.$ServiceRequestPayload<ExtArgs> | null;
 		uploadedBy: Prisma.$UserDetailsPayload<ExtArgs>;
 	};
 	scalars: runtime.Types.Extensions.GetPayloadResult<
 		{
 			id: string;
-			requestId: string;
+			requestId: string | null;
 			uploadedById: string;
 			uploadedByRole: $Enums.Role;
 			name: string;
@@ -1766,17 +1769,16 @@ export interface Prisma__RequestDocumentClient<
 	GlobalOmitOptions = {},
 > extends Prisma.PrismaPromise<T> {
 	readonly [Symbol.toStringTag]: "PrismaPromise";
-	request<T extends Prisma.ServiceRequestDefaultArgs<ExtArgs> = {}>(
-		args?: Prisma.Subset<T, Prisma.ServiceRequestDefaultArgs<ExtArgs>>,
+	request<T extends Prisma.RequestDocument$requestArgs<ExtArgs> = {}>(
+		args?: Prisma.Subset<T, Prisma.RequestDocument$requestArgs<ExtArgs>>,
 	): Prisma.Prisma__ServiceRequestClient<
-		| runtime.Types.Result.GetResult<
-				Prisma.$ServiceRequestPayload<ExtArgs>,
-				T,
-				"findUniqueOrThrow",
-				GlobalOmitOptions
-		  >
-		| Null,
-		Null,
+		runtime.Types.Result.GetResult<
+			Prisma.$ServiceRequestPayload<ExtArgs>,
+			T,
+			"findUniqueOrThrow",
+			GlobalOmitOptions
+		> | null,
+		null,
 		ExtArgs,
 		GlobalOmitOptions
 	>;
@@ -2321,6 +2323,28 @@ export type RequestDocumentDeleteManyArgs<
 	 * Limit how many RequestDocuments to delete.
 	 */
 	limit?: number;
+};
+
+/**
+ * RequestDocument.request
+ */
+export type RequestDocument$requestArgs<
+	ExtArgs extends
+		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+	/**
+	 * Select specific fields to fetch from the ServiceRequest
+	 */
+	select?: Prisma.ServiceRequestSelect<ExtArgs> | null;
+	/**
+	 * Omit specific fields from the ServiceRequest
+	 */
+	omit?: Prisma.ServiceRequestOmit<ExtArgs> | null;
+	/**
+	 * Choose, which related nodes to fetch as well
+	 */
+	include?: Prisma.ServiceRequestInclude<ExtArgs> | null;
+	where?: Prisma.ServiceRequestWhereInput;
 };
 
 /**

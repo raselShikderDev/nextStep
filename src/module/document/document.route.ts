@@ -8,8 +8,7 @@ const router = Router();
 
 router.post(
 	"/upload/:requestId",
-	authCheck(Role.MANAGER, Role.ADMIN, Role.SUPER_ADMIN),
-	upload.array("files", 10),
+	upload.any(),
 	DocumentControllers.uploadDocuments,
 );
 
