@@ -1,3 +1,4 @@
+import path from "node:path";
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import generateMeta from "@/utils/generateMeta";
@@ -457,8 +458,116 @@ const startWork = async (requestId: string, userId: string) => {
 | CREATE SERVICE REQUEST BY GUEST
 |
 */
+// type CreateRequestPayload =
+// 	Prisma.ServiceRequestUncheckedCreateInput & {
+// 		documentIds?: string[];
+// 	};
+// const createServiceRequest = async (
+// 	payload: CreateRequestPayload,
+// ) => {
+// 	const service = await prisma.service.findUnique({
+// 		where: {
+// 			id: payload.serviceId,
+// 		},
+// 	});
+
+// 	if (!service) {
+// 		throw new AppError(404, "Service not found");
+// 	}
+
+// 	if (!service.isActive) {
+// 		throw new AppError(400, "Service is currently unavailable");
+// 	}
+
+// 	const totalRequest = await prisma.serviceRequest.count();
+
+// 	const requestNo = `NSX-${new Date().getFullYear()}-${String(
+// 		totalRequest + 1,
+// 	).padStart(6, "0")}`;
+
+// 	const { documentIds, ...requestPayload } = payload;
+
+// 	const result = await prisma.$transaction(async (tx) => {
+// 		if (documentIds?.length) {
+// 			const uploadedDocuments =
+// 				await tx.requestDocument.findMany({
+// 					where: {
+// 						id: {
+// 							in: documentIds,
+// 						},
+// 						requestId: null,
+// 					},
+// 					select: {
+// 						id: true,
+// 					},
+// 				});
+
+// 			if (
+// 				uploadedDocuments.length !==
+// 				documentIds.length
+// 			) {
+// 				throw new AppError(
+// 					400,
+// 					"Invalid document selection",
+// 				);
+// 			}
+// 		}
+
+// 		const request = await tx.serviceRequest.create({
+// 			data: {
+// 				...requestPayload,
+// 				requestNo,
+// 				status: service.requiresQuotation
+// 					? RequestStatus.UNDER_REVIEW
+// 					: RequestStatus.PAYMENT_PENDING,
+// 				currency: service.currency,
+// 			},
+// 			include: {
+// 				service: true,
+// 			},
+// 		});
+
+// 		if (documentIds?.length) {
+// 			await tx.requestDocument.updateMany({
+// 				where: {
+// 					id: {
+// 						in: documentIds,
+// 					},
+// 				},
+// 				data: {
+// 					requestId: request.id,
+// 				},
+// 			});
+// 		}
+
+// 		await tx.requestStatusHistory.create({
+// 			data: {
+// 				requestId: request.id,
+// 				toStatus: request.status,
+// 				note: "Request submitted successfully",
+// 				action: ActionType.REQUEST_CREATED,
+// 			},
+// 		});
+
+// 		return request;
+// 	});
+
+// 	return result;
+// };
+type CreateRequestPayload = {
+	serviceId: string;
+	guestName?: string;
+	guestEmail?: string;
+	guestPhone?: string;
+	guestAddress?: string;
+	userNotes?: string;
+	formData: Prisma.InputJsonValue;
+};
 const createServiceRequest = async (
-	payload: Prisma.ServiceRequestUncheckedCreateInput,
+	payload: CreateRequestPayload,
+	files: Express.Multer.File[],
+	userId?: string,
+	role?: Role,
 ) => {
 	const service = await prisma.service.findUnique({
 		where: {
@@ -471,7 +580,7 @@ const createServiceRequest = async (
 	}
 
 	if (!service.isActive) {
-		throw new AppError(400, "Service is currently unavailable");
+		throw new AppError(400, "Service is not available");
 	}
 
 	const totalRequest = await prisma.serviceRequest.count();
@@ -480,33 +589,91 @@ const createServiceRequest = async (
 		totalRequest + 1,
 	).padStart(6, "0")}`;
 
+	let userDetailsId: string | undefined;
+
+	if (userId) {
+		const user = await prisma.userDetails.findUnique({
+			where: {
+				userId,
+			},
+			select: {
+				id: true,
+			},
+		});
+
+		if (!user) {
+			throw new AppError(404, "User not found");
+		}
+
+		userDetailsId = user.id;
+	}
+
 	const result = await prisma.$transaction(async (tx) => {
 		const request = await tx.serviceRequest.create({
 			data: {
-				...payload,
 				requestNo,
+				userId: userDetailsId,
+				serviceId: payload.serviceId,
+				isGuest: !userDetailsId,
+				guestName: payload.guestName,
+				guestEmail: payload.guestEmail,
+				guestPhone: payload.guestPhone,
+				guestAddress: payload.guestAddress,
+				userNotes: payload.userNotes,
+				formData: payload.formData,
 				status: service.requiresQuotation
 					? RequestStatus.UNDER_REVIEW
 					: RequestStatus.PAYMENT_PENDING,
 				currency: service.currency,
 			},
-			include: {
-				service: true,
-			},
 		});
 
-		/*
-	 CREATE REQUEST HISTORY
-	*/
+		if (files.length > 0) {
+			await tx.requestDocument.createMany({
+				data: files.map((file) => ({
+					requestId: request.id,
+					uploadedById: userDetailsId,
+					uploadedByRole: role,
+					name: path.parse(file.originalname).name,
+					originalName: file.originalname,
+					url: `/uploads/requests/${file.filename}`,
+					key: file.filename,
+					mimeType: file.mimetype,
+					size: file.size,
+				})),
+			});
+		}
+
 		await tx.requestStatusHistory.create({
 			data: {
 				requestId: request.id,
-				toStatus: request.status,
-				note: "Request submitted successfully",
+
+				changedById: userDetailsId,
+
 				action: ActionType.REQUEST_CREATED,
+
+				toStatus: request.status,
+
+				note: "Request submitted successfully",
 			},
 		});
-		return request;
+
+		const fullRequest = await tx.serviceRequest.findUnique({
+			where: {
+				id: request.id,
+			},
+			include: {
+				service: true,
+				documents: true,
+				statusHistory: {
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
+			},
+		});
+
+		return fullRequest;
 	});
 
 	return result;

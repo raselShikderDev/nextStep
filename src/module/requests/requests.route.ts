@@ -1,11 +1,11 @@
 import { Router } from "express";
+import upload from "@/config/upload";
 import authCheck from "@/middleware/checkAuth";
 import requestZodValidator from "@/middleware/requestZodValidator";
 import { Role } from "../../../prisma/generated/prisma/enums";
 import {
 	assignManagerValidationSchema,
 	cancelRequestValidationSchema,
-	createServiceRequestValidationSchema,
 	setQuotationValidationSchema,
 	updateRequestStatusValidationSchema,
 } from "./request.validation";
@@ -85,7 +85,7 @@ router.get(
 
 router.post(
 	"/create",
-	requestZodValidator(createServiceRequestValidationSchema),
+	upload.array("files", 20),
 	RequestControllers.createServiceRequest,
 );
 

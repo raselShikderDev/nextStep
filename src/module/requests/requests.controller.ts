@@ -147,12 +147,21 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
 
 const createServiceRequest = asyncHelper(
 	async (req: Request, res: Response) => {
-		const result = await RequestServices.createServiceRequest(req.body);
+		console.log({ formData: JSON.parse(req.body.formData || "{}") });
+
+		const parsedData = JSON.parse(req.body.formData || "{}");
+
+		const result = await RequestServices.createServiceRequest(
+			parsedData,
+			req.files as Express.Multer.File[],
+			req.user?.id,
+			req.user?.role,
+		);
 
 		sendResponse(res, {
 			statusCode: 201,
 			success: true,
-			message: "Service request submitted successfully",
+			message: "Request submitted successfully",
 			data: result,
 		});
 	},
