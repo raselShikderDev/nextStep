@@ -264,10 +264,198 @@ const getSinglePayment = async (id: string) => {
 	return payment;
 };
 
+const getPaymentAnalytics = async () => {
+	const now = new Date();
+
+	const todayStart = new Date();
+	todayStart.setHours(0, 0, 0, 0);
+
+	const sevenDaysAgo = new Date();
+	sevenDaysAgo.setDate(now.getDate() - 7);
+
+	const thirtyDaysAgo = new Date();
+	thirtyDaysAgo.setDate(now.getDate() - 30);
+
+	const [
+		totalPayments,
+		pendingPayments,
+		verifiedPayments,
+		rejectedPayments,
+		totalRevenue,
+		verifiedRevenue,
+		todayRevenue,
+		last7DaysRevenue,
+		last30DaysRevenue,
+		methodStats,
+	] = await Promise.all([
+		prisma.payment.count(),
+
+		prisma.payment.count({
+			where: {
+				status: PaymentStatus.SUBMITTED,
+			},
+		}),
+
+		prisma.payment.count({
+			where: {
+				status: PaymentStatus.VERIFIED,
+			},
+		}),
+
+		prisma.payment.count({
+			where: {
+				status: PaymentStatus.REJECTED,
+			},
+		}),
+
+		prisma.payment.aggregate({
+			_sum: {
+				amount: true,
+			},
+		}),
+
+		prisma.payment.aggregate({
+			where: {
+				status: PaymentStatus.VERIFIED,
+			},
+			_sum: {
+				amount: true,
+			},
+		}),
+
+		prisma.payment.aggregate({
+			where: {
+				status: PaymentStatus.VERIFIED,
+				verifiedAt: {
+					gte: todayStart,
+				},
+			},
+			_sum: {
+				amount: true,
+			},
+		}),
+
+		prisma.payment.aggregate({
+			where: {
+				status: PaymentStatus.VERIFIED,
+				verifiedAt: {
+					gte: sevenDaysAgo,
+				},
+			},
+			_sum: {
+				amount: true,
+			},
+		}),
+
+		prisma.payment.aggregate({
+			where: {
+				status: PaymentStatus.VERIFIED,
+				verifiedAt: {
+					gte: thirtyDaysAgo,
+				},
+			},
+			_sum: {
+				amount: true,
+			},
+		}),
+
+		prisma.payment.groupBy({
+			by: ["method"],
+			_count: {
+				method: true,
+			},
+			_sum: {
+				amount: true,
+			},
+		}),
+	]);
+
+	const monthlyRevenue = [];
+
+	for (let i = 11; i >= 0; i--) {
+		const start = new Date(
+			now.getFullYear(),
+			now.getMonth() - i,
+			1,
+		);
+
+		const end = new Date(
+			now.getFullYear(),
+			now.getMonth() - i + 1,
+			1,
+		);
+
+		const revenue =
+			await prisma.payment.aggregate({
+				where: {
+					status:
+						PaymentStatus.VERIFIED,
+					verifiedAt: {
+						gte: start,
+						lt: end,
+					},
+				},
+				_sum: {
+					amount: true,
+				},
+			});
+
+		monthlyRevenue.push({
+			month: start.toLocaleString(
+				"default",
+				{
+					month: "short",
+				},
+			),
+			revenue:
+				Number(
+					revenue._sum.amount,
+				) || 0,
+		});
+	}
+
+	return {
+		totalPayments,
+		pendingPayments,
+		verifiedPayments,
+		rejectedPayments,
+
+		totalRevenue:
+			Number(
+				totalRevenue._sum.amount,
+			) || 0,
+
+		verifiedRevenue:
+			Number(
+				verifiedRevenue._sum.amount,
+			) || 0,
+
+		todayRevenue:
+			Number(
+				todayRevenue._sum.amount,
+			) || 0,
+
+		last7DaysRevenue:
+			Number(
+				last7DaysRevenue._sum.amount,
+			) || 0,
+
+		last30DaysRevenue:
+			Number(
+				last30DaysRevenue._sum.amount,
+			) || 0,
+
+		methodStats,
+
+		monthlyRevenue,
+	};
+};
+
 export const PaymentServices = {
 	submitPayment,
 	verifyPayment,
 	rejectPayment,
 	getAllPayments,
 	getSinglePayment,
+	getPaymentAnalytics,
 };

@@ -43,6 +43,16 @@ router.get(
 	PaymentControllers.getSinglePayment,
 );
 
+router.get(
+	"/analytics",
+	authCheck(
+		Role.SUPER_ADMIN,
+		Role.ADMIN,
+		Role.MANAGER,
+	),
+	PaymentControllers.getPaymentAnalytics,
+);
+
 export const PaymentRoutes = router;
 
 // GET /api/v1/payments?status=VERIFIED

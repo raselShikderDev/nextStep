@@ -82,4 +82,14 @@ router.patch(
 	RequestControllers.startWork,
 );
 
+router.get(
+	"/analytics",
+	authCheck(
+		Role.SUPER_ADMIN,
+		Role.ADMIN,
+		Role.MANAGER,
+	),
+	RequestControllers.getRequestAnalytics,
+);
+
 export const requestsRouter = router;
