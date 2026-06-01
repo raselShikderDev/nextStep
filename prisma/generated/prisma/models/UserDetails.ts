@@ -616,13 +616,15 @@ export type UserDetailsCreateNestedOneWithoutUploadedDocumentsInput = {
 	connect?: Prisma.UserDetailsWhereUniqueInput;
 };
 
-export type UserDetailsUpdateOneRequiredWithoutUploadedDocumentsNestedInput = {
+export type UserDetailsUpdateOneWithoutUploadedDocumentsNestedInput = {
 	create?: Prisma.XOR<
 		Prisma.UserDetailsCreateWithoutUploadedDocumentsInput,
 		Prisma.UserDetailsUncheckedCreateWithoutUploadedDocumentsInput
 	>;
 	connectOrCreate?: Prisma.UserDetailsCreateOrConnectWithoutUploadedDocumentsInput;
 	upsert?: Prisma.UserDetailsUpsertWithoutUploadedDocumentsInput;
+	disconnect?: Prisma.UserDetailsWhereInput | boolean;
+	delete?: Prisma.UserDetailsWhereInput | boolean;
 	connect?: Prisma.UserDetailsWhereUniqueInput;
 	update?: Prisma.XOR<
 		Prisma.XOR<

@@ -116,8 +116,8 @@ model RequestStatusHistory {
 model RequestDocument {
   id             String   @id @default(uuid())
   requestId      String?
-  uploadedById   String
-  uploadedByRole Role
+  uploadedById   String?
+  uploadedByRole Role?
   name           String
   originalName   String
   url            String // S3 URL
@@ -128,7 +128,7 @@ model RequestDocument {
   createdAt      DateTime @default(now())
 
   request    ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  uploadedBy UserDetails     @relation("UploadedBy", fields: [uploadedById], references: [id])
+  uploadedBy UserDetails?    @relation("UploadedBy", fields: [uploadedById], references: [id])
 
   @@index([requestId])
   @@index([uploadedById])

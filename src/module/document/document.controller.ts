@@ -5,10 +5,9 @@ import { DocumentServices } from "./document.service";
 
 const uploadDocuments = asyncHelper(async (req: Request, res: Response) => {
 	const result = await DocumentServices.uploadDocuments(
-		req.params.requestId as string,
 		req.files as Express.Multer.File[],
-		req.user.id,
-		req.user.role,
+		req?.user?.id,
+		req?.user?.role,
 		req.body.description,
 	);
 

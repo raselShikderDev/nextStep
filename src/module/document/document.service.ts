@@ -6,115 +6,192 @@ import AppError from "@/errorHelper/appError";
 import type { Role } from "../../../prisma/generated/prisma/enums";
 
 const uploadDocuments = async (
-	requestId: string,
-	files: Express.Multer.File[],
-	userId: string,
-	role: Role,
-	description?: string,
+  files: Express.Multer.File[],
+  userId?: string,
+  role?: Role,
+  description?: string,
 ) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id: requestId,
-		},
-	});
+  let uploadedById: string | undefined;
 
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
+  if (userId) {
+    const user = await prisma.userDetails.findUnique({
+      where: {
+        userId,
+      },
+      select: {
+        id: true,
+      },
+    });
 
-	const user = await prisma.userDetails.findUnique({
-		where: {
-			userId,
-		},
-	});
+    if (!user) {
+      throw new AppError(404, "User not found");
+    }
 
-	if (!user) {
-		throw new AppError(404, "User not found");
-	}
+    uploadedById = user.id;
+  }
 
-	const documents = await Promise.all(
-		files.map((file) =>
-			prisma.requestDocument.create({
-				data: {
-					requestId,
-					uploadedById: user.id,
-					uploadedByRole: role,
+  //   const documents = await prisma.$transaction(async (tx) => {
+  //     return Promise.all(
+  //       files.map((file) =>
+  //         tx.requestDocument.create({
+  //           data: {
+  //             uploadedById,
+  //             uploadedByRole: role,
+  //             name: path.parse(file.originalname).name,
+  //             originalName: file.originalname,
+  //             url: `/uploads/requests/${file.filename}`,
+  //             key: file.filename,
+  //             mimeType: file.mimetype,
+  //             size: file.size,
+  //             description,
+  //           },
+  //         }),
+  //       ),
+  //     );
+  //   });
 
-					name: path.parse(file.originalname).name,
+  try {
+    const documents = await Promise.all(
+      files.map((file) =>
+        prisma.requestDocument.create({
+          data: {
+            uploadedById,
+            uploadedByRole: role,
 
-					originalName: file.originalname,
+            name: path.parse(file.originalname).name,
+            originalName: file.originalname,
 
-					url: `/uploads/requests/${file.filename}`,
+            url: `/uploads/requests/${file.filename}`,
+            key: file.filename,
 
-					key: file.filename,
+            mimeType: file.mimetype,
+            size: file.size,
 
-					mimeType: file.mimetype,
+            description,
+          },
+        }),
+      ),
+    );
 
-					size: file.size,
+    return documents;
+  } catch (error) {
+    for (const file of files) {
+      if (file.path && fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+    }
 
-					description,
-				},
-			}),
-		),
-	);
+    throw error;
+  }
+};
 
-	return documents;
+const attachDocumentsToRequest = async (
+  requestId: string,
+  documentIds: string[],
+) => {
+  const request = await prisma.serviceRequest.findUnique({
+    where: {
+      id: requestId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!request) {
+    throw new AppError(404, "Request not found");
+  }
+
+  const documents = await prisma.requestDocument.findMany({
+    where: {
+      id: {
+        in: documentIds,
+      },
+      requestId: null,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (documents.length !== documentIds.length) {
+    throw new AppError(400, "Invalid document selection");
+  }
+
+  await prisma.requestDocument.updateMany({
+    where: {
+      id: {
+        in: documentIds,
+      },
+    },
+    data: {
+      requestId,
+    },
+  });
+
+  return true;
 };
 
 const getRequestDocuments = async (requestId: string) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id: requestId,
-		},
-	});
+  const request = await prisma.serviceRequest.findUnique({
+    where: {
+      id: requestId,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
+  if (!request) {
+    throw new AppError(404, "Request not found");
+  }
 
-	return prisma.requestDocument.findMany({
-		where: {
-			requestId,
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-	});
+  return prisma.requestDocument.findMany({
+    where: {
+      requestId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 };
 
 const deleteDocument = async (documentId: string) => {
-	const document = await prisma.requestDocument.findUnique({
-		where: {
-			id: documentId,
-		},
-	});
+  const document = await prisma.requestDocument.findUnique({
+    where: {
+      id: documentId,
+    },
+  });
 
-	if (!document) {
-		throw new AppError(404, "Document not found");
-	}
+  if (!document) {
+    throw new AppError(404, "Document not found");
+  }
 
-	const filePath = path.join(
-		process.cwd(),
-		"uploads",
-		"requests",
-		document.key,
-	);
+  const filePath = path.join(
+    process.cwd(),
+    "uploads",
+    "requests",
+    document.key,
+  );
 
-	if (fs.existsSync(filePath)) {
-		fs.unlinkSync(filePath);
-	}
+  await prisma.$transaction(async (tx) => {
+    await tx.requestDocument.delete({
+      where: {
+        id: documentId,
+      },
+    });
 
-	await prisma.requestDocument.delete({
-		where: {
-			id: documentId,
-		},
-	});
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  });
 
-	return null;
+  return null;
 };
 
 export const DocumentServices = {
-	uploadDocuments,
-	getRequestDocuments,
-	deleteDocument,
+  uploadDocuments,
+  attachDocumentsToRequest,
+  getRequestDocuments,
+  deleteDocument,
 };

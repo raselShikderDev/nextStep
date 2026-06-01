@@ -419,6 +419,10 @@ export type UserNullableScalarRelationFilter = {
 	isNot?: Prisma.UserWhereInput | null;
 };
 
+export type EnumRoleFieldUpdateOperationsInput = {
+	set?: $Enums.Role;
+};
+
 export type UserCreateNestedOneWithoutEmailChangeRequestsInput = {
 	create?: Prisma.XOR<
 		Prisma.UserCreateWithoutEmailChangeRequestsInput,
