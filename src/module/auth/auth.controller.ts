@@ -103,6 +103,31 @@ const changePassword = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+const refreshToken = asyncHelper(
+	async (req: Request, res: Response) => {
+		const refreshToken =
+			req.cookies?.refreshToken;
+
+		const result =
+			await AuthServices.refreshToken(
+				refreshToken,
+			);
+
+		await setAuthCookie(res, {
+			accessToken:
+				result.accessToken,
+		});
+
+		sendResponse(res, {
+			statusCode: 200,
+			success: true,
+			message:
+				"Access token refreshed successfully",
+			data: result,
+		});
+	},
+);
+
 export const AuthControllers = {
 	registerUser,
 	loginUser,
@@ -110,4 +135,5 @@ export const AuthControllers = {
 	forgotPassword,
 	resetPassword,
 	changePassword,
+	refreshToken
 };

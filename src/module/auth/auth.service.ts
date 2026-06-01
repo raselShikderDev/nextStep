@@ -9,6 +9,8 @@ import { createJwtToken } from "@/utils/jwtHelper";
 import sendEmail from "@/utils/sendEmail";
 import resetPasswordTemplate from "@/utils/templates/resetPasswordTemplate";
 import type { User } from "../../../prisma/generated/prisma/client";
+import type { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken"
 
 // Register user
 const registerUser = async (payload: {
@@ -283,10 +285,50 @@ const changePassword = async (
 	return;
 };
 
+const refreshToken = async (token: string) => {
+	if (!token) {
+		throw new AppError(401, "Refresh token is required");
+	}
+
+	const decoded = jwt.verify(
+		token,
+		envVar.JWT_REFRESH_SECRET as string,
+	) as JwtPayload;
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: decoded.id,
+		},
+	});
+
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
+
+	if (!user.isActive) {
+		throw new AppError(403, "User account is disabled");
+	}
+
+	if (!user.isVerified) {
+		throw new AppError(403, "User is not verified");
+	}
+
+	const accessToken = await createJwtToken(
+		user,
+		envVar.JWT_ACCESS_SECRET as string,
+		envVar.JWT_ACCESS_EXPIRES_IN as string,
+	);
+
+	return {
+		accessToken,
+	};
+};
+
 export const AuthServices = {
 	registerUser,
 	loginUser,
 	forgotPassword,
 	resetPassword,
 	changePassword,
+	refreshToken
 };
