@@ -36,9 +36,8 @@ const registerUser = async (payload: {
 	const user = await prisma.user.create({
 		data: {
 			email: payload.email,
-
 			passwordHash: hashedPassword,
-
+			isVerified:true,
 			userDetails: {
 				create: {
 					name: payload.name,
