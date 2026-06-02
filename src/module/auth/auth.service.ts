@@ -326,6 +326,59 @@ const refreshToken = async (token: string) => {
 	};
 };
 
+const changeInitialPassword =
+	async (
+		userId: string,
+		payload: {
+			currentPassword: string;
+			newPassword: string;
+		},
+	) => {
+		const user =
+			await prisma.user.findUnique({
+				where: {
+					id: userId,
+				},
+			});
+
+		if (!user) {
+			throw new AppError(
+				404,
+				"User not found",
+			);
+		}
+
+		const matched =
+			await bcrypt.compare(
+				payload.currentPassword,
+				user.passwordHash,
+			);
+
+		if (!matched) {
+			throw new AppError(
+				400,
+				"Invalid password",
+			);
+		}
+
+		const passwordHash =
+			await bcrypt.hash(
+				payload.newPassword,
+				10,
+			);
+
+		await prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				passwordHash,
+				mustChangePassword:
+					false,
+			},
+		});
+	};
+
 export const AuthServices = {
 	registerUser,
 	loginUser,
