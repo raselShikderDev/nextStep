@@ -5,6 +5,9 @@ import AppError from "@/errorHelper/appError";
 import QueryBuilder from "@/utils/QueryBuilder";
 import { RequestStatus, Role } from "../../../prisma/generated/prisma/enums";
 import sendEmail from "@/utils/sendEmail";
+import staffAccountCreatedTemplate from "@/utils/templates/staffAccountCreatedTemplate";
+import { StatusCodes } from "http-status-codes";
+import envVar from "@/config/env.config";
 
 interface IUpdateUserPayload {
   name?: string;
@@ -518,19 +521,30 @@ const createStaff = async (payload: {
     return user;
   });
 
-  await sendEmail({
-    to: payload.email,
-    subject: "Your NextStep Account",
-    html: `
-			<h2>Account Created</h2>
+  try {
+    const emailResult = await sendEmail({
+      to: payload.email,
+      subject: "Your NextStep Account",
+      html: staffAccountCreatedTemplate({
+        name: payload.name,
+        email: payload.email,
+        temporaryPassword,
+      }),
+    });
 
-			<p>Email: ${payload.email}</p>
-
-			<p>Temporary Password: ${temporaryPassword}</p>
-
-			<p>Please login and change your password.</p>
-		`,
-  });
+    if (emailResult) {
+      return emailResult;
+    }
+  } catch (error) {
+    if (envVar.NODE_ENV === "Development") {
+      console.error("Sending reset password OTP is failed", error);
+    }
+    throw new AppError(
+      StatusCodes.BAD_GATEWAY,
+      "Sending reset password OTP is Unsuccessfull",
+    );
+  }
+  console.log({ email: payload.email });
 
   return result;
 };
@@ -546,5 +560,5 @@ export const UserServices = {
   getSingleUser,
   toggleUserStatus,
   getUserAnalytics,
-  createStaff
+  createStaff,
 };
