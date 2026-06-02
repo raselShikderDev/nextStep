@@ -1,8 +1,10 @@
 import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
 import QueryBuilder from "@/utils/QueryBuilder";
-import { RequestStatus } from "../../../prisma/generated/prisma/enums";
+import { RequestStatus, Role } from "../../../prisma/generated/prisma/enums";
+import sendEmail from "@/utils/sendEmail";
 
 interface IUpdateUserPayload {
 	name?: string;
@@ -467,6 +469,77 @@ const getUserAnalytics = async () => {
 		last1YearUsers,
 		graphData: monthlyUsers,
 	};
+};
+
+
+const createStaff = async (
+	payload: {
+		name: string;
+		email: string;
+		phone?: string;
+		role: Role;
+	},
+) => {
+	const temporaryPassword =
+		crypto.randomBytes(4).toString("hex");
+
+	const passwordHash =
+		await bcrypt.hash(
+			temporaryPassword,
+			10,
+		);
+
+	const result =
+		await prisma.$transaction(
+			async (tx) => {
+				const user =
+					await tx.user.create({
+						data: {
+							email:
+								payload.email,
+							passwordHash,
+							role:
+								payload.role,
+							isActive:
+								true,
+							isVerified:
+								true,
+							mustChangePassword:
+								true,
+						},
+					});
+
+				await tx.userDetails.create({
+					data: {
+						name:
+							payload.name,
+						phone:
+							payload.phone,
+						userId:
+							user.id,
+					},
+				});
+
+				return user;
+			},
+		);
+
+	await sendEmail({
+		to: payload.email,
+		subject:
+			"Your NextStep Account",
+		html: `
+			<h2>Account Created</h2>
+
+			<p>Email: ${payload.email}</p>
+
+			<p>Temporary Password: ${temporaryPassword}</p>
+
+			<p>Please login and change your password.</p>
+		`,
+	});
+
+	return result;
 };
 
 export const UserServices = {

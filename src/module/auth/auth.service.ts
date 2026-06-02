@@ -38,6 +38,7 @@ const registerUser = async (payload: {
 			email: payload.email,
 			passwordHash: hashedPassword,
 			isVerified:true,
+			mustChangePassword:false,
 			userDetails: {
 				create: {
 					name: payload.name,
@@ -113,6 +114,8 @@ const loginUser = async (payload: { email: string; password: string }) => {
 			role: user.role,
 			isActive: user.isActive,
 			isVerified: user.isVerified,
+			mustChangePassword: user.mustChangePassword,
+			
 		},
 	};
 };
