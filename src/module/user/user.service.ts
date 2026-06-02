@@ -484,6 +484,7 @@ const getUserAnalytics = async () => {
   };
 };
 
+// Create stuff by admin or super admin
 const createStaff = async (payload: {
   name: string;
   email: string;
@@ -545,4 +546,5 @@ export const UserServices = {
   getSingleUser,
   toggleUserStatus,
   getUserAnalytics,
+  createStaff
 };

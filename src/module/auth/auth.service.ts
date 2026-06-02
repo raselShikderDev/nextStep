@@ -326,6 +326,7 @@ const refreshToken = async (token: string) => {
 	};
 };
 
+// Chnage password after created by admin or super admin
 const changeInitialPassword =
 	async (
 		userId: string,
@@ -386,4 +387,5 @@ export const AuthServices = {
 	resetPassword,
 	changePassword,
 	refreshToken,
+	changeInitialPassword,
 };

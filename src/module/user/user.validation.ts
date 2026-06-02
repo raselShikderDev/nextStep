@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Role } from "../../../prisma/generated/prisma/enums";
 
 export const updateUserValidationSchema = z.object({
 	name: z.string().min(2, "Name must be at least 2 characters").optional(),
@@ -21,3 +22,16 @@ export const approveEmailChangeSchema = z.object({
 
 	rejectedReason: z.string().optional(),
 });
+
+
+export const createStaffValidationSchema =
+	z.object({
+		name: z.string(),
+		email: z.email(),
+		phone: z.string().optional(),
+		role: z.enum([
+			Role.ADMIN,
+			Role.MANAGER,
+			Role.USER,
+		]),
+	});

@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { UserServices } from "./user.service";
+import { AuthServices } from "../auth/auth.service";
+import { StatusCodes } from "http-status-codes";
 
 // Update own profile
 const updateOwnProfile = asyncHelper(async (req: Request, res: Response) => {
@@ -131,6 +133,24 @@ const getUserAnalytics = asyncHelper(async (_req: Request, res: Response) => {
 	});
 });
 
+const createStaff = asyncHelper(
+	async (req: Request, res: Response) => {
+		const result =
+			await UserServices.createStaff(
+				req.body,
+			);
+
+		sendResponse(res, {
+			statusCode:
+				StatusCodes.CREATED,
+			success: true,
+			message:
+				"Staff created successfully",
+			data: result,
+		});
+	},
+);
+
 export const UserControllers = {
 	updateOwnProfile,
 	getMyProfile,
@@ -142,4 +162,5 @@ export const UserControllers = {
 	getSingleUser,
 	toggleUserStatus,
 	getUserAnalytics,
+	createStaff,
 };

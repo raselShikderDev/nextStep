@@ -120,6 +120,27 @@ const refreshToken = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+const changeInitialPassword =
+	asyncHelper(
+		async (
+			req: Request,
+			res: Response,
+		) => {
+			await AuthServices.changeInitialPassword(
+				req.user.id,
+				req.body,
+			);
+
+			sendResponse(res, {
+				statusCode:
+					StatusCodes.OK,
+				success: true,
+				message:
+					"Password changed successfully",
+			});
+		},
+	);
+
 export const AuthControllers = {
 	registerUser,
 	loginUser,
@@ -128,4 +149,5 @@ export const AuthControllers = {
 	resetPassword,
 	changePassword,
 	refreshToken,
+	changeInitialPassword
 };

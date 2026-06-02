@@ -5,6 +5,7 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import { UserControllers } from "./user.controller";
 import {
 	approveEmailChangeSchema,
+	createStaffValidationSchema,
 	requestEmailChangeSchema,
 	updateUserValidationSchema,
 } from "./user.validation";
@@ -71,6 +72,18 @@ router.patch(
 	"/toggle-status/:id",
 	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
 	UserControllers.toggleUserStatus,
+);
+
+router.post(
+	"/create-staff",
+	authCheck(
+		Role.ADMIN,
+		Role.SUPER_ADMIN,
+	),
+	requestZodValidator(
+		createStaffValidationSchema,
+	),
+	UserControllers.createStaff,
 );
 
 export const userRouter = router;
