@@ -9,7 +9,8 @@ interface ISendEmailOptions {
 
 const sendEmail = async (options: ISendEmailOptions) => {
 	const emailSent = await resend.emails.send({
-		from: `NextStep <${envVar.EMAIL_FROM as string}>`,
+		// from: `NextStep <${envVar.EMAIL_FROM as string}>`,
+		from: `onboarding@resend.dev`,
 		to: options.to,
 		subject: options.subject,
 		html: options.html,

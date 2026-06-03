@@ -544,7 +544,8 @@ const createStaff = async (payload: {
       "Sending reset password OTP is Unsuccessfull",
     );
   }
-  console.log({ email: payload.email });
+        
+  console.log({ email: payload.email, temporaryPassword });
 
   return result;
 };
