@@ -26,12 +26,7 @@ export const changePasswordValidationSchema = z.object({
 	newPassword: z.string().min(8),
 });
 
-
-export const changeInitialPasswordValidationSchema =
-	z.object({
-		currentPassword:
-			z.string(),
-		newPassword: z
-			.string()
-			.min(6),
-	});
+export const changeInitialPasswordValidationSchema = z.object({
+	currentPassword: z.string(),
+	newPassword: z.string().min(6),
+});

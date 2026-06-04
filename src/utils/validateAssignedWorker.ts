@@ -41,7 +41,3 @@ const validateAssignedWorker = async (requestId: string, userId: string) => {
 };
 
 export default validateAssignedWorker;
-
-// verifyPayment()
-// rejectPayment()
-// refundPayment()

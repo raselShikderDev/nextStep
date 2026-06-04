@@ -30,26 +30,6 @@ const uploadDocuments = async (
 		uploadedById = user.id;
 	}
 
-	//   const documents = await prisma.$transaction(async (tx) => {
-	//     return Promise.all(
-	//       files.map((file) =>
-	//         tx.requestDocument.create({
-	//           data: {
-	//             uploadedById,
-	//             uploadedByRole: role,
-	//             name: path.parse(file.originalname).name,
-	//             originalName: file.originalname,
-	//             url: `/uploads/requests/${file.filename}`,
-	//             key: file.filename,
-	//             mimeType: file.mimetype,
-	//             size: file.size,
-	//             description,
-	//           },
-	//         }),
-	//       ),
-	//     );
-	//   });
-
 	try {
 		const documents = await Promise.all(
 			files.map((file) =>

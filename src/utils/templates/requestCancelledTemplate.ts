@@ -15,11 +15,7 @@ const requestCancelledTemplate = ({
 
 <p><strong>Request No:</strong> ${requestNo}</p>
 
-${
-	reason
-		? `<p><strong>Reason:</strong> ${reason}</p>`
-		: ""
-}
+${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ""}
 `;
 
 export default requestCancelledTemplate;

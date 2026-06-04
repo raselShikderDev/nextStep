@@ -8,83 +8,83 @@ import AppError from "@/errorHelper/appError";
 import { verifyJwtToken } from "@/utils/jwtHelper";
 
 const authCheck =
-  (...authRoles: string[]) =>
-  async (req: Request, _res: Response, next: NextFunction) => {
-    try {
-      const bearerToken = req.headers.authorization;
+	(...authRoles: string[]) =>
+	async (req: Request, _res: Response, next: NextFunction) => {
+		try {
+			const bearerToken = req.headers.authorization;
 
-      const accessToken = bearerToken?.startsWith("Bearer ")
-        ? bearerToken.split(" ")[1]
-        : req.cookies?.accessToken;
+			const accessToken = bearerToken?.startsWith("Bearer ")
+				? bearerToken.split(" ")[1]
+				: req.cookies?.accessToken;
 
-      if (!accessToken) {
-        throw new AppError(StatusCodes.UNAUTHORIZED, "Access token not found");
-      }
+			if (!accessToken) {
+				throw new AppError(StatusCodes.UNAUTHORIZED, "Access token not found");
+			}
 
-      const verifiedToken = (await verifyJwtToken(
-        accessToken,
-        envVar.JWT_ACCESS_SECRET as string,
-      )) as JwtPayload;
+			const verifiedToken = (await verifyJwtToken(
+				accessToken,
+				envVar.JWT_ACCESS_SECRET as string,
+			)) as JwtPayload;
 
-      console.log({ verifiedToken });
+			console.log({ verifiedToken });
 
-      if (!verifiedToken) {
-        throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid access token");
-      }
+			if (!verifiedToken) {
+				throw new AppError(StatusCodes.UNAUTHORIZED, "Invalid access token");
+			}
 
-      const user = await prisma.user.findUnique({
-        where: {
-          id: verifiedToken.id,
-        },
-        select: {
-          id: true,
-          email: true,
-          role: true,
-          isActive: true,
-          isVerified: true,
-          mustChangePassword: true,
-        },
-      });
+			const user = await prisma.user.findUnique({
+				where: {
+					id: verifiedToken.id,
+				},
+				select: {
+					id: true,
+					email: true,
+					role: true,
+					isActive: true,
+					isVerified: true,
+					mustChangePassword: true,
+				},
+			});
 
-      if (!user) {
-        throw new AppError(StatusCodes.NOT_FOUND, "User not found");
-      }
+			if (!user) {
+				throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+			}
 
-      if (user?.mustChangePassword && req.path !== "/change-initial-password") {
-        throw new AppError(403, "Password change required");
-      }
+			if (user?.mustChangePassword && req.path !== "/change-initial-password") {
+				throw new AppError(403, "Password change required");
+			}
 
-      if (!user.isVerified) {
-        throw new AppError(
-          StatusCodes.FORBIDDEN,
-          "Your account is not verified",
-        );
-      }
+			if (!user.isVerified) {
+				throw new AppError(
+					StatusCodes.FORBIDDEN,
+					"Your account is not verified",
+				);
+			}
 
-      if (!user.isActive) {
-        throw new AppError(StatusCodes.FORBIDDEN, "Your account is inactive");
-      }
+			if (!user.isActive) {
+				throw new AppError(StatusCodes.FORBIDDEN, "Your account is inactive");
+			}
 
-      if (authRoles.length > 0 && !authRoles.includes(user.role)) {
-        throw new AppError(
-          StatusCodes.FORBIDDEN,
-          "You are not authorized to access this route",
-        );
-      }
+			if (authRoles.length > 0 && !authRoles.includes(user.role)) {
+				throw new AppError(
+					StatusCodes.FORBIDDEN,
+					"You are not authorized to access this route",
+				);
+			}
 
-      req.user = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-        isActive: user.isActive,
-      };
+			req.user = {
+				id: user.id,
+				email: user.email,
+				role: user.role,
+				isActive: user.isActive,
+			};
 
-      next();
-    } catch (error) {
-      console.log("Error in checkauth", error);
+			next();
+		} catch (error) {
+			console.log("Error in checkauth", error);
 
-      next(error);
-    }
-  };
+			next(error);
+		}
+	};
 
 export default authCheck;

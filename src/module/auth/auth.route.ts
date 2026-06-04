@@ -4,67 +4,67 @@ import requestZodValidator from "@/middleware/requestZodValidator";
 import { Role } from "../../../prisma/generated/prisma/enums";
 import { AuthControllers } from "./auth.controller";
 import {
-  changeInitialPasswordValidationSchema,
-  changePasswordValidationSchema,
-  forgotPasswordValidationSchema,
-  loginValidationSchema,
-  registerValidationSchema,
-  resetPasswordValidationSchema,
+	changeInitialPasswordValidationSchema,
+	changePasswordValidationSchema,
+	forgotPasswordValidationSchema,
+	loginValidationSchema,
+	registerValidationSchema,
+	resetPasswordValidationSchema,
 } from "./auth.validation";
 
 const router = Router();
 
 // Register user
 router.post(
-  "/register",
-  requestZodValidator(registerValidationSchema),
-  AuthControllers.registerUser,
+	"/register",
+	requestZodValidator(registerValidationSchema),
+	AuthControllers.registerUser,
 );
 
 // Login User
 router.post(
-  "/login",
-  requestZodValidator(loginValidationSchema),
-  AuthControllers.loginUser,
+	"/login",
+	requestZodValidator(loginValidationSchema),
+	AuthControllers.loginUser,
 );
 
 // LogOut User
 router.post(
-  "/logout",
-  authCheck(...Object.values(Role)),
-  AuthControllers.logoutUser,
+	"/logout",
+	authCheck(...Object.values(Role)),
+	AuthControllers.logoutUser,
 );
 
 // Send otp for reseting password after forgetting
 router.post(
-  "/forgot-password",
-  requestZodValidator(forgotPasswordValidationSchema),
-  AuthControllers.forgotPassword,
+	"/forgot-password",
+	requestZodValidator(forgotPasswordValidationSchema),
+	AuthControllers.forgotPassword,
 );
 
 // Reset password after forgeting
 router.post(
-  "/reset-password",
-  requestZodValidator(resetPasswordValidationSchema),
-  authCheck(...Object.values(Role)),
-  AuthControllers.resetPassword,
+	"/reset-password",
+	requestZodValidator(resetPasswordValidationSchema),
+	authCheck(...Object.values(Role)),
+	AuthControllers.resetPassword,
 );
 
 // Chnage password - For logged in user
 router.post(
-  "/change-password",
-  requestZodValidator(changePasswordValidationSchema),
-  authCheck(...Object.values(Role)),
-  AuthControllers.changePassword,
+	"/change-password",
+	requestZodValidator(changePasswordValidationSchema),
+	authCheck(...Object.values(Role)),
+	AuthControllers.changePassword,
 );
 
 router.post("/refresh-token", AuthControllers.refreshToken);
 
 router.patch(
-  "/change-initial-password",
-  authCheck(Role.USER, Role.MANAGER, Role.ADMIN,),
-  requestZodValidator(changeInitialPasswordValidationSchema),
-  AuthControllers.changeInitialPassword,
+	"/change-initial-password",
+	authCheck(Role.USER, Role.MANAGER, Role.ADMIN),
+	requestZodValidator(changeInitialPasswordValidationSchema),
+	AuthControllers.changeInitialPassword,
 );
 
 export const authRouter = router;

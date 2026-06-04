@@ -23,15 +23,9 @@ export const approveEmailChangeSchema = z.object({
 	rejectedReason: z.string().optional(),
 });
 
-
-export const createStaffValidationSchema =
-	z.object({
-		name: z.string(),
-		email: z.email(),
-		phone: z.string().optional(),
-		role: z.enum([
-			Role.ADMIN,
-			Role.MANAGER,
-			Role.USER,
-		]),
-	});
+export const createStaffValidationSchema = z.object({
+	name: z.string(),
+	email: z.email(),
+	phone: z.string().optional(),
+	role: z.enum([Role.ADMIN, Role.MANAGER, Role.USER]),
+});

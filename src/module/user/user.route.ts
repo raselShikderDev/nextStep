@@ -76,13 +76,8 @@ router.patch(
 
 router.post(
 	"/create-staff",
-	authCheck(
-		Role.ADMIN,
-		Role.SUPER_ADMIN,
-	),
-	requestZodValidator(
-		createStaffValidationSchema,
-	),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
+	requestZodValidator(createStaffValidationSchema),
 	UserControllers.createStaff,
 );
 

@@ -15,11 +15,7 @@ const requestDeliveredTemplate = ({
 
 <p><strong>Request No:</strong> ${requestNo}</p>
 
-${
-	message
-		? `<p><strong>Message:</strong> ${message}</p>`
-		: ""
-}
+${message ? `<p><strong>Message:</strong> ${message}</p>` : ""}
 
 <p>Thank you for choosing NextStep.</p>
 `;
