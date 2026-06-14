@@ -21,6 +21,9 @@ const envVar = {
 	EMAIL_FROM: process.env.EMAIL_FROM as string,
 	SUPER_ADMIN_PASS: process.env.SUPER_ADMIN_PASS as string,
 	SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
+	FRONTEND_URL: process.env.FRONTEND_URL as string,
+	FRONTEND_ADMIN_DASHBOARD_URL: process.env.FRONTEND_ADMIN_DASHBOARD_URL as string,
+	
 };
 
 export default envVar;
