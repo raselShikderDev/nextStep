@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"target": "es2023",
 		"module": "ESNext",
+		"ignoreDeprecations": "6.0",
 		"moduleResolution": "bundler",
 		"types": ["node", "bun"],
 		"strict": true,

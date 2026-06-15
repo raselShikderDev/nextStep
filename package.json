@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "bun --watch src/server.ts",
-		"build": "tsup src/server.ts --format esm --dts",
+		"build": "tsup src/server.ts --format esm",
 		"start": "bun run dist/server.js",
 		"db:generate": "bunx prisma generate",
 		"db:migrate": "bunx prisma migrate dev --schema=./prisma/schema.prisma",
