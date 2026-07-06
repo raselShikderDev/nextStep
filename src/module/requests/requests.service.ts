@@ -551,7 +551,7 @@ const deliverRequest = async (
 	},
 	userId: string,
 ) => {
-	const { request } = await validateAssignedWorker(requestId, userId);
+	const { request, user } = await validateAssignedWorker(requestId, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
@@ -561,6 +561,8 @@ const deliverRequest = async (
 		throw new AppError(400, "Request is not ready for delivery");
 	}
 
+const deliveryMessage = payload?.deliveryMessage || `Not defined by ${user?.name}`
+
 	const result = await prisma.$transaction(async (tx) => {
 		const updatedRequest = await tx.serviceRequest.update({
 			where: {
@@ -568,7 +570,7 @@ const deliverRequest = async (
 			},
 			data: {
 				status: RequestStatus.DELIVERED,
-				deliveryMessage: payload.deliveryMessage,
+				deliveryMessage ,
 				completedAt: new Date(),
 			},
 		});
@@ -576,11 +578,11 @@ const deliverRequest = async (
 		await tx.requestStatusHistory.create({
 			data: {
 				requestId,
-				changedById: userId,
+				changedById: user?.id,
 				action: ActionType.REQUEST_DELIVERED,
 				fromStatus: RequestStatus.READY_FOR_DELIVERY,
 				toStatus: RequestStatus.DELIVERED,
-				note: payload.deliveryMessage ?? "Delivered to client",
+				note: deliveryMessage,
 			},
 		});
 
