@@ -230,11 +230,13 @@ const cancelRequest = async (
 	},
 	userId: string,
 ) => {
-	const { request } = await validateRequestAccess(id, userId);
+	const { request, user } = await validateRequestAccess(id, userId);
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
 	}
+	const note = payload?.note || `Not defined by ${user?.name}`
+
 	const result = await prisma.$transaction(async (tx) => {
 		const updatedRequest = await tx.serviceRequest.update({
 			where: {
@@ -248,10 +250,10 @@ const cancelRequest = async (
 		await tx.requestStatusHistory.create({
 			data: {
 				requestId: id,
-				changedById: userId,
+				changedById: user?.id,
 				fromStatus: request.status,
 				toStatus: RequestStatus.CANCELLED,
-				note: payload.note,
+				note,
 				action: ActionType.REQUEST_CANCELLED,
 			},
 		});
