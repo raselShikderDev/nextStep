@@ -322,6 +322,8 @@ const claimRequest = async (requestId: string, userId: string) => {
 			id: requestId,
 		},
 	});
+	console.log({request});
+	
 
 	if (!request) {
 		throw new AppError(404, "Request not found");
@@ -340,13 +342,14 @@ const claimRequest = async (requestId: string, userId: string) => {
 	if (!user) {
 		throw new AppError(404, "User not found");
 	}
-	const result = await prisma.$transaction(async (tx) => {
+	const result = await prisma.$transaction(async (tx) => {		
 		const updatedRequest = await tx.serviceRequest.update({
 			where: {
 				id: requestId,
 			},
 			data: {
 				assignedToId: user.id,
+				status: RequestStatus.IN_PROGRESS,
 			},
 		});
 
@@ -361,7 +364,7 @@ const claimRequest = async (requestId: string, userId: string) => {
 		});
 
 		return updatedRequest;
-	});
+	});	
 	return result;
 };
 
