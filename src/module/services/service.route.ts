@@ -25,6 +25,7 @@ router.post(
 );
 
 router.get("/", ServiceControllers.getAllServices);
+router.get("/service-category", ServiceControllers.getAllServicesCategory);
 
 router.get("/:slug", ServiceControllers.getSingleService);
 

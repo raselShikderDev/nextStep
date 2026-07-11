@@ -25,6 +25,18 @@ const createService = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
+const getAllServicesCategory = asyncHelper(async (req: Request, res: Response) => {
+	const result = await ServiceServices.getAllServicesCategory(req.query);
+
+	sendResponse(res, {
+		statusCode: 200,
+		success: true,
+		message: "Service Categories fetched successfully",
+		data: result.data,
+		meta: result.meta,
+	});
+});
+
 const getAllServices = asyncHelper(async (req: Request, res: Response) => {
 	const result = await ServiceServices.getAllServices(req.query);
 
@@ -55,4 +67,5 @@ export const ServiceControllers = {
 	createService,
 	getAllServices,
 	getSingleService,
+	getAllServicesCategory
 };

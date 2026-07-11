@@ -72,6 +72,32 @@ const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 };
 
 // GET ALL SERVICES
+const getAllServicesCategory = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder(query)
+		.search(["name", "slug"])
+		.filter()
+		.sort()
+		.paginate();
+
+	const services = await prisma.serviceCategory.findMany();
+
+	const total = await prisma.service.count({
+		where: queryBuilder.getWhere(),
+	});
+
+	const meta = generateMeta({
+		total,
+		page: Number(query.page) || 1,
+		limit: Number(query.limit) || 10,
+	});
+
+	return {
+		meta,
+		data: services,
+	};
+};
+
+// GET ALL SERVICES
 const getAllServices = async (query: Record<string, unknown>) => {
 	const queryBuilder = new QueryBuilder(query)
 		.search(["name", "slug"])
@@ -125,4 +151,5 @@ export const ServiceServices = {
 	createService,
 	getAllServices,
 	getSingleService,
+	getAllServicesCategory,
 };
