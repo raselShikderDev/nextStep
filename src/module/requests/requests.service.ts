@@ -412,11 +412,13 @@ const createServiceRequest = async (
 	userId?: string,
 	role?: Role,
 ) => {
-	const service = await prisma.service.findUnique({
+	const service = await prisma.service.findFirst({
 		where: {
 			id: payload.serviceId,
 		},
 	});
+console.log("in request service 420", {payload});
+console.log("in request service 421", {service});
 
 	if (!service) {
 		throw new AppError(404, "Service not found");
