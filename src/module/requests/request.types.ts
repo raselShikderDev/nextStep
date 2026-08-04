@@ -1,4 +1,4 @@
-import type { Prisma } from "../../../prisma/generated/prisma/client";
+import type { GuestSource, Prisma } from "../../../prisma/generated/prisma/client";
 
 export type CreateRequestPayload = {
 	serviceId: string;
@@ -8,4 +8,5 @@ export type CreateRequestPayload = {
 	guestAddress?: string;
 	userNotes?: string;
 	formData: Prisma.InputJsonValue;
+	guestSource:GuestSource
 };
