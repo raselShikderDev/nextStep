@@ -17,6 +17,23 @@ router.post(
 	ServiceControllers.createCategory,
 );
 
+router.get("/", ServiceControllers.getAllServices);
+
+//  Update category
+router.patch(
+	"/category/:id",
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
+	requestZodValidator(createServiceCategoryValidationSchema),
+	ServiceControllers.updateCategory,
+);
+
+// Toggle active/deactive
+router.patch(
+	"/category/:id/toggle-status",
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
+	ServiceControllers.toggleCategoryStatus,
+);
+
 router.post(
 	"/create",
 	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
@@ -24,7 +41,6 @@ router.post(
 	ServiceControllers.createService,
 );
 
-router.get("/", ServiceControllers.getAllServices);
 router.get("/service-category", ServiceControllers.getAllServicesCategory);
 
 router.get("/:slug", ServiceControllers.getSingleService);

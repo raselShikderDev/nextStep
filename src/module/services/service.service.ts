@@ -32,6 +32,92 @@ const createCategory = async (
 	return category;
 };
 
+// GET ALL SERVICES CATEGORY
+const getAllServicesCategory = async (query: Record<string, unknown>) => {
+	const queryBuilder = new QueryBuilder(query)
+		.search(["name", "slug"])
+		.filter()
+		.sort()
+		.paginate();
+
+	const services = await prisma.serviceCategory.findMany();
+
+	const total = await prisma.service.count({
+		where: queryBuilder.getWhere(),
+	});
+
+	const meta = generateMeta({
+		total,
+		page: Number(query.page) || 1,
+		limit: Number(query.limit) || 10,
+	});
+
+	return {
+		meta,
+		data: services,
+	};
+};
+
+// UPDATE SERVICE CATEGORY  
+const updateCategory = async (
+	id: string,
+	payload: Prisma.ServiceCategoryUncheckedUpdateInput,
+) => {
+	const existing = await prisma.serviceCategory.findUnique({
+		where: { id },
+	});
+
+	if (!existing) {
+		throw new AppError(404, "Service category not found");
+	}
+
+	// Prevent duplicate name/slug on other categories
+	const orConditions: Array<{ name: string } | { slug: string }> = [];
+	if (payload.name) orConditions.push({ name: payload.name as string });
+	if (payload.slug) orConditions.push({ slug: payload.slug as string });
+
+	if (orConditions.length > 0) {
+		const conflict = await prisma.serviceCategory.findFirst({
+			where: {
+				AND: [{ NOT: { id } }, { OR: orConditions }],
+			},
+		});
+
+		if (conflict) {
+			throw new AppError(
+				409,
+				"Service category with this name or slug already exists",
+			);
+		}
+	}
+
+	const category = await prisma.serviceCategory.update({
+		where: { id },
+		data: payload,
+	});
+
+	return category;
+};
+
+// TOGGLE SERVICE CATEGORY STATUS  
+const toggleCategoryStatus = async (id: string) => {
+	const existing = await prisma.serviceCategory.findUnique({
+		where: { id },
+	});
+
+	if (!existing) {
+		throw new AppError(404, "Service category not found");
+	}
+
+	const category = await prisma.serviceCategory.update({
+		where: { id },
+		data: { isActive: !existing.isActive },
+	});
+
+	return category;
+};
+
+
 // CREATE SERVICE
 const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 	const category = await prisma.serviceCategory.findUnique({
@@ -71,31 +157,6 @@ const createService = async (payload: Prisma.ServiceUncheckedCreateInput) => {
 	return service;
 };
 
-// GET ALL SERVICES
-const getAllServicesCategory = async (query: Record<string, unknown>) => {
-	const queryBuilder = new QueryBuilder(query)
-		.search(["name", "slug"])
-		.filter()
-		.sort()
-		.paginate();
-
-	const services = await prisma.serviceCategory.findMany();
-
-	const total = await prisma.service.count({
-		where: queryBuilder.getWhere(),
-	});
-
-	const meta = generateMeta({
-		total,
-		page: Number(query.page) || 1,
-		limit: Number(query.limit) || 10,
-	});
-
-	return {
-		meta,
-		data: services,
-	};
-};
 
 // GET ALL SERVICES
 const getAllServices = async (query: Record<string, unknown>) => {
@@ -152,4 +213,6 @@ export const ServiceServices = {
 	getAllServices,
 	getSingleService,
 	getAllServicesCategory,
+	toggleCategoryStatus,
+	updateCategory,
 };
