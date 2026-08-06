@@ -6,6 +6,7 @@ import { ServiceControllers } from "./service.controller";
 import {
 	createServiceCategoryValidationSchema,
 	createServiceValidationSchema,
+	updateServiceValidationSchema,
 } from "./service.validation";
 
 const router = Router();
@@ -32,6 +33,20 @@ router.patch(
 	"/category/:id/toggle-status",
 	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	ServiceControllers.toggleCategoryStatus,
+);
+
+router.patch(
+  "/:id",
+  authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+  requestZodValidator(updateServiceValidationSchema),
+  ServiceControllers.updateService,
+);
+
+// TOGGLE SERVICE STATUS
+router.patch(
+  "/:id/toggle-status",
+  authCheck(Role.SUPER_ADMIN, Role.ADMIN),
+  ServiceControllers.toggleServiceStatus,
 );
 
 router.post(

@@ -91,6 +91,17 @@ const getAllServices = asyncHelper(async (req: Request, res: Response) => {
   });
 });
 
+const updateService = asyncHelper(async (req: Request, res: Response) => {
+  const result = await ServiceServices.updateService(req.params.id as string, req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Service updated successfully",
+    data: result,
+  });
+});
+
 const getSingleService = asyncHelper(async (req: Request, res: Response) => {
   const result = await ServiceServices.getSingleService(
     req.params.slug as string,
@@ -104,6 +115,17 @@ const getSingleService = asyncHelper(async (req: Request, res: Response) => {
   });
 });
 
+const toggleServiceStatus = asyncHelper(async (req: Request, res: Response) => {
+  const result = await ServiceServices.toggleServiceStatus(req.params.id as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: `Service ${result.isActive ? "activated" : "deactivated"} successfully`,
+    data: result,
+  });
+});
+
 export const ServiceControllers = {
   createCategory,
   createService,
@@ -112,4 +134,6 @@ export const ServiceControllers = {
   getAllServicesCategory,
   toggleCategoryStatus,
   updateCategory,
+  updateService,
+  toggleServiceStatus,
 };

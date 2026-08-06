@@ -187,6 +187,55 @@ const getAllServices = async (query: Record<string, unknown>) => {
   };
 };
 
+// UPDATE SERVICE
+const updateService = async (
+  id: string,
+  payload: Prisma.ServiceUncheckedUpdateInput,
+) => {
+  const existing = await prisma.service.findUnique({
+    where: { id },
+    include: { category: true },
+  });
+
+  if (!existing) {
+    throw new AppError(404, "Service not found");
+  }
+
+  // Auto-generate slug if name changed but slug not provided
+  if (payload.name && !payload.slug) {
+    payload.slug = (payload.name as string)
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+  }
+
+  // Check for duplicates (name or slug) on OTHER services
+  const orConditions: Array<{ name: string } | { slug: string }> = [];
+  if (payload.name) orConditions.push({ name: payload.name as string });
+  if (payload.slug) orConditions.push({ slug: payload.slug as string });
+
+  if (orConditions.length > 0) {
+    const conflict = await prisma.service.findFirst({
+      where: {
+        AND: [{ NOT: { id } }, { OR: orConditions }],
+      },
+    });
+
+    if (conflict) {
+      throw new AppError(409, "Service with this name or slug already exists");
+    }
+  }
+
+  const service = await prisma.service.update({
+    where: { id },
+    data: payload,
+    include: { category: true },
+  });
+
+  return service;
+};
+
 // GET SINGLE SERVICE
 const getSingleService = async (slug: string) => {
   const service = await prisma.service.findUnique({
@@ -205,6 +254,25 @@ const getSingleService = async (slug: string) => {
   return service;
 };
 
+// TOGGLE SERVICE STATUS
+const toggleServiceStatus = async (id: string) => {
+  const existing = await prisma.service.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    throw new AppError(404, "Service not found");
+  }
+
+  const service = await prisma.service.update({
+    where: { id },
+    data: { isActive: !existing.isActive },
+    include: { category: true },
+  });
+
+  return service;
+};
+
 export const ServiceServices = {
   createCategory,
   createService,
@@ -213,4 +281,6 @@ export const ServiceServices = {
   getAllServicesCategory,
   toggleCategoryStatus,
   updateCategory,
+  updateService,
+  toggleServiceStatus,
 };

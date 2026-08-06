@@ -44,3 +44,33 @@ export const createServiceValidationSchema = z.object({
 		}),
 	),
 });
+
+
+export const updateServiceValidationSchema = z.object({
+  name: z.string().min(2).max(200).optional(),
+  description: z.string().min(10).optional(),
+  price: z.coerce.number().min(0).optional(),
+  categoryId: z.string().optional(),
+  features: z.array(z.string()).optional(),
+  deliverables: z.array(z.string()).optional(),
+  turnaround: z.string().optional(),
+  currency: z.string().optional(),
+  requiresQuotation: z.coerce.boolean().optional(),
+  isActive: z.coerce.boolean().optional(),
+  sortOrder: z.coerce.number().min(0).optional(),
+  slug: z.string().optional(),
+  formSchema: z.array(
+    z.object({
+      name: z.string().min(1),
+      label: z.string().min(1),
+      type: z.enum([
+        "TEXT", "TEXTAREA", "NUMBER", "EMAIL", "PHONE",
+        "PASSWORD", "DATE", "FILE", "SELECT", "MULTI_SELECT",
+        "RADIO", "CHECKBOX", "URL",
+      ]),
+      required: z.boolean().default(false),
+      placeholder: z.string().optional(),
+      options: z.array(z.string()).optional(),
+    })
+  ).optional(),
+});
