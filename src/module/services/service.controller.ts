@@ -80,7 +80,17 @@ const createService = asyncHelper(async (req: Request, res: Response) => {
 });
 
 const getAllServices = asyncHelper(async (req: Request, res: Response) => {
-  const result = await ServiceServices.getAllServices(req.query);
+  const query: Record<string, unknown> = { ...req.query };
+
+  // Convert frontend "status" string to backend "isActive" boolean
+  if (req.query.status === "active") {
+    query.isActive = true;
+  } else if (req.query.status === "inactive") {
+    query.isActive = false;
+  }
+  delete query.status;
+
+  const result = await ServiceServices.getAllServices(query);
 
   sendResponse(res, {
     statusCode: 200,
@@ -92,7 +102,10 @@ const getAllServices = asyncHelper(async (req: Request, res: Response) => {
 });
 
 const updateService = asyncHelper(async (req: Request, res: Response) => {
-  const result = await ServiceServices.updateService(req.params.id as string, req.body);
+  const result = await ServiceServices.updateService(
+    req.params.id as string,
+    req.body,
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -116,7 +129,9 @@ const getSingleService = asyncHelper(async (req: Request, res: Response) => {
 });
 
 const toggleServiceStatus = asyncHelper(async (req: Request, res: Response) => {
-  const result = await ServiceServices.toggleServiceStatus(req.params.id as string);
+  const result = await ServiceServices.toggleServiceStatus(
+    req.params.id as string,
+  );
 
   sendResponse(res, {
     statusCode: 200,
