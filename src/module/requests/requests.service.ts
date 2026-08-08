@@ -1,16 +1,15 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: <> */
 import path from "node:path";
 import prisma from "@/config/db.config";
-import envVar from "@/config/env.config";
 import AppError from "@/errorHelper/appError";
 import generateMeta from "@/utils/generateMeta";
 import QueryBuilder from "@/utils/QueryBuilder";
-import sendEmail from "@/utils/sendEmail";
-import requestReceivedTemplate from "@/utils/templates/requestReceivedTemplate";
 import validateAssignedWorker from "@/utils/validateAssignedWorker";
 import validateRequestAccess from "@/utils/validateRequestAccess";
 import {
 	ActionType,
+	type PaymentMethod,
+	PaymentStatus,
 	RequestStatus,
 	Role,
 } from "../../../prisma/generated/prisma/enums";
@@ -408,7 +407,13 @@ const startWork = async (requestId: string, userId: string) => {
 // CREATE SERVICE REQUEST BY GUEST
 const createServiceRequest = async (
   payload: CreateRequestPayload,
-  files: Express.Multer.File[] = [], 
+  files: Express.Multer.File[] = [],
+  paymentData?: {
+    method: string;
+    transactionId: string;
+    senderNumber?: string;
+    userNote?: string;
+  },
   userId?: string,
   role?: Role,
 ) => {
@@ -416,40 +421,31 @@ const createServiceRequest = async (
     where: { id: payload.serviceId },
   });
 
-  if (!service) {
-    throw new AppError(404, "Service not found");
-  }
+  if (!service) throw new AppError(404, "Service not found");
+  if (!service.isActive) throw new AppError(400, "Service is not available");
 
-  if (!service.isActive) {
-    throw new AppError(400, "Service is not available");
-  }
-
-  
   const totalRequest = await prisma.serviceRequest.count();
   const requestNo = `NSX-${new Date().getFullYear()}-${String(
     totalRequest + 1,
   ).padStart(6, "0")}`;
 
   let userDetailsId: string | undefined;
-
   if (userId) {
     const user = await prisma.userDetails.findUnique({
       where: { userId },
-      select: {
-        id: true,
-        phone: true,
-        user: { select: { email: true } },
-      },
+      select: { id: true },
     });
-
-    if (!user) {
-      throw new AppError(404, "User not found");
-    }
-
-    userDetailsId = user.id;
+    if (user) userDetailsId = user.id;
   }
 
   const result = await prisma.$transaction(async (tx) => {
+    // Determine status: if payment included, go straight to PAYMENT_SUBMITTED
+    const initialStatus = paymentData
+      ? RequestStatus.PAYMENT_SUBMITTED
+      : service.requiresQuotation
+        ? RequestStatus.UNDER_REVIEW
+        : RequestStatus.PAYMENT_PENDING;
+
     const request = await tx.serviceRequest.create({
       data: {
         requestNo,
@@ -460,16 +456,30 @@ const createServiceRequest = async (
         guestEmail: payload.guestEmail,
         guestPhone: payload.guestPhone,
         guestAddress: payload.guestAddress,
-        guestSource: payload.guestSource, // ✅ was missing
+        guestSource: payload.guestSource,
         userNotes: payload.userNotes,
         formData: payload.formData,
-        status: service.requiresQuotation
-          ? RequestStatus.UNDER_REVIEW
-          : RequestStatus.PAYMENT_PENDING,
+        status: initialStatus,
         currency: service.currency,
       },
     });
 
+    if (paymentData) {
+      await tx.payment.create({
+        data: {
+          requestId: request.id,
+          amount: service.price,
+          currency: service.currency,
+          method: paymentData.method as PaymentMethod, // cast to your PaymentMethod enum
+          transactionId: paymentData.transactionId,
+          senderNumber: paymentData.senderNumber,
+          userNote: paymentData.userNote,
+          status: PaymentStatus.SUBMITTED,
+        },
+      });
+    }
+
+    // Request documents
     if (files.length > 0) {
       await tx.requestDocument.createMany({
         data: files.map((file) => ({
@@ -492,42 +502,158 @@ const createServiceRequest = async (
         changedById: userDetailsId,
         action: ActionType.REQUEST_CREATED,
         toStatus: request.status,
-        note: "Request submitted successfully",
+        note: paymentData
+          ? "Request created with payment proof"
+          : "Request submitted successfully",
       },
     });
 
-    const fullRequest = await tx.serviceRequest.findUnique({
+    return tx.serviceRequest.findUnique({
       where: { id: request.id },
       include: {
         service: true,
         documents: true,
-        statusHistory: {
-          orderBy: { createdAt: "desc" },
-        },
+        payment: true, 
+        statusHistory: { orderBy: { createdAt: "desc" } },
       },
     });
-
-    return fullRequest;
   });
+
+//   // Email confirmation
+//   sendEmail({
+//     to: payload.guestEmail!,
+//     subject: `Request Received - ${requestNo}`,
+//     html: requestReceivedTemplate({
+//       name: payload.guestName!,
+//       requestNo,
+//       serviceName: service.name,
+//     }),
+//   }).catch(console.error);
+
+  return result;
+};
+// const createServiceRequest = async (
+//   payload: CreateRequestPayload,
+//   files: Express.Multer.File[] = [], 
+//   userId?: string,
+//   role?: Role,
+// ) => {
+//   const service = await prisma.service.findFirst({
+//     where: { id: payload.serviceId },
+//   });
+
+//   if (!service) {
+//     throw new AppError(404, "Service not found");
+//   }
+
+//   if (!service.isActive) {
+//     throw new AppError(400, "Service is not available");
+//   }
 
   
-  sendEmail({
-    to: payload.guestEmail!,
-    subject: `Request Received - ${requestNo}`,
-    html: requestReceivedTemplate({
-      name: payload.guestName!,
-      requestNo,
-      serviceName: service.name,
-    }),
-  }).catch((error) => {
-    if (envVar.NODE_ENV === "Development") {
-      console.error("Failed to send request confirmation email:", error);
-    }
-    // In production, log to monitoring (Sentry/DataDog) instead of throwing
-  });
+//   const totalRequest = await prisma.serviceRequest.count();
+//   const requestNo = `NSX-${new Date().getFullYear()}-${String(
+//     totalRequest + 1,
+//   ).padStart(6, "0")}`;
 
-  return result; // ✅ always return the created request
-};
+//   let userDetailsId: string | undefined;
+
+//   if (userId) {
+//     const user = await prisma.userDetails.findUnique({
+//       where: { userId },
+//       select: {
+//         id: true,
+//         phone: true,
+//         user: { select: { email: true } },
+//       },
+//     });
+
+//     if (!user) {
+//       throw new AppError(404, "User not found");
+//     }
+
+//     userDetailsId = user.id;
+//   }
+
+//   const result = await prisma.$transaction(async (tx) => {
+//     const request = await tx.serviceRequest.create({
+//       data: {
+//         requestNo,
+//         userId: userDetailsId,
+//         serviceId: payload.serviceId,
+//         isGuest: !userDetailsId,
+//         guestName: payload.guestName,
+//         guestEmail: payload.guestEmail,
+//         guestPhone: payload.guestPhone,
+//         guestAddress: payload.guestAddress,
+//         guestSource: payload.guestSource, // ✅ was missing
+//         userNotes: payload.userNotes,
+//         formData: payload.formData,
+//         status: service.requiresQuotation
+//           ? RequestStatus.UNDER_REVIEW
+//           : RequestStatus.PAYMENT_PENDING,
+//         currency: service.currency,
+//       },
+//     });
+
+//     if (files.length > 0) {
+//       await tx.requestDocument.createMany({
+//         data: files.map((file) => ({
+//           requestId: request.id,
+//           uploadedById: userDetailsId,
+//           uploadedByRole: role,
+//           name: path.parse(file.originalname).name,
+//           originalName: file.originalname,
+//           url: `/uploads/requests/${file.filename}`,
+//           key: file.filename,
+//           mimeType: file.mimetype,
+//           size: file.size,
+//         })),
+//       });
+//     }
+
+//     await tx.requestStatusHistory.create({
+//       data: {
+//         requestId: request.id,
+//         changedById: userDetailsId,
+//         action: ActionType.REQUEST_CREATED,
+//         toStatus: request.status,
+//         note: "Request submitted successfully",
+//       },
+//     });
+
+//     const fullRequest = await tx.serviceRequest.findUnique({
+//       where: { id: request.id },
+//       include: {
+//         service: true,
+//         documents: true,
+//         statusHistory: {
+//           orderBy: { createdAt: "desc" },
+//         },
+//       },
+//     });
+
+//     return fullRequest;
+//   });
+
+  
+//   sendEmail({
+//     to: payload.guestEmail!,
+//     subject: `Request Received - ${requestNo}`,
+//     html: requestReceivedTemplate({
+//       name: payload.guestName!,
+//       requestNo,
+//       serviceName: service.name,
+//     }),
+//   }).catch((error) => {
+//     if (envVar.NODE_ENV === "Development") {
+//       console.error("Failed to send request confirmation email:", error);
+//     }
+//     // In production, log to monitoring (Sentry/DataDog) instead of throwing
+//   });
+
+//   return result; // ✅ always return the created request
+// };
 // Deliver request after finishing the job
 const deliverRequest = async (
 	requestId: string,

@@ -13,8 +13,8 @@ const router = Router();
 
 router.post(
 	"/category-create",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(createServiceCategoryValidationSchema),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	ServiceControllers.createCategory,
 );
 
@@ -23,8 +23,8 @@ router.get("/", ServiceControllers.getAllServices);
 //  Update category
 router.patch(
 	"/category/:id",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(createServiceCategoryValidationSchema),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	ServiceControllers.updateCategory,
 );
 
@@ -37,8 +37,8 @@ router.patch(
 
 router.patch(
   "/:id",
-  authCheck(Role.SUPER_ADMIN, Role.ADMIN),
   requestZodValidator(updateServiceValidationSchema),
+  authCheck(Role.SUPER_ADMIN, Role.ADMIN),
   ServiceControllers.updateService,
 );
 
@@ -51,8 +51,8 @@ router.patch(
 
 router.post(
 	"/create",
-	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
 	requestZodValidator(createServiceValidationSchema),
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN),
 	ServiceControllers.createService,
 );
 

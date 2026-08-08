@@ -62,8 +62,8 @@ router.post("/refresh-token", AuthControllers.refreshToken);
 
 router.patch(
 	"/change-initial-password",
-	authCheck(Role.USER, Role.MANAGER, Role.ADMIN),
 	requestZodValidator(changeInitialPasswordValidationSchema),
+	authCheck(Role.USER, Role.MANAGER, Role.ADMIN),
 	AuthControllers.changeInitialPassword,
 );
 

@@ -3,6 +3,47 @@ import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { RequestServices } from "./requests.service";
 
+
+// Create request for service (Guest and later by registered users)
+const createServiceRequest = asyncHelper(async (req: Request, res: Response) => {
+  const rawFormData = req.body.formData;
+  const parsedData =
+    typeof rawFormData === "string"
+      ? JSON.parse(rawFormData)
+      : (rawFormData ?? {});
+
+  const paymentData =  req.body.paymentMethod && req.body.transactionId
+      ? {
+          method: req.body.paymentMethod,
+          transactionId: req.body.transactionId,
+          senderNumber: req.body.senderNumber,
+          userNote: req.body.paymentNote,
+        }
+      : undefined;
+
+  const payload = {
+    ...req.body,
+    formData: parsedData,
+  };
+
+  const result = await RequestServices.createServiceRequest(
+    payload,
+    (req.files as Express.Multer.File[]) || [],
+    paymentData, 
+    req.user?.id,
+    req.user?.role,
+  );
+
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: paymentData
+      ? "Request and payment submitted successfully"
+      : "Request submitted successfully",
+    data: result,
+  });
+});
+
 // Get all requests
 const getAllRequests = asyncHelper(async (req: Request, res: Response) => {
   const result = await RequestServices.getAllRequests(
@@ -133,34 +174,34 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
   });
 });
 
-const createServiceRequest = asyncHelper(
-  async (req: Request, res: Response) => {
-    const rawFormData = req.body.formData;
-    const parsedData =
-      typeof rawFormData === "string"
-        ? JSON.parse(rawFormData)
-        : (rawFormData ?? {});
+// const createServiceRequest = asyncHelper(
+//   async (req: Request, res: Response) => {
+//     const rawFormData = req.body.formData;
+//     const parsedData =
+//       typeof rawFormData === "string"
+//         ? JSON.parse(rawFormData)
+//         : (rawFormData ?? {});
 
-    const payload = {
-      ...req.body,
-      formData: parsedData,
-    };
+//     const payload = {
+//       ...req.body,
+//       formData: parsedData,
+//     };
 
-    const result = await RequestServices.createServiceRequest(
-      payload, 
-      (req.files as Express.Multer.File[]) || [], 
-      req.user?.id,
-      req.user?.role,
-    );
+//     const result = await RequestServices.createServiceRequest(
+//       payload, 
+//       (req.files as Express.Multer.File[]) || [], 
+//       req.user?.id,
+//       req.user?.role,
+//     );
 
-    sendResponse(res, {
-      statusCode: 201,
-      success: true,
-      message: "Request submitted successfully",
-      data: result,
-    });
-  },
-);
+//     sendResponse(res, {
+//       statusCode: 201,
+//       success: true,
+//       message: "Request submitted successfully",
+//       data: result,
+//     });
+//   },
+// );
 
 const deliverRequest = asyncHelper(async (req, res) => {
   const result = await RequestServices.deliverRequest(

@@ -6,6 +6,7 @@ import { Role } from "../../../prisma/generated/prisma/enums";
 import {
 	assignManagerValidationSchema,
 	cancelRequestValidationSchema,
+	createServiceRequestValidationSchema,
 	setQuotationValidationSchema,
 } from "./request.validation";
 import { RequestControllers } from "./requests.controller";
@@ -52,8 +53,8 @@ router.patch(
 
 router.patch(
 	"/cancel/:id",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(cancelRequestValidationSchema),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	RequestControllers.cancelRequest,
 );
 
@@ -78,6 +79,7 @@ router.get(
 router.post(
 	"/create",
 	upload.array("files", 20),
+	requestZodValidator(createServiceRequestValidationSchema),
 	RequestControllers.createServiceRequest,
 );
 

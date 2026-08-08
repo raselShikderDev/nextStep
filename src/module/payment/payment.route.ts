@@ -19,15 +19,15 @@ router.post(
 
 router.patch(
 	"/verify/:id",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(verifyPaymentValidationSchema),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	PaymentControllers.verifyPayment,
 );
 
 router.patch(
 	"/reject/:id",
-	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	requestZodValidator(rejectPaymentValidationSchema),
+	authCheck(Role.ADMIN, Role.SUPER_ADMIN),
 	PaymentControllers.rejectPayment,
 );
 
