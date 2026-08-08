@@ -1,7 +1,10 @@
+/** biome-ignore-all assist/source/organizeImports: > */
 import type { Request, Response } from "express";
 import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
 import { RequestServices } from "./requests.service";
+import prisma from "@/config/db.config";
+import AppError from "@/errorHelper/appError";
 
 
 // Create request for service (Guest and later by registered users)
@@ -174,34 +177,23 @@ const startWork = asyncHelper(async (req: Request, res: Response) => {
   });
 });
 
-// const createServiceRequest = asyncHelper(
-//   async (req: Request, res: Response) => {
-//     const rawFormData = req.body.formData;
-//     const parsedData =
-//       typeof rawFormData === "string"
-//         ? JSON.parse(rawFormData)
-//         : (rawFormData ?? {});
-
-//     const payload = {
-//       ...req.body,
-//       formData: parsedData,
-//     };
-
-//     const result = await RequestServices.createServiceRequest(
-//       payload, 
-//       (req.files as Express.Multer.File[]) || [], 
-//       req.user?.id,
-//       req.user?.role,
-//     );
-
-//     sendResponse(res, {
-//       statusCode: 201,
-//       success: true,
-//       message: "Request submitted successfully",
-//       data: result,
-//     });
-//   },
-// );
+const trackRequest = asyncHelper(async (req: Request, res: Response) => {
+  const { requestNo, email } = req.query;
+  
+  const request = await prisma.serviceRequest.findFirst({
+    where: { requestNo: requestNo as string, guestEmail: email as string },
+    include: { service: true, payment: true, statusHistory: true },
+  });
+  
+  if (!request) throw new AppError(404, "Request not found");
+  
+   sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Request successfully Tracked",
+    data: request,
+  });
+});
 
 const deliverRequest = asyncHelper(async (req, res) => {
   const result = await RequestServices.deliverRequest(
@@ -230,4 +222,5 @@ export const RequestControllers = {
   startWork,
   createServiceRequest,
   deliverRequest,
+  trackRequest,
 };

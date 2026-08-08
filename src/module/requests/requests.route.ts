@@ -76,6 +76,9 @@ router.get(
 	RequestControllers.getRequestAnalytics,
 );
 
+router.get("/track", RequestControllers.trackRequest);
+
+
 router.post(
 	"/create",
 	upload.array("files", 20),
