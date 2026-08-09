@@ -340,11 +340,8 @@ const rejectEmailChangeRequest = async (
 const getAllUsers = async (query: Record<string, unknown>) => {
   const queryBuilder = new QueryBuilder(query).search(["email"]).filter().paginate();
 
-
-  const paginationQuery = new QueryBuilder(query).sort().paginate().build();
-
   const users = await prisma.user.findMany({
-    ...paginationQuery,
+    ...queryBuilder.build(),
     include: {
       userDetails: true,
     },
