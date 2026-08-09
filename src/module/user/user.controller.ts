@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import asyncHelper from "@/middleware/asyncHelper";
 import { sendResponse } from "@/utils/response";
-import { AuthServices } from "../auth/auth.service";
 import { UserServices } from "./user.service";
 
 // Update own profile
