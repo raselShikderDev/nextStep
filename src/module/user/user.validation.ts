@@ -19,7 +19,6 @@ export const requestEmailChangeSchema = z.object({
 
 export const approveEmailChangeSchema = z.object({
 	status: z.enum(["APPROVED", "REJECTED"]),
-
 	rejectedReason: z.string().optional(),
 });
 
