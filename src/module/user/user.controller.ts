@@ -119,7 +119,6 @@ const getSingleUser = asyncHelper(async (req: Request, res: Response) => {
 const toggleUserStatus = asyncHelper(async (req: Request, res: Response) => {
   const result = await UserServices.toggleUserStatus(
     req.params.id as string,
-    req.body,
   );
 
   sendResponse(res, {

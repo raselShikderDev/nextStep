@@ -8,7 +8,7 @@ export const updateUserValidationSchema = z.object({
 		.regex(/^(?:\+8801|01)[3-9]\d{8}$/, "Invalid phone number format")
 		.optional(),
 	address: z.string().optional(),
-	avatarUrl: z.string().url().optional(),
+	avatarUrl: z.url().optional(),
 });
 
 export const requestEmailChangeSchema = z.object({
@@ -26,5 +26,6 @@ export const createStaffValidationSchema = z.object({
 	name: z.string(),
 	email: z.email(),
 	phone: z.string().optional(),
+	password:z.string().min(8).max(20).optional(),
 	role: z.enum([Role.ADMIN, Role.MANAGER, Role.USER]),
 });

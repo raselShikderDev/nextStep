@@ -380,14 +380,14 @@ const getSingleUser = async (id: string) => {
 // TOGGOLE USER STATUS CHANAGE
 const toggleUserStatus = async (
   id: string,
-  payload: {
-    message: string;
-  },
 ) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
     },
+    include:{
+      userDetails:true
+    }
   });
 
   if (!user) {
@@ -400,12 +400,12 @@ const toggleUserStatus = async (
     },
     data: {
       isActive: !user.isActive,
+      
     },
   });
 
   return {
     user: updatedUser,
-    message: payload.message,
   };
 };
 
@@ -488,11 +488,12 @@ const createStaff = async (payload: {
   name: string;
   email: string;
   phone?: string;
+  password?: string;
   role: Role;
 }) => {
   const temporaryPassword = crypto.randomBytes(4).toString("hex");
 
-  const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+  const passwordHash = payload?.password ?  await bcrypt.hash(payload?.password, 10) :  await bcrypt.hash(temporaryPassword, 10);
 
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
@@ -502,7 +503,7 @@ const createStaff = async (payload: {
         role: payload.role,
         isActive: true,
         isVerified: true,
-        mustChangePassword: true,
+        mustChangePassword: !!payload.password,
       },
     });
 
