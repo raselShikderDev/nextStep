@@ -94,6 +94,7 @@ const getMyProfile = async (userId: string) => {
       email: true,
       role: true,
       isActive: true,
+      mustChangePassword:true,
       isVerified: true,
       createdAt: true,
       updatedAt: true,
