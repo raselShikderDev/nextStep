@@ -280,6 +280,7 @@ const changePassword = async (
 		},
 		data: {
 			passwordHash: hashedPassword,
+			mustChangePassword:false,
 		},
 	});
 
