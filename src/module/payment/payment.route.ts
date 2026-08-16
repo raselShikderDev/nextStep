@@ -38,16 +38,18 @@ router.get(
 );
 
 router.get(
+	"/analytics",
+	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
+	PaymentControllers.getPaymentAnalytics,
+);
+
+router.get(
 	"/:id",
 	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
 	PaymentControllers.getSinglePayment,
 );
 
-router.get(
-	"/analytics",
-	authCheck(Role.SUPER_ADMIN, Role.ADMIN, Role.MANAGER),
-	PaymentControllers.getPaymentAnalytics,
-);
+
 
 export const PaymentRoutes = router;
 
