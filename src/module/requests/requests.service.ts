@@ -16,15 +16,46 @@ import {
 import type { CreateRequestPayload } from "./request.types";
 
 // Get all requests
-const getAllRequests = async (query: Record<string, unknown>) => {
+const getAllRequests = async (
+  query: Record<string, unknown>,
+  userId?: string,
+  userRole?: Role,
+) => {
+
+	
+
 	const queryBuilder = new QueryBuilder(query)
 		.search(["requestNo", "guestName", "guestEmail", "guestPhone"])
 		.filter()
 		.sort()
 		.paginate();
 
+
+		let where = queryBuilder.getWhere();
+
+if (userRole === Role.MANAGER) {
+  if (!userId) {
+    throw new AppError(401, "Authentication required");
+  }
+
+  const userDetails = await prisma.userDetails.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+
+  if (!userDetails) {
+    throw new AppError(403, "Unauthorized access");
+  }
+
+  where = {
+    ...where,
+    assignedToId: userDetails.id,
+  };
+}
+
 	const requests = await prisma.serviceRequest.findMany({
 		...queryBuilder.build(),
+where,
 		include: {
 			service: {
 				select: {
@@ -52,7 +83,7 @@ const getAllRequests = async (query: Record<string, unknown>) => {
 	});
 
 	const total = await prisma.serviceRequest.count({
-		where: queryBuilder.getWhere(),
+		where,
 	});
 
 	return {
@@ -66,29 +97,73 @@ const getAllRequests = async (query: Record<string, unknown>) => {
 };
 
 // Get singel request
-const getSingleRequest = async (id: string) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id,
-		},
-		include: {
-			service: true,
-			payment: true,
-			documents: true,
-			assignedTo: true,
-			statusHistory: {
-				orderBy: {
-					createdAt: "desc",
-				},
-			},
-		},
-	});
+const getSingleRequest = async (
+  id: string,
+  userId?: string,
+  userRole?: Role,
+) => {
+  const include = {
+    service: true,
+    payment: true,
+    documents: true,
+    assignedTo: true,
+    statusHistory: {
+      orderBy: {
+        createdAt: "desc" as const,
+      },
+    },
+  };
 
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
+  if (userRole === Role.ADMIN || userRole === Role.SUPER_ADMIN) {
+    const request = await prisma.serviceRequest.findUnique({
+      where: { id },
+      include,
+    });
 
-	return request;
+    if (!request) {
+      throw new AppError(404, "Request not found");
+    }
+
+    return request;
+  }
+
+  if (!userId || !userRole) {
+    throw new AppError(401, "Authentication required");
+  }
+
+  const userDetails = await prisma.userDetails.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+
+  if (!userDetails) {
+    throw new AppError(403, "Unauthorized access");
+  }
+
+  const request =
+    userRole === Role.USER
+      ? await prisma.serviceRequest.findFirst({
+          where: {
+            id,
+            userId: userDetails.id,
+          },
+          include,
+        })
+      : userRole === Role.MANAGER
+        ? await prisma.serviceRequest.findFirst({
+            where: {
+              id,
+              assignedToId: userDetails.id,
+            },
+            include,
+          })
+        : null;
+
+  if (!request) {
+    throw new AppError(403, "Unauthorized access or request not found");
+  }
+
+  return request;
 };
 
 // Assign Worker

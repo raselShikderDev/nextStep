@@ -49,9 +49,11 @@ const createServiceRequest = asyncHelper(async (req: Request, res: Response) => 
 
 // Get all requests
 const getAllRequests = asyncHelper(async (req: Request, res: Response) => {
-  const result = await RequestServices.getAllRequests(
-    req.query as Record<string, unknown>,
-  );
+ const result = await RequestServices.getAllRequests(
+  req.query as Record<string, unknown>,
+  req.user.id,
+  req.user.role,
+);
 
   sendResponse(res, {
     statusCode: 200,
@@ -64,9 +66,11 @@ const getAllRequests = asyncHelper(async (req: Request, res: Response) => {
 
 // Get Singel Requesr
 const getSingleRequest = asyncHelper(async (req: Request, res: Response) => {
-  const result = await RequestServices.getSingleRequest(
-    req.params.id as string,
-  );
+ const result = await RequestServices.getSingleRequest(
+  req.params.id as string,
+  req.user.id,
+  req.user.role,
+);
 
   sendResponse(res, {
     statusCode: 200,
