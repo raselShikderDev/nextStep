@@ -1,33 +1,67 @@
 import fs from "node:fs";
 import path from "node:path";
-
 import prisma from "@/config/db.config";
 import AppError from "@/errorHelper/appError";
-import type { Role } from "../../../prisma/generated/prisma/enums";
+import {
+	Role,
+	type Role as RoleType,
+} from "../../../prisma/generated/prisma/enums";
+import { uploadRequestIdSchema } from "./document.validation";
 
 const uploadDocuments = async (
 	files: Express.Multer.File[],
+	requestId: string,
 	userId?: string,
-	role?: Role,
+	role?: RoleType,
 	description?: string,
 ) => {
-	let uploadedById: string | undefined;
+	const parsedRequestId = uploadRequestIdSchema.safeParse(requestId);
 
-	if (userId) {
-		const user = await prisma.userDetails.findUnique({
-			where: {
-				userId,
-			},
-			select: {
-				id: true,
-			},
-		});
+	if (!parsedRequestId.success) {
+		throw new AppError(400, "Invalid request ID");
+	}
 
-		if (!user) {
-			throw new AppError(404, "User not found");
-		}
+	if (!userId || !role) {
+		throw new AppError(401, "Authentication required");
+	}
 
-		uploadedById = user.id;
+	const user = await prisma.userDetails.findUnique({
+		where: {
+			userId,
+		},
+		select: {
+			id: true,
+		},
+	});
+
+	if (!user) {
+		throw new AppError(404, "User not found");
+	}
+
+	const request = await prisma.serviceRequest.findUnique({
+		where: {
+			id: parsedRequestId.data,
+		},
+		select: {
+			id: true,
+			userId: true,
+			assignedToId: true,
+		},
+	});
+
+	if (!request) {
+		throw new AppError(404, "Request not found");
+	}
+
+	const isRequestOwner = request.userId === user.id;
+	const isAssignedManager = request.assignedToId === user.id;
+	const isPrivilegedRole = role === Role.ADMIN || role === Role.SUPER_ADMIN;
+
+	if (!isRequestOwner && !isAssignedManager && !isPrivilegedRole) {
+		throw new AppError(
+			403,
+			"You are not authorized to upload documents to this request",
+		);
 	}
 
 	try {
@@ -35,11 +69,12 @@ const uploadDocuments = async (
 			files.map((file) =>
 				prisma.requestDocument.create({
 					data: {
-						uploadedById,
+						requestId: parsedRequestId.data,
+						uploadedById: user.id,
 						uploadedByRole: role,
 						name: path.parse(file.originalname).name,
 						originalName: file.originalname,
-						url: `/uploads/requests/${file.filename}`,
+						url: `/private/requests/${parsedRequestId.data}/${file.filename}`,
 						key: file.filename,
 						mimeType: file.mimetype,
 						size: file.size,
@@ -59,53 +94,6 @@ const uploadDocuments = async (
 
 		throw error;
 	}
-};
-
-const attachDocumentsToRequest = async (
-	requestId: string,
-	documentIds: string[],
-) => {
-	const request = await prisma.serviceRequest.findUnique({
-		where: {
-			id: requestId,
-		},
-		select: {
-			id: true,
-		},
-	});
-
-	if (!request) {
-		throw new AppError(404, "Request not found");
-	}
-
-	const documents = await prisma.requestDocument.findMany({
-		where: {
-			id: {
-				in: documentIds,
-			},
-			requestId: null,
-		},
-		select: {
-			id: true,
-		},
-	});
-
-	if (documents.length !== documentIds.length) {
-		throw new AppError(400, "Invalid document selection");
-	}
-
-	await prisma.requestDocument.updateMany({
-		where: {
-			id: {
-				in: documentIds,
-			},
-		},
-		data: {
-			requestId,
-		},
-	});
-
-	return true;
 };
 
 const getRequestDocuments = async (requestId: string) => {
@@ -145,7 +133,7 @@ const deleteDocument = async (documentId: string) => {
 
 	const filePath = path.join(
 		process.cwd(),
-		"uploads",
+		"private_uploads",
 		"requests",
 		document.key,
 	);
@@ -165,7 +153,6 @@ const deleteDocument = async (documentId: string) => {
 
 export const DocumentServices = {
 	uploadDocuments,
-	attachDocumentsToRequest,
 	getRequestDocuments,
 	deleteDocument,
 };

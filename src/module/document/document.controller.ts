@@ -4,10 +4,18 @@ import { sendResponse } from "@/utils/response";
 import { DocumentServices } from "./document.service";
 
 const uploadDocuments = asyncHelper(async (req: Request, res: Response) => {
+	// requestId comes from route params: /upload/:requestId
+	const { requestId } = req.params;
+
+	// userId and role come from authCheck middleware
+	const userId = req.user?.id;
+	const userRole = req.user?.role;
+
 	const result = await DocumentServices.uploadDocuments(
 		req.files as Express.Multer.File[],
-		req?.user?.id,
-		req?.user?.role,
+		requestId as string,
+		userId,
+		userRole,
 		req.body.description,
 	);
 
