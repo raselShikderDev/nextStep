@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import AppError from "@/errorHelper/appError";
 import asyncHelper from "@/middleware/asyncHelper";
@@ -17,7 +17,7 @@ const registerUser = asyncHelper(async (req: Request, res: Response) => {
 	const result = await AuthServices.registerUser(validatedData);
 
 	sendResponse(res, {
-		statusCode: 201,
+		statusCode: StatusCodes.CREATED,
 		success: true,
 		message: "User registered successfully",
 		data: result,
@@ -29,47 +29,51 @@ const loginUser = asyncHelper(async (req: Request, res: Response) => {
 	const validatedData = loginValidationSchema.parse(req.body);
 	const result = await AuthServices.loginUser(validatedData);
 
-	if (result.accessToken || result.refreshToken) {
-		await setAuthCookie(res, {
-			accessToken: result.accessToken,
-			refreshToken: result.refreshToken,
-		});
-	} else {
+	if (!result.accessToken || !result.refreshToken) {
 		throw new AppError(StatusCodes.FORBIDDEN, "Login unsuccessful");
 	}
+
+	await setAuthCookie(res, {
+		accessToken: result.accessToken,
+		refreshToken: result.refreshToken,
+	});
+
 	sendResponse(res, {
-		statusCode: 200,
+		statusCode: StatusCodes.OK,
 		success: true,
 		message: "Login successful",
 		data: result,
 	});
 });
 
-// Logout user by deleting accessToken and refreshToken from cookies
-const logoutUser = asyncHelper(
-	async (_req: Request, res: Response, _next: NextFunction) => {
-		await removeCookie(res);
-		sendResponse(res, {
-			statusCode: StatusCodes.OK,
-			success: true,
-			message: "User successfully logout",
-			data: null,
-		});
-	},
-);
+// Logout user and revoke refresh token
+const logoutUser = asyncHelper(async (req: Request, res: Response) => {
+	const refreshToken = req.cookies?.refreshToken;
 
-// Send otp for reseting password after forgetting
+	await AuthServices.logoutUser(refreshToken);
+
+	await removeCookie(res);
+
+	sendResponse(res, {
+		statusCode: StatusCodes.OK,
+		success: true,
+		message: "User successfully logout",
+		data: null,
+	});
+});
+
+// Send OTP for resetting password after forgetting
 const forgotPassword = asyncHelper(async (req: Request, res: Response) => {
 	const data = await AuthServices.forgotPassword(req.body.email);
 
 	let message = "OTP sent successfully";
-	let statusCode = 200;
+	let statusCode = StatusCodes.OK;
 	let success = true;
 
 	if (data?.error) {
-		message = data?.error.message;
+		message = data.error.message;
 		statusCode = data.error.statusCode as number;
-		success = data?.data !== null;
+		success = data.data !== null;
 	}
 
 	sendResponse(res, {
@@ -79,30 +83,29 @@ const forgotPassword = asyncHelper(async (req: Request, res: Response) => {
 	});
 });
 
-// Reset password after forgeting
+// Reset password after forgetting
 const resetPassword = asyncHelper(async (req: Request, res: Response) => {
 	await AuthServices.resetPassword(req.body);
 
 	sendResponse(res, {
-		statusCode: 200,
+		statusCode: StatusCodes.OK,
 		success: true,
 		message: "Password reset successful",
 	});
 });
 
-// Chnage password - For logged in user
+// Change password for logged-in user
 const changePassword = asyncHelper(async (req: Request, res: Response) => {
-	console.log(req.user.id as string, req.body);
-
 	await AuthServices.changePassword(req.user.id as string, req.body);
 
 	sendResponse(res, {
-		statusCode: 200,
+		statusCode: StatusCodes.OK,
 		success: true,
 		message: "Password changed successfully",
 	});
 });
 
+// Refresh access token and rotate refresh token
 const refreshToken = asyncHelper(async (req: Request, res: Response) => {
 	const refreshToken = req.cookies?.refreshToken;
 
@@ -110,16 +113,18 @@ const refreshToken = asyncHelper(async (req: Request, res: Response) => {
 
 	await setAuthCookie(res, {
 		accessToken: result.accessToken,
+		refreshToken: result.refreshToken,
 	});
 
 	sendResponse(res, {
-		statusCode: 200,
+		statusCode: StatusCodes.OK,
 		success: true,
 		message: "Access token refreshed successfully",
 		data: result,
 	});
 });
 
+// Change initial password
 const changeInitialPassword = asyncHelper(
 	async (req: Request, res: Response) => {
 		await AuthServices.changeInitialPassword(req.user.id, req.body);

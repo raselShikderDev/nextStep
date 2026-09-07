@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { StatusCodes } from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
@@ -46,7 +46,6 @@ const registerUser = async (payload: {
 				},
 			},
 		},
-
 		include: {
 			userDetails: true,
 		},
@@ -103,7 +102,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
 
 	const jti = crypto.randomUUID();
 
-	// Generate jti (JWT ID) for the refresh token
 	const refreshToken = await createJwtToken(
 		user as User,
 		envVar.JWT_REFRESH_SECRET as string,
@@ -113,13 +111,12 @@ const loginUser = async (payload: { email: string; password: string }) => {
 
 	const tokenHash = await bcrypt.hash(refreshToken, 10);
 
-	// Store the refresh token in the database
 	await prisma.refreshToken.create({
 		data: {
 			tokenHash,
 			jti,
 			userId: user.id,
-			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 		},
 	});
 
@@ -137,7 +134,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
 	};
 };
 
-// Send otp for reseting password after forgetting
+// Send OTP for resetting password after forgetting
 const forgotPassword = async (email: string) => {
 	const user = await prisma.user.findUnique({
 		where: {
@@ -179,17 +176,19 @@ const forgotPassword = async (email: string) => {
 		if (envVar.NODE_ENV === "Development") {
 			console.error("Sending reset password OTP is failed", error);
 		}
+
 		throw new AppError(
 			StatusCodes.BAD_GATEWAY,
 			"Sending reset password OTP is Unsuccessfull",
 		);
 	}
+
 	console.log({ otp, email });
 
 	return;
 };
 
-// Reset password after forgeting
+// Reset password after forgetting
 const resetPassword = async (payload: {
 	email: string;
 	otp: string;
@@ -242,12 +241,17 @@ const resetPassword = async (payload: {
 		},
 	});
 
-	await redisClient.del(`forgot-password:${email}`);
+	// Revoke all existing refresh tokens after password reset
+	await prisma.refreshToken.deleteMany({
+		where: {
+			userId: user.id,
+		},
+	});
 
-	return;
+	await redisClient.del(`forgot-password:${email}`);
 };
 
-// Chnage password - For logged in user
+// Change password for logged-in user
 const changePassword = async (
 	userId: string,
 	payload: {
@@ -302,9 +306,15 @@ const changePassword = async (
 		},
 	});
 
-	return;
+	// Revoke all existing refresh tokens after password change
+	await prisma.refreshToken.deleteMany({
+		where: {
+			userId,
+		},
+	});
 };
 
+// Refresh access token and rotate refresh token
 const refreshToken = async (token: string) => {
 	if (!token) {
 		throw new AppError(401, "Refresh token is required");
@@ -314,6 +324,10 @@ const refreshToken = async (token: string) => {
 		token,
 		envVar.JWT_REFRESH_SECRET as string,
 	) as JwtPayload;
+
+	if (!decoded.id || !decoded.jti) {
+		throw new AppError(401, "Invalid refresh token");
+	}
 
 	const user = await prisma.user.findUnique({
 		where: {
@@ -333,7 +347,6 @@ const refreshToken = async (token: string) => {
 		throw new AppError(403, "User is not verified");
 	}
 
-	// Validate token against database
 	const storedToken = await prisma.refreshToken.findFirst({
 		where: {
 			userId: user.id,
@@ -346,43 +359,49 @@ const refreshToken = async (token: string) => {
 	}
 
 	const isTokenValid = await bcrypt.compare(token, storedToken.tokenHash);
+
 	if (!isTokenValid) {
 		throw new AppError(401, "Invalid refresh token");
 	}
 
 	if (storedToken.expiresAt < new Date()) {
+		await prisma.refreshToken.delete({
+			where: {
+				id: storedToken.id,
+			},
+		});
+
 		throw new AppError(401, "Refresh token expired");
 	}
 
-	// Invalidate the old refresh token
+	// Delete old refresh token before issuing a new one
 	await prisma.refreshToken.delete({
 		where: {
 			id: storedToken.id,
 		},
 	});
 
-	// Generate a new refresh token
+	// Generate new JTI BEFORE generating the new refresh token
+	const newJti = crypto.randomUUID();
+
 	const newRefreshToken = await createJwtToken(
 		user,
 		envVar.JWT_REFRESH_SECRET as string,
 		envVar.JWT_REFRESH_EXPIRES_IN as string,
+		newJti,
 	);
 
-	// Generate a new jti for the new refresh token
-	const newJti = crypto.randomUUID();
 	const newTokenHash = await bcrypt.hash(newRefreshToken, 10);
 
-	// Store the new refresh token in the database
 	await prisma.refreshToken.create({
 		data: {
 			tokenHash: newTokenHash,
 			jti: newJti,
 			userId: user.id,
-			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 		},
 	});
 
-	// Generate a new access token
 	const accessToken = await createJwtToken(
 		user,
 		envVar.JWT_ACCESS_SECRET as string,
@@ -395,7 +414,7 @@ const refreshToken = async (token: string) => {
 	};
 };
 
-// Chnage password after created by admin or super admin
+// Change initial password after created by admin or super admin
 const changeInitialPassword = async (
 	userId: string,
 	payload: {
@@ -437,6 +456,41 @@ const changeInitialPassword = async (
 			mustChangePassword: false,
 		},
 	});
+
+	// Revoke all existing refresh tokens after initial password change
+	await prisma.refreshToken.deleteMany({
+		where: {
+			userId,
+		},
+	});
+};
+
+// Logout user and revoke current refresh token
+const logoutUser = async (token: string) => {
+	if (!token) {
+		return;
+	}
+
+	try {
+		const decoded = jwt.verify(
+			token,
+			envVar.JWT_REFRESH_SECRET as string,
+		) as JwtPayload;
+
+		if (!decoded.jti) {
+			return;
+		}
+
+		await prisma.refreshToken.deleteMany({
+			where: {
+				jti: decoded.jti,
+			},
+		});
+	} catch {
+		// Always allow logout to clear cookies even if the refresh token
+		// is already expired or invalid.
+		return;
+	}
 };
 
 export const AuthServices = {
@@ -447,4 +501,5 @@ export const AuthServices = {
 	changePassword,
 	refreshToken,
 	changeInitialPassword,
+	logoutUser,
 };
