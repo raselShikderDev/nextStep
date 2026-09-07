@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { StatusCodes } from "http-status-codes";
 import type { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
@@ -99,11 +100,28 @@ const loginUser = async (payload: { email: string; password: string }) => {
 		envVar.JWT_ACCESS_SECRET as string,
 		envVar.JWT_ACCESS_EXPIRES_IN as string,
 	);
+
+	const jti = crypto.randomUUID();
+
+	// Generate jti (JWT ID) for the refresh token
 	const refreshToken = await createJwtToken(
 		user as User,
 		envVar.JWT_REFRESH_SECRET as string,
 		envVar.JWT_REFRESH_EXPIRES_IN as string,
+		jti,
 	);
+
+	const tokenHash = await bcrypt.hash(refreshToken, 10);
+
+	// Store the refresh token in the database
+	await prisma.refreshToken.create({
+		data: {
+			tokenHash,
+			jti,
+			userId: user.id,
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+		},
+	});
 
 	return {
 		accessToken,
@@ -280,7 +298,7 @@ const changePassword = async (
 		},
 		data: {
 			passwordHash: hashedPassword,
-			mustChangePassword:false,
+			mustChangePassword: false,
 		},
 	});
 
@@ -315,6 +333,56 @@ const refreshToken = async (token: string) => {
 		throw new AppError(403, "User is not verified");
 	}
 
+	// Validate token against database
+	const storedToken = await prisma.refreshToken.findFirst({
+		where: {
+			userId: user.id,
+			jti: decoded.jti,
+		},
+	});
+
+	if (!storedToken) {
+		throw new AppError(401, "Invalid refresh token");
+	}
+
+	const isTokenValid = await bcrypt.compare(token, storedToken.tokenHash);
+	if (!isTokenValid) {
+		throw new AppError(401, "Invalid refresh token");
+	}
+
+	if (storedToken.expiresAt < new Date()) {
+		throw new AppError(401, "Refresh token expired");
+	}
+
+	// Invalidate the old refresh token
+	await prisma.refreshToken.delete({
+		where: {
+			id: storedToken.id,
+		},
+	});
+
+	// Generate a new refresh token
+	const newRefreshToken = await createJwtToken(
+		user,
+		envVar.JWT_REFRESH_SECRET as string,
+		envVar.JWT_REFRESH_EXPIRES_IN as string,
+	);
+
+	// Generate a new jti for the new refresh token
+	const newJti = crypto.randomUUID();
+	const newTokenHash = await bcrypt.hash(newRefreshToken, 10);
+
+	// Store the new refresh token in the database
+	await prisma.refreshToken.create({
+		data: {
+			tokenHash: newTokenHash,
+			jti: newJti,
+			userId: user.id,
+			expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days
+		},
+	});
+
+	// Generate a new access token
 	const accessToken = await createJwtToken(
 		user,
 		envVar.JWT_ACCESS_SECRET as string,
@@ -323,6 +391,7 @@ const refreshToken = async (token: string) => {
 
 	return {
 		accessToken,
+		refreshToken: newRefreshToken,
 	};
 };
 

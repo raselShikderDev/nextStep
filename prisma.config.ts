@@ -6,7 +6,7 @@ export default defineConfig({
 	schema: "prisma",
 
 	migrations: {
-		path: "../src/generated/prisma",
+		path: "prisma/migrations",
 	},
 
 	datasource: {

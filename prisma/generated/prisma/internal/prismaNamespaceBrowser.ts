@@ -57,6 +57,7 @@ export const ModelName = {
 	AuditLog: "AuditLog",
 	Notification: "Notification",
 	Payment: "Payment",
+	RefreshToken: "RefreshToken",
 	ServiceCategory: "ServiceCategory",
 	Service: "Service",
 	ServiceRequest: "ServiceRequest",
@@ -141,6 +142,19 @@ export const PaymentScalarFieldEnum = {
 
 export type PaymentScalarFieldEnum =
 	(typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum];
+
+export const RefreshTokenScalarFieldEnum = {
+	id: "id",
+	tokenHash: "tokenHash",
+	jti: "jti",
+	userId: "userId",
+	expiresAt: "expiresAt",
+	createdAt: "createdAt",
+	updatedAt: "updatedAt",
+} as const;
+
+export type RefreshTokenScalarFieldEnum =
+	(typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum];
 
 export const ServiceCategoryScalarFieldEnum = {
 	id: "id",

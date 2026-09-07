@@ -12,6 +12,7 @@ export type * from "./models/AuditLog.ts";
 export type * from "./models/EmailChangeRequest.ts";
 export type * from "./models/Notification.ts";
 export type * from "./models/Payment.ts";
+export type * from "./models/RefreshToken.ts";
 export type * from "./models/RequestDocument.ts";
 export type * from "./models/RequestStatusHistory.ts";
 export type * from "./models/Service.ts";

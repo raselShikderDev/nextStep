@@ -417,6 +417,7 @@ export const ModelName = {
 	AuditLog: "AuditLog",
 	Notification: "Notification",
 	Payment: "Payment",
+	RefreshToken: "RefreshToken",
 	ServiceCategory: "ServiceCategory",
 	Service: "Service",
 	ServiceRequest: "ServiceRequest",
@@ -451,6 +452,7 @@ export type TypeMap<
 			| "auditLog"
 			| "notification"
 			| "payment"
+			| "refreshToken"
 			| "serviceCategory"
 			| "service"
 			| "serviceRequest"
@@ -687,6 +689,82 @@ export type TypeMap<
 					args: Prisma.PaymentCountArgs<ExtArgs>;
 					result:
 						| runtime.Types.Utils.Optional<Prisma.PaymentCountAggregateOutputType>
+						| number;
+				};
+			};
+		};
+		RefreshToken: {
+			payload: Prisma.$RefreshTokenPayload<ExtArgs>;
+			fields: Prisma.RefreshTokenFieldRefs;
+			operations: {
+				findUnique: {
+					args: Prisma.RefreshTokenFindUniqueArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload> | null;
+				};
+				findUniqueOrThrow: {
+					args: Prisma.RefreshTokenFindUniqueOrThrowArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				findFirst: {
+					args: Prisma.RefreshTokenFindFirstArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload> | null;
+				};
+				findFirstOrThrow: {
+					args: Prisma.RefreshTokenFindFirstOrThrowArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				findMany: {
+					args: Prisma.RefreshTokenFindManyArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>[];
+				};
+				create: {
+					args: Prisma.RefreshTokenCreateArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				createMany: {
+					args: Prisma.RefreshTokenCreateManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				createManyAndReturn: {
+					args: Prisma.RefreshTokenCreateManyAndReturnArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>[];
+				};
+				delete: {
+					args: Prisma.RefreshTokenDeleteArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				update: {
+					args: Prisma.RefreshTokenUpdateArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				deleteMany: {
+					args: Prisma.RefreshTokenDeleteManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				updateMany: {
+					args: Prisma.RefreshTokenUpdateManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				updateManyAndReturn: {
+					args: Prisma.RefreshTokenUpdateManyAndReturnArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>[];
+				};
+				upsert: {
+					args: Prisma.RefreshTokenUpsertArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$RefreshTokenPayload>;
+				};
+				aggregate: {
+					args: Prisma.RefreshTokenAggregateArgs<ExtArgs>;
+					result: runtime.Types.Utils.Optional<Prisma.AggregateRefreshToken>;
+				};
+				groupBy: {
+					args: Prisma.RefreshTokenGroupByArgs<ExtArgs>;
+					result: runtime.Types.Utils.Optional<Prisma.RefreshTokenGroupByOutputType>[];
+				};
+				count: {
+					args: Prisma.RefreshTokenCountArgs<ExtArgs>;
+					result:
+						| runtime.Types.Utils.Optional<Prisma.RefreshTokenCountAggregateOutputType>
 						| number;
 				};
 			};
@@ -1472,6 +1550,19 @@ export const PaymentScalarFieldEnum = {
 export type PaymentScalarFieldEnum =
 	(typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum];
 
+export const RefreshTokenScalarFieldEnum = {
+	id: "id",
+	tokenHash: "tokenHash",
+	jti: "jti",
+	userId: "userId",
+	expiresAt: "expiresAt",
+	createdAt: "createdAt",
+	updatedAt: "updatedAt",
+} as const;
+
+export type RefreshTokenScalarFieldEnum =
+	(typeof RefreshTokenScalarFieldEnum)[keyof typeof RefreshTokenScalarFieldEnum];
+
 export const ServiceCategoryScalarFieldEnum = {
 	id: "id",
 	name: "name",
@@ -2005,6 +2096,7 @@ export type GlobalOmitConfig = {
 	auditLog?: Prisma.AuditLogOmit;
 	notification?: Prisma.NotificationOmit;
 	payment?: Prisma.PaymentOmit;
+	refreshToken?: Prisma.RefreshTokenOmit;
 	serviceCategory?: Prisma.ServiceCategoryOmit;
 	service?: Prisma.ServiceOmit;
 	serviceRequest?: Prisma.ServiceRequestOmit;

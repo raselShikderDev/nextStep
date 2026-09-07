@@ -222,6 +222,7 @@ export type UserWhereInput = {
 		Prisma.UserDetailsNullableScalarRelationFilter,
 		Prisma.UserDetailsWhereInput
 	> | null;
+	refreshTokens?: Prisma.RefreshTokenListRelationFilter;
 	emailChangeRequests?: Prisma.EmailChangeRequestListRelationFilter;
 	approvedEmailRequests?: Prisma.EmailChangeRequestListRelationFilter;
 };
@@ -237,6 +238,7 @@ export type UserOrderByWithRelationInput = {
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
 	userDetails?: Prisma.UserDetailsOrderByWithRelationInput;
+	refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestOrderByRelationAggregateInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestOrderByRelationAggregateInput;
 };
@@ -259,6 +261,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
 			Prisma.UserDetailsNullableScalarRelationFilter,
 			Prisma.UserDetailsWhereInput
 		> | null;
+		refreshTokens?: Prisma.RefreshTokenListRelationFilter;
 		emailChangeRequests?: Prisma.EmailChangeRequestListRelationFilter;
 		approvedEmailRequests?: Prisma.EmailChangeRequestListRelationFilter;
 	},
@@ -310,6 +313,7 @@ export type UserCreateInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutApprovedByInput;
 };
@@ -325,6 +329,7 @@ export type UserUncheckedCreateInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutApprovedByInput;
 };
@@ -340,6 +345,7 @@ export type UserUpdateInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUpdateManyWithoutApprovedByNestedInput;
 };
@@ -355,6 +361,7 @@ export type UserUncheckedUpdateInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutApprovedByNestedInput;
 };
@@ -395,6 +402,11 @@ export type UserUncheckedUpdateManyInput = {
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
+export type UserScalarRelationFilter = {
+	is?: Prisma.UserWhereInput;
+	isNot?: Prisma.UserWhereInput;
+};
+
 export type UserCountOrderByAggregateInput = {
 	id?: Prisma.SortOrder;
 	email?: Prisma.SortOrder;
@@ -431,14 +443,35 @@ export type UserMinOrderByAggregateInput = {
 	updatedAt?: Prisma.SortOrder;
 };
 
-export type UserScalarRelationFilter = {
-	is?: Prisma.UserWhereInput;
-	isNot?: Prisma.UserWhereInput;
-};
-
 export type UserNullableScalarRelationFilter = {
 	is?: Prisma.UserWhereInput | null;
 	isNot?: Prisma.UserWhereInput | null;
+};
+
+export type UserCreateNestedOneWithoutRefreshTokensInput = {
+	create?: Prisma.XOR<
+		Prisma.UserCreateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedCreateWithoutRefreshTokensInput
+	>;
+	connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefreshTokensInput;
+	connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutRefreshTokensNestedInput = {
+	create?: Prisma.XOR<
+		Prisma.UserCreateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedCreateWithoutRefreshTokensInput
+	>;
+	connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefreshTokensInput;
+	upsert?: Prisma.UserUpsertWithoutRefreshTokensInput;
+	connect?: Prisma.UserWhereUniqueInput;
+	update?: Prisma.XOR<
+		Prisma.XOR<
+			Prisma.UserUpdateToOneWithWhereWithoutRefreshTokensInput,
+			Prisma.UserUpdateWithoutRefreshTokensInput
+		>,
+		Prisma.UserUncheckedUpdateWithoutRefreshTokensInput
+	>;
 };
 
 export type EnumRoleFieldUpdateOperationsInput = {
@@ -525,6 +558,94 @@ export type UserUpdateOneRequiredWithoutUserDetailsNestedInput = {
 	>;
 };
 
+export type UserCreateWithoutRefreshTokensInput = {
+	id?: string;
+	email: string;
+	passwordHash: string;
+	role?: $Enums.Role;
+	isActive?: boolean;
+	isVerified?: boolean;
+	mustChangePassword?: boolean;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	userDetails?: Prisma.UserDetailsCreateNestedOneWithoutUserInput;
+	emailChangeRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutUserInput;
+	approvedEmailRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutApprovedByInput;
+};
+
+export type UserUncheckedCreateWithoutRefreshTokensInput = {
+	id?: string;
+	email: string;
+	passwordHash: string;
+	role?: $Enums.Role;
+	isActive?: boolean;
+	isVerified?: boolean;
+	mustChangePassword?: boolean;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	userDetails?: Prisma.UserDetailsUncheckedCreateNestedOneWithoutUserInput;
+	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutUserInput;
+	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutApprovedByInput;
+};
+
+export type UserCreateOrConnectWithoutRefreshTokensInput = {
+	where: Prisma.UserWhereUniqueInput;
+	create: Prisma.XOR<
+		Prisma.UserCreateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedCreateWithoutRefreshTokensInput
+	>;
+};
+
+export type UserUpsertWithoutRefreshTokensInput = {
+	update: Prisma.XOR<
+		Prisma.UserUpdateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedUpdateWithoutRefreshTokensInput
+	>;
+	create: Prisma.XOR<
+		Prisma.UserCreateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedCreateWithoutRefreshTokensInput
+	>;
+	where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutRefreshTokensInput = {
+	where?: Prisma.UserWhereInput;
+	data: Prisma.XOR<
+		Prisma.UserUpdateWithoutRefreshTokensInput,
+		Prisma.UserUncheckedUpdateWithoutRefreshTokensInput
+	>;
+};
+
+export type UserUpdateWithoutRefreshTokensInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	email?: Prisma.StringFieldUpdateOperationsInput | string;
+	passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	userDetails?: Prisma.UserDetailsUpdateOneWithoutUserNestedInput;
+	emailChangeRequests?: Prisma.EmailChangeRequestUpdateManyWithoutUserNestedInput;
+	approvedEmailRequests?: Prisma.EmailChangeRequestUpdateManyWithoutApprovedByNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutRefreshTokensInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	email?: Prisma.StringFieldUpdateOperationsInput | string;
+	passwordHash?: Prisma.StringFieldUpdateOperationsInput | string;
+	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	userDetails?: Prisma.UserDetailsUncheckedUpdateOneWithoutUserNestedInput;
+	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutUserNestedInput;
+	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutApprovedByNestedInput;
+};
+
 export type UserCreateWithoutEmailChangeRequestsInput = {
 	id?: string;
 	email: string;
@@ -536,6 +657,7 @@ export type UserCreateWithoutEmailChangeRequestsInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutApprovedByInput;
 };
 
@@ -550,6 +672,7 @@ export type UserUncheckedCreateWithoutEmailChangeRequestsInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutApprovedByInput;
 };
 
@@ -572,6 +695,7 @@ export type UserCreateWithoutApprovedEmailRequestsInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutUserInput;
 };
 
@@ -586,6 +710,7 @@ export type UserUncheckedCreateWithoutApprovedEmailRequestsInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedCreateNestedOneWithoutUserInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutUserInput;
 };
 
@@ -628,6 +753,7 @@ export type UserUpdateWithoutEmailChangeRequestsInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUpdateManyWithoutApprovedByNestedInput;
 };
 
@@ -642,6 +768,7 @@ export type UserUncheckedUpdateWithoutEmailChangeRequestsInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutApprovedByNestedInput;
 };
 
@@ -676,6 +803,7 @@ export type UserUpdateWithoutApprovedEmailRequestsInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUpdateManyWithoutUserNestedInput;
 };
 
@@ -690,6 +818,7 @@ export type UserUncheckedUpdateWithoutApprovedEmailRequestsInput = {
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	userDetails?: Prisma.UserDetailsUncheckedUpdateOneWithoutUserNestedInput;
+	refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutUserNestedInput;
 };
 
@@ -703,6 +832,7 @@ export type UserCreateWithoutUserDetailsInput = {
 	mustChangePassword?: boolean;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
+	refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestCreateNestedManyWithoutApprovedByInput;
 };
@@ -717,6 +847,7 @@ export type UserUncheckedCreateWithoutUserDetailsInput = {
 	mustChangePassword?: boolean;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
+	refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutUserInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedCreateNestedManyWithoutApprovedByInput;
 };
@@ -759,6 +890,7 @@ export type UserUpdateWithoutUserDetailsInput = {
 	mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUpdateManyWithoutApprovedByNestedInput;
 };
@@ -773,6 +905,7 @@ export type UserUncheckedUpdateWithoutUserDetailsInput = {
 	mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
 	emailChangeRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutUserNestedInput;
 	approvedEmailRequests?: Prisma.EmailChangeRequestUncheckedUpdateManyWithoutApprovedByNestedInput;
 };
@@ -782,6 +915,7 @@ export type UserUncheckedUpdateWithoutUserDetailsInput = {
  */
 
 export type UserCountOutputType = {
+	refreshTokens: number;
 	emailChangeRequests: number;
 	approvedEmailRequests: number;
 };
@@ -790,6 +924,7 @@ export type UserCountOutputTypeSelect<
 	ExtArgs extends
 		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
+	refreshTokens?: boolean | UserCountOutputTypeCountRefreshTokensArgs;
 	emailChangeRequests?:
 		| boolean
 		| UserCountOutputTypeCountEmailChangeRequestsArgs;
@@ -809,6 +944,16 @@ export type UserCountOutputTypeDefaultArgs<
 	 * Select specific fields to fetch from the UserCountOutputType
 	 */
 	select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null;
+};
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRefreshTokensArgs<
+	ExtArgs extends
+		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+	where?: Prisma.RefreshTokenWhereInput;
 };
 
 /**
@@ -846,6 +991,7 @@ export type UserSelect<
 		createdAt?: boolean;
 		updatedAt?: boolean;
 		userDetails?: boolean | Prisma.User$userDetailsArgs<ExtArgs>;
+		refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
 		emailChangeRequests?:
 			| boolean
 			| Prisma.User$emailChangeRequestsArgs<ExtArgs>;
@@ -925,6 +1071,7 @@ export type UserInclude<
 		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
 	userDetails?: boolean | Prisma.User$userDetailsArgs<ExtArgs>;
+	refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
 	emailChangeRequests?: boolean | Prisma.User$emailChangeRequestsArgs<ExtArgs>;
 	approvedEmailRequests?:
 		| boolean
@@ -947,6 +1094,7 @@ export type $UserPayload<
 	name: "User";
 	objects: {
 		userDetails: Prisma.$UserDetailsPayload<ExtArgs> | null;
+		refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[];
 		emailChangeRequests: Prisma.$EmailChangeRequestPayload<ExtArgs>[];
 		approvedEmailRequests: Prisma.$EmailChangeRequestPayload<ExtArgs>[];
 	};
@@ -1524,6 +1672,17 @@ export interface Prisma__UserClient<
 		ExtArgs,
 		GlobalOmitOptions
 	>;
+	refreshTokens<T extends Prisma.User$refreshTokensArgs<ExtArgs> = {}>(
+		args?: Prisma.Subset<T, Prisma.User$refreshTokensArgs<ExtArgs>>,
+	): Prisma.PrismaPromise<
+		| runtime.Types.Result.GetResult<
+				Prisma.$RefreshTokenPayload<ExtArgs>,
+				T,
+				"findMany",
+				GlobalOmitOptions
+		  >
+		| Null
+	>;
 	emailChangeRequests<
 		T extends Prisma.User$emailChangeRequestsArgs<ExtArgs> = {},
 	>(
@@ -2066,6 +2225,37 @@ export type User$userDetailsArgs<
 	 */
 	include?: Prisma.UserDetailsInclude<ExtArgs> | null;
 	where?: Prisma.UserDetailsWhereInput;
+};
+
+/**
+ * User.refreshTokens
+ */
+export type User$refreshTokensArgs<
+	ExtArgs extends
+		runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+	/**
+	 * Select specific fields to fetch from the RefreshToken
+	 */
+	select?: Prisma.RefreshTokenSelect<ExtArgs> | null;
+	/**
+	 * Omit specific fields from the RefreshToken
+	 */
+	omit?: Prisma.RefreshTokenOmit<ExtArgs> | null;
+	/**
+	 * Choose, which related nodes to fetch as well
+	 */
+	include?: Prisma.RefreshTokenInclude<ExtArgs> | null;
+	where?: Prisma.RefreshTokenWhereInput;
+	orderBy?:
+		| Prisma.RefreshTokenOrderByWithRelationInput
+		| Prisma.RefreshTokenOrderByWithRelationInput[];
+	cursor?: Prisma.RefreshTokenWhereUniqueInput;
+	take?: number;
+	skip?: number;
+	distinct?:
+		| Prisma.RefreshTokenScalarFieldEnum
+		| Prisma.RefreshTokenScalarFieldEnum[];
 };
 
 /**
